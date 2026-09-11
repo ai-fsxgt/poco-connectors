@@ -8,6 +8,12 @@ Each root directory is an independently installable connector. Use lowercase keb
 
 Before choosing Python, Node, or a bundled executable, verify the manifest schema, Provider runner, and target OS/architecture; a runtime installed elsewhere does not prove support. Prefer remote MCP, using a program adapter only when required. For large APIs or CLIs, expose a pinned searchable catalog and few stable dispatchers instead of thousands of tools. Treat invocations as isolated: omit commands needing a daemon, persistent local state, or unbounded listeners. Synchronize the manifest, locales, bundled Skill, and references with actual behavior.
 
+## Migration & Source Reuse
+
+Before creating files during a migration, inventory reusable material from the source connector. Directly copy platform-neutral content whose purpose and semantics already match, including documentation, general Skills, references, API schemas and catalogs, icons and other assets, configuration, and provider code. Preserve reusable files verbatim instead of regenerating or paraphrasing equivalent content. When adaptation is required, copy the source file as the baseline and make only the necessary Poco-specific changes. Do not rebuild a reusable asset from scratch without a concrete incompatibility; this reuse-first workflow avoids unnecessary implementation time, review churn, and model-token usage.
+
+After copying, verify licensing and provenance, manifest paths, platform assumptions, installation and authorization instructions, and runtime behavior. Never carry over credentials, user data, caches, or generated build artifacts. Ensure copied documentation, locales, Skills, references, configuration, and code remain consistent with the connector's actual behavior.
+
 ## Safety & Supply Chain
 
 Use a default-deny tool policy. Writes and destructive actions use `retry: never`; sensitive writes and destructive actions require confirmation. At invocation, revalidate catalog effect and confirmation so callers cannot downgrade risk. Disable upstream SDK or CLI retries where ambiguous writes could repeat. Never commit credentials or user data.
