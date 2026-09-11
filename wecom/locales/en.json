@@ -1,0 +1,23 @@
+{
+  "name": "WeCom",
+  "description": "Connect WeCom for contacts, messages, documents, calendars, meetings, and todos.",
+  "authorization.title": "Connect a WeCom bot",
+  "authorization.description": "An administrator configures the WeCom bot ID and secret. Poco establishes each user's connection from that configuration and manages access tokens.",
+  "capabilities.title": "Capabilities",
+  "capabilities.contacts.title": "Contacts and messages",
+  "capabilities.contacts.description": "Look up visible members, chats, and messages, and send text messages.",
+  "capabilities.collaboration.title": "Calendars, meetings, and todos",
+  "capabilities.collaboration.description": "Create, inspect, update, and cancel calendars and meetings, and manage todos.",
+  "capabilities.documents.title": "Documents and sheets",
+  "capabilities.documents.description": "Read and write documents, online sheets, smart sheets, and smart pages.",
+  "capabilities.safety.title": "Action confirmation",
+  "capabilities.safety.description": "Writes follow command risk policies; deletes and high-risk actions require one-time user confirmation.",
+  "actions.reauthorize": "Reauthorize",
+  "actions.openService": "Open WeCom",
+  "configuration.group": "WeCom bot configuration",
+  "configuration.botId.label": "Bot ID",
+  "configuration.botId.description": "The WeCom bot ID.",
+  "configuration.botId.placeholder": "Enter the bot ID",
+  "configuration.botSecret.label": "Bot Secret",
+  "configuration.botSecret.description": "The WeCom bot secret, encrypted by Poco."
+}

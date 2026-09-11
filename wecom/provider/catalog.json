@@ -1,0 +1,405 @@
+{
+  "cli_version": "1.2.1",
+  "commands": [
+    {
+      "canonical_path": "contact.get_userlist",
+      "cli_path": "contact users search",
+      "description": "查询当前用户可见的企业微信成员。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli contact users search --json '<json_params>'"
+    },
+    {
+      "canonical_path": "msg.get_msg_chat_list",
+      "cli_path": "chat groups list",
+      "description": "按时间范围查询有消息的会话列表。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli chat groups list --json '<json_params>'"
+    },
+    {
+      "canonical_path": "msg.get_message",
+      "cli_path": "chat messages list",
+      "description": "拉取单聊或群聊的消息记录。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli chat messages list --json '<json_params>'"
+    },
+    {
+      "canonical_path": "msg.get_msg_media",
+      "cli_path": "message files get",
+      "description": "下载消息中的图片、文件、语音或视频。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli message files get --json '<json_params>'"
+    },
+    {
+      "canonical_path": "msg.send_message",
+      "cli_path": "message aibot send",
+      "description": "向单聊或群聊发送消息。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli message aibot send --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.create_doc",
+      "cli_path": "doc create",
+      "description": "创建企业微信在线文档或表格。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli doc create --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.get_doc_content",
+      "cli_path": "doc contents get",
+      "description": "读取文档、在线表格或智能文档内容。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli doc contents get --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.edit_doc_content",
+      "cli_path": "doc contents overwrite",
+      "description": "覆写在线文档正文。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli doc contents overwrite --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.sheet_get_info",
+      "cli_path": "sheet get",
+      "description": "读取在线表格基础信息和子表列表。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli sheet get --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.sheet_update_range_data",
+      "cli_path": "sheet contents update",
+      "description": "修改在线表格指定区域。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli sheet contents update --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.sheet_append_data",
+      "cli_path": "sheet rows append",
+      "description": "向在线表格末尾追加一行数据。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli sheet rows append --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.sheet_add_sub",
+      "cli_path": "sheet subsheets add",
+      "description": "添加在线表格子工作表。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli sheet subsheets add --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.sheet_delete_sub",
+      "cli_path": "sheet subsheets delete",
+      "description": "删除在线表格子工作表。",
+      "effect": "destructive",
+      "confirmation": "user_required",
+      "usage": "wecom-cli sheet subsheets delete --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_get_sheet",
+      "cli_path": "smartsheet sheets list",
+      "description": "读取智能表格子表信息。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli smartsheet sheets list --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_add_sheet",
+      "cli_path": "smartsheet sheets add",
+      "description": "添加智能表格子表。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet sheets add --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_update_sheet",
+      "cli_path": "smartsheet sheets update",
+      "description": "更新智能表格子表。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet sheets update --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_delete_sheet",
+      "cli_path": "smartsheet sheets delete",
+      "description": "删除智能表格子表。",
+      "effect": "destructive",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet sheets delete --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_get_fields",
+      "cli_path": "smartsheet fields list",
+      "description": "读取智能表格字段。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli smartsheet fields list --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_add_fields",
+      "cli_path": "smartsheet fields add",
+      "description": "添加智能表格字段。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet fields add --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_update_fields",
+      "cli_path": "smartsheet fields update",
+      "description": "更新智能表格字段。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet fields update --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_delete_fields",
+      "cli_path": "smartsheet fields delete",
+      "description": "删除智能表格字段。",
+      "effect": "destructive",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet fields delete --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_get_records",
+      "cli_path": "smartsheet records list",
+      "description": "读取智能表格记录。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli smartsheet records list --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_add_records",
+      "cli_path": "smartsheet records add",
+      "description": "添加智能表格记录。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet records add --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.+smartsheet_add_records_auto_file",
+      "cli_path": "smartsheet records add",
+      "description": "添加包含文件或图片的智能表格记录。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet records add --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_update_records",
+      "cli_path": "smartsheet records update",
+      "description": "更新智能表格记录。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet records update --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.+smartsheet_update_records_auto_file",
+      "cli_path": "smartsheet records update",
+      "description": "更新包含文件或图片的智能表格记录。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet records update --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartsheet_delete_records",
+      "cli_path": "smartsheet records delete",
+      "description": "删除智能表格记录。",
+      "effect": "destructive",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartsheet records delete --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.+smartpage_create",
+      "cli_path": "smartpage import",
+      "description": "创建企业微信智能文档。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartpage import --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartpage_export_task",
+      "cli_path": "smartpage pages get",
+      "description": "创建智能文档导出任务。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli smartpage pages get --json '<json_params>'"
+    },
+    {
+      "canonical_path": "doc.smartpage_get_export_result",
+      "cli_path": "smartpage pages get",
+      "description": "读取智能文档导出结果。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli smartpage pages get --json '<json_params>'"
+    },
+    {
+      "canonical_path": "meeting.create_meeting",
+      "cli_path": "meeting create",
+      "description": "创建预约会议。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli meeting create --json '<json_params>'"
+    },
+    {
+      "canonical_path": "meeting.list_user_meetings",
+      "cli_path": "meeting list",
+      "description": "查询时间范围内的会议列表。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli meeting list --json '<json_params>'"
+    },
+    {
+      "canonical_path": "meeting.get_meeting_info",
+      "cli_path": "meeting get",
+      "description": "读取会议详情。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli meeting get --json '<json_params>'"
+    },
+    {
+      "canonical_path": "meeting.cancel_meeting",
+      "cli_path": "meeting cancel",
+      "description": "取消预约会议。",
+      "effect": "destructive",
+      "confirmation": "user_required",
+      "usage": "wecom-cli meeting cancel --json '<json_params>'"
+    },
+    {
+      "canonical_path": "meeting.set_invite_meeting_members",
+      "cli_path": "meeting update",
+      "description": "覆盖会议受邀成员列表。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli meeting update --json '<json_params>'"
+    },
+    {
+      "canonical_path": "schedule.get_schedule_list_by_range",
+      "cli_path": "calendar schedules list",
+      "description": "查询时间范围内的日程。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli calendar schedules list --json '<json_params>'"
+    },
+    {
+      "canonical_path": "schedule.get_schedule_detail",
+      "cli_path": "calendar schedules get",
+      "description": "读取日程详情。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli calendar schedules get --json '<json_params>'"
+    },
+    {
+      "canonical_path": "schedule.create_schedule",
+      "cli_path": "calendar schedules create",
+      "description": "创建日程。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli calendar schedules create --json '<json_params>'"
+    },
+    {
+      "canonical_path": "schedule.update_schedule",
+      "cli_path": "calendar schedules update",
+      "description": "更新日程。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli calendar schedules update --json '<json_params>'"
+    },
+    {
+      "canonical_path": "schedule.cancel_schedule",
+      "cli_path": "calendar schedules cancel",
+      "description": "取消日程。",
+      "effect": "destructive",
+      "confirmation": "user_required",
+      "usage": "wecom-cli calendar schedules cancel --json '<json_params>'"
+    },
+    {
+      "canonical_path": "schedule.add_schedule_attendees",
+      "cli_path": "calendar schedules update",
+      "description": "添加日程参与人。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli calendar schedules update --json '<json_params>'"
+    },
+    {
+      "canonical_path": "schedule.del_schedule_attendees",
+      "cli_path": "calendar schedules update",
+      "description": "移除日程参与人。",
+      "effect": "destructive",
+      "confirmation": "user_required",
+      "usage": "wecom-cli calendar schedules update --json '<json_params>'"
+    },
+    {
+      "canonical_path": "schedule.check_availability",
+      "cli_path": "calendar schedules free list",
+      "description": "查询多名成员的闲忙状态。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli calendar schedules free list --json '<json_params>'"
+    },
+    {
+      "canonical_path": "todo.search_todo_userid",
+      "cli_path": "contact users search",
+      "description": "按姓名或别名查找待办参与人的 userid。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli contact users search --json '<json_params>'"
+    },
+    {
+      "canonical_path": "todo.create_todo",
+      "cli_path": "todo create",
+      "description": "创建待办。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli todo create --json '<json_params>'"
+    },
+    {
+      "canonical_path": "todo.update_todo",
+      "cli_path": "todo update",
+      "description": "更新待办内容、参与人或状态。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli todo update --json '<json_params>'"
+    },
+    {
+      "canonical_path": "todo.change_todo_user_status",
+      "cli_path": "todo finish",
+      "description": "更改参与人在待办中的处理状态。",
+      "effect": "write",
+      "confirmation": "user_required",
+      "usage": "wecom-cli todo finish --json '<json_params>'"
+    },
+    {
+      "canonical_path": "todo.get_todo_list",
+      "cli_path": "todo list",
+      "description": "查询待办列表。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli todo list --json '<json_params>'"
+    },
+    {
+      "canonical_path": "todo.get_todo_detail",
+      "cli_path": "todo get",
+      "description": "批量读取待办详情。",
+      "effect": "read",
+      "confirmation": "not_required",
+      "usage": "wecom-cli todo get --json '<json_params>'"
+    },
+    {
+      "canonical_path": "todo.delete_todo",
+      "cli_path": "todo delete",
+      "description": "删除待办。",
+      "effect": "destructive",
+      "confirmation": "user_required",
+      "usage": "wecom-cli todo delete --json '<json_params>'"
+    }
+  ]
+}

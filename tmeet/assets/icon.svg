@@ -1,5 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Tencent Meeting">
-  <rect width="64" height="64" rx="16" fill="#2f6bff"/>
-  <path d="M16 22h20c4.4 0 8 3.6 8 8v4c0 4.4-3.6 8-8 8H28l-8 7v-7h-4V22Z" fill="#fff"/>
-  <path d="m43 28 8-4v16l-8-4z" fill="#fff"/>
-</svg>
+<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1789131424571" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6448" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64"><path d="M215.646 9.197h583.512q215.645 0 215.645 215.645v583.512q0 215.646-215.645 215.646H215.646Q0 1024 0 808.354V224.842Q0 9.197 215.646 9.197z" fill="#0377FC" p-id="6449"></path><path d="M844.443 536.133l-83.34-82.262-126.534-127.548-127.484 126.026L379.6 326.323 253.067 453.807l-82.834 82.39a61.966 61.966 0 0 0 0 87.4l82.834 83.277 126.977-126.533 127.04 128.563L634.063 580.34l127.04 128.055 83.341-82.833a64.06 64.06 0 0 0 0-89.43z" fill="#FFFFFF" p-id="6450"></path><path d="M386.048 305.584l134.545 134.545-269.09 269.09-134.546-134.545z" fill="#E0EBFD" p-id="6451"></path><path d="M379.536 326.323L513.3 445.816 387.02 596.134h-3.995z" fill="#ABC4FB" p-id="6452"></path></svg>

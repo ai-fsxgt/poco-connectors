@@ -1,0 +1,23 @@
+{
+  "name": "企业微信",
+  "description": "连接企业微信，处理通讯录、消息、文档、日程、会议和待办。",
+  "authorization.title": "连接企业微信机器人",
+  "authorization.description": "管理员配置企业微信机器人 Bot ID 和 Secret。Poco 会为每位用户按该配置建立连接并管理访问令牌。",
+  "capabilities.title": "支持的能力",
+  "capabilities.contacts.title": "通讯录与消息",
+  "capabilities.contacts.description": "查询可见成员、会话和消息，并发送文本消息。",
+  "capabilities.collaboration.title": "日程、会议与待办",
+  "capabilities.collaboration.description": "创建、查询、更新和取消日程及会议，管理待办事项。",
+  "capabilities.documents.title": "文档与表格",
+  "capabilities.documents.description": "读写在线文档、在线表格、智能表格和智能文档。",
+  "capabilities.safety.title": "操作确认",
+  "capabilities.safety.description": "写入操作按命令风险策略执行；删除和高风险操作需要一次性用户确认。",
+  "actions.reauthorize": "重新授权",
+  "actions.openService": "打开企业微信",
+  "configuration.group": "企业微信机器人配置",
+  "configuration.botId.label": "Bot ID",
+  "configuration.botId.description": "企业微信机器人 Bot ID。",
+  "configuration.botId.placeholder": "请输入 Bot ID",
+  "configuration.botSecret.label": "Bot Secret",
+  "configuration.botSecret.description": "企业微信机器人 Secret，将由 Poco 加密保存。"
+}

@@ -1,0 +1,7 @@
+WeCom CLI runtime
+
+The file provider/vendor/wecom-cli-linux-amd64 is distributed from the official
+@wecom/cli-linux-x64 package version 1.2.1.
+
+Upstream project: https://github.com/WecomTeam/wecom-cli
+License: MIT

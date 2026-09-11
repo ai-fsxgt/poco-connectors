@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "wecom",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "productivity",
+    "sections": [
+      {"type": "notice", "title_key": "authorization.title", "description_key": "authorization.description"},
+      {"type": "capability_list", "title_key": "capabilities.title", "items": [
+        {"title_key": "capabilities.contacts.title", "description_key": "capabilities.contacts.description"},
+        {"title_key": "capabilities.collaboration.title", "description_key": "capabilities.collaboration.description"},
+        {"title_key": "capabilities.documents.title", "description_key": "capabilities.documents.description"},
+        {"title_key": "capabilities.safety.title", "description_key": "capabilities.safety.description"}
+      ]}
+    ],
+    "connection_actions": [
+      {"type": "reauthorize", "label_key": "actions.reauthorize"},
+      {"type": "open_service", "label_key": "actions.openService", "url": "https://work.weixin.qq.com/"}
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.wecom",
+  "configuration": {"fields": [
+    {"key": "bot_id", "type": "text", "label_key": "configuration.botId.label", "description_key": "configuration.botId.description", "placeholder_key": "configuration.botId.placeholder", "group_key": "configuration.group", "required": true, "min_length": 1, "max_length": 255},
+    {"key": "bot_secret", "type": "secret", "label_key": "configuration.botSecret.label", "description_key": "configuration.botSecret.description", "group_key": "configuration.group", "required": true, "min_length": 1, "max_length": 4096}
+  ]},
+  "auth": {"strategy": "program", "interaction": "none", "fields": [], "options": {"type": "program"}},
+  "runtime": {"adapter": "program", "transport": "program", "options": {"type": "program"}},
+  "program": {"protocol_version": 1, "runtime": "python", "entrypoint": "provider/main.py", "capabilities": ["credential_refresh", "launch_url"]},
+  "tool_policy": {"default": "deny", "rules": [
+    {"tool": "search_commands", "effect": "read", "retry": "safe"},
+    {"tool": "execute_read_command", "effect": "read", "retry": "safe"},
+    {"tool": "execute_write_command", "effect": "write", "retry": "never", "confirmation": "not_required"},
+    {"tool": "execute_confirmed_write_command", "effect": "write", "retry": "never", "confirmation": "user_required"},
+    {"tool": "execute_destructive_command", "effect": "destructive", "retry": "never", "confirmation": "user_required"}
+  ]},
+  "skills": [
+    {"key": "wecom-workspace", "path": "skills/wecom-workspace"},
+    {"key": "wecomcli-contact", "path": "skills/wecomcli-contact"},
+    {"key": "wecomcli-doc", "path": "skills/wecomcli-doc"},
+    {"key": "wecomcli-meeting", "path": "skills/wecomcli-meeting"},
+    {"key": "wecomcli-msg", "path": "skills/wecomcli-msg"},
+    {"key": "wecomcli-schedule", "path": "skills/wecomcli-schedule"},
+    {"key": "wecomcli-sheet", "path": "skills/wecomcli-sheet"},
+    {"key": "wecomcli-smartpage", "path": "skills/wecomcli-smartpage"},
+    {"key": "wecomcli-smartsheet", "path": "skills/wecomcli-smartsheet"},
+    {"key": "wecomcli-todo", "path": "skills/wecomcli-todo"}
+  ]
+}
