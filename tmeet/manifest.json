@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "tmeet",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "productivity",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {"title_key": "capabilities.meetings.title", "description_key": "capabilities.meetings.description"},
+          {"title_key": "capabilities.records.title", "description_key": "capabilities.records.description"},
+          {"title_key": "capabilities.reports.title", "description_key": "capabilities.reports.description"},
+          {"title_key": "capabilities.control.title", "description_key": "capabilities.control.description"}
+        ]
+      }
+    ],
+    "connection_actions": [
+      {"type": "reauthorize", "label_key": "actions.reauthorize"},
+      {"type": "open_service", "label_key": "actions.openService", "url": "https://meeting.tencent.com/"}
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.tmeet",
+  "configuration": {"fields": []},
+  "auth": {
+    "strategy": "program",
+    "interaction": "redirect",
+    "fields": [],
+    "options": {"type": "program"}
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {"type": "program"}
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": ["credential_refresh"]
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {"tool": "meeting_create", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "meeting_update", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "meeting_cancel", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "meeting_get", "effect": "read", "retry": "safe"},
+      {"tool": "meeting_get_by_code", "effect": "read", "retry": "safe"},
+      {"tool": "meeting_list", "effect": "read", "retry": "safe"},
+      {"tool": "meeting_list_ended", "effect": "read", "retry": "safe"},
+      {"tool": "meeting_search", "effect": "read", "retry": "safe"},
+      {"tool": "meeting_invitees_list", "effect": "read", "retry": "safe"},
+      {"tool": "meeting_invitees_add", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "meeting_invitees_remove", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "meeting_invitees_replace", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "record_list", "effect": "read", "retry": "safe"},
+      {"tool": "record_address", "effect": "read", "retry": "safe"},
+      {"tool": "record_smart_minutes", "effect": "read", "retry": "safe"},
+      {"tool": "record_transcript_get", "effect": "read", "retry": "safe"},
+      {"tool": "record_transcript_paragraphs", "effect": "read", "retry": "safe"},
+      {"tool": "record_transcript_search", "effect": "read", "retry": "safe"},
+      {"tool": "record_search", "effect": "read", "retry": "safe"},
+      {"tool": "record_permission_apply_prepare", "effect": "read", "retry": "safe"},
+      {"tool": "record_permission_apply_commit", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "report_participants", "effect": "read", "retry": "safe"},
+      {"tool": "report_waiting_room_log", "effect": "read", "retry": "safe"},
+      {"tool": "report_participants_export", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "report_job_result", "effect": "read", "retry": "safe"},
+      {"tool": "contact_search", "effect": "read", "retry": "safe"},
+      {"tool": "contact_lookup_by_phone", "effect": "read", "retry": "safe"},
+      {"tool": "contact_lookup_by_email", "effect": "read", "retry": "safe"},
+      {"tool": "control_call", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "control_kick", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "control_waiting_room", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "tshoot_feedback", "effect": "write", "retry": "never", "confirmation": "user_required"}
+    ]
+  },
+  "skills": [{"key": "tmeet", "path": "skills/tmeet"}]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Tencent Meeting",
+  "description": "Connect Tencent Meeting to manage meetings, recordings, transcripts, and reports.",
+  "authorization.title": "Tencent Meeting authorization required",
+  "authorization.description": "A Tencent Meeting authorization page will open during connection.",
+  "capabilities.title": "Capabilities",
+  "capabilities.meetings.title": "Meeting management",
+  "capabilities.meetings.description": "Create, query, update meetings, and manage invitees.",
+  "capabilities.records.title": "Recordings and transcripts",
+  "capabilities.records.description": "Query recordings, download addresses, smart minutes, and transcripts.",
+  "capabilities.reports.title": "Meeting reports",
+  "capabilities.reports.description": "Query participants, waiting-room members, and export jobs.",
+  "capabilities.control.title": "In-meeting controls",
+  "capabilities.control.description": "Call, remove, or operate waiting-room members after confirmation.",
+  "actions.reauthorize": "Reauthorize",
+  "actions.openService": "Open Tencent Meeting"
+}

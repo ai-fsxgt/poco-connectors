@@ -1,0 +1,17 @@
+{
+  "name": "腾讯会议",
+  "description": "连接腾讯会议，管理会议、录制、转写和参会报告。",
+  "authorization.title": "需要腾讯会议授权",
+  "authorization.description": "连接时会打开腾讯会议授权页面，完成授权后即可使用会议工具。",
+  "capabilities.title": "支持的能力",
+  "capabilities.meetings.title": "会议管理",
+  "capabilities.meetings.description": "创建、查询、更新会议并管理受邀者。",
+  "capabilities.records.title": "录制与转写",
+  "capabilities.records.description": "查询录制、下载地址、智能纪要和转写内容。",
+  "capabilities.reports.title": "会议报告",
+  "capabilities.reports.description": "查询参会人、等候室成员和导出任务。",
+  "capabilities.control.title": "会中控制",
+  "capabilities.control.description": "在确认后呼叫、踢出或操作等候室成员。",
+  "actions.reauthorize": "重新授权",
+  "actions.openService": "打开腾讯会议"
+}

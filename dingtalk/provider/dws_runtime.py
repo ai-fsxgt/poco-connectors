@@ -23,6 +23,15 @@ _MAX_FILE_INPUT_BASE64_CHARS = 4 * ((_MAX_FILE_INPUT_BYTES + 2) // 3)
 _MAX_FILE_INPUT_TEXT_CHARS = 32 * 1024
 _MAX_OUTPUT_BYTES = 360 * 1024
 _MAX_OUTPUT_FILES = 20
+_NOT_FOUND_MARKERS = (
+    "not found",
+    "not exist",
+    "not_found",
+    "不存在",
+    "未找到",
+    "找不到",
+    "not in task",
+)
 _FILE_INPUT_PARAMETERS = {
     ("aitable.record_create", "records-file"),
     ("aitable.record_update", "records-file"),
@@ -658,14 +667,18 @@ def _read_process_output(stream: Any) -> str:
 def _error_from_output(stdout: str, stderr: str) -> ProgramError:
     raw = stdout.strip() or stderr.strip()
     message = raw[-1800:] if raw else "钉钉命令执行失败"
+    joined = message.casefold()
     try:
         payload = json.loads(raw)
         error = payload.get("error") if isinstance(payload, dict) else None
         if isinstance(error, dict):
             message = str(error.get("message") or message)
+            provider_code = str(
+                error.get("code") or error.get("errcode") or ""
+            ).casefold()
             reason = str(error.get("reason") or "").lower()
             category = str(error.get("category") or "").lower()
-            joined = f"{reason} {category} {message}".lower()
+            joined = f"{provider_code} {reason} {category} {message}".casefold()
             if "scope" in joined or "permission" in joined or "权限" in joined:
                 return ProgramError(
                     "insufficient_scope",
@@ -675,6 +688,8 @@ def _error_from_output(stdout: str, stderr: str) -> ProgramError:
                 return ProgramError("authorization_required", message)
     except ValueError:
         pass
+    if any(marker in joined for marker in _NOT_FOUND_MARKERS):
+        return ProgramError("not_found", message)
     return ProgramError("external_error", message)
 
 
