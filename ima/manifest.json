@@ -3,7 +3,7 @@
   "platform_api_version": "1",
   "key": "ima-mcp",
   "package_version": "1.0.0",
-  "authorization_contract_version": "1",
+  "authorization_contract_version": "2",
   "default_locale": "zh-CN",
   "locales": ["zh-CN", "en"],
   "presentation": {
@@ -22,12 +22,12 @@
         "title_key": "capabilities.title",
         "items": [
           {
-            "title_key": "capabilities.browse.title",
-            "description_key": "capabilities.browse.description"
+            "title_key": "capabilities.notes.title",
+            "description_key": "capabilities.notes.description"
           },
           {
-            "title_key": "capabilities.search.title",
-            "description_key": "capabilities.search.description"
+            "title_key": "capabilities.knowledge.title",
+            "description_key": "capabilities.knowledge.description"
           },
           {
             "title_key": "capabilities.content.title",
@@ -51,86 +51,84 @@
   "connection_policy": "single_per_user",
   "permission_key": "feature.connector.ima-mcp",
   "configuration": {
-    "fields": [
-      {
-        "key": "endpoint",
-        "type": "url",
-        "label_key": "configuration.endpoint.label",
-        "description_key": "configuration.endpoint.description",
-        "placeholder_key": "configuration.endpoint.placeholder",
-        "group_key": "configuration.group",
-        "required": true,
-        "default": "https://ima.qq.com/mcp",
-        "max_length": 2048
-      }
-    ]
+    "fields": []
   },
   "auth": {
-    "strategy": "static_credentials",
+    "strategy": "program",
     "interaction": "form",
     "fields": [
       {
-        "key": "access_token",
+        "key": "client_id",
+        "type": "text",
+        "label_key": "authorization.clientId.label",
+        "description_key": "authorization.clientId.description",
+        "placeholder_key": "authorization.clientId.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 255
+      },
+      {
+        "key": "api_key",
         "type": "secret",
-        "label_key": "authorization.accessToken.label",
-        "description_key": "authorization.accessToken.description",
-        "placeholder_key": "authorization.accessToken.placeholder",
+        "label_key": "authorization.apiKey.label",
+        "description_key": "authorization.apiKey.description",
+        "placeholder_key": "authorization.apiKey.placeholder",
         "required": true,
         "min_length": 1,
         "max_length": 16384
       }
     ],
     "options": {
-      "type": "static_credentials",
-      "verification": "mcp_initialize_and_list_tools",
-      "account_identity": "connection_id"
+      "type": "program"
     }
   },
   "runtime": {
-    "adapter": "remote_mcp",
-    "transport": "streamable_http",
+    "adapter": "program",
+    "transport": "program",
     "options": {
-      "type": "remote_mcp",
-      "endpoint": {
-        "configuration_field": "endpoint"
-      },
-      "credential_binding": {
-        "type": "http_header",
-        "name": "Authorization",
-        "scheme": "Bearer",
-        "credential_field": "access_token"
-      }
+      "type": "program"
     }
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": []
   },
   "tool_policy": {
     "default": "deny",
     "rules": [
-      {
-        "tool": "get_knowledge_base_list",
-        "effect": "read",
-        "retry": "safe"
-      },
-      {
-        "tool": "search_knowledge",
-        "effect": "read",
-        "retry": "safe"
-      },
-      {
-        "tool": "get_knowledge_list",
-        "effect": "read",
-        "retry": "safe"
-      },
-      {
-        "tool": "fetch_media_content",
-        "effect": "read",
-        "retry": "safe"
-      }
+      {"tool": "search_note", "effect": "read", "retry": "safe"},
+      {"tool": "list_notebook", "effect": "read", "retry": "safe"},
+      {"tool": "list_note", "effect": "read", "retry": "safe"},
+      {"tool": "get_doc_content", "effect": "read", "retry": "safe"},
+      {"tool": "get_knowledge_base", "effect": "read", "retry": "safe"},
+      {"tool": "get_knowledge_list", "effect": "read", "retry": "safe"},
+      {"tool": "search_knowledge", "effect": "read", "retry": "safe"},
+      {"tool": "search_knowledge_base", "effect": "read", "retry": "safe"},
+      {"tool": "get_addable_knowledge_base_list", "effect": "read", "retry": "safe"},
+      {"tool": "check_repeated_names", "effect": "read", "retry": "safe"},
+      {"tool": "get_media_info", "effect": "read", "retry": "safe"},
+      {"tool": "fetch_media_content", "effect": "read", "retry": "safe"},
+      {"tool": "import_doc", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "append_doc", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "import_urls", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "add_knowledge", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "upload_file", "effect": "write", "retry": "never", "confirmation": "user_required"}
     ]
   },
   "skills": [
     {
       "key": "ima",
       "path": "skills/ima"
+    },
+    {
+      "key": "ima-notes",
+      "path": "skills/ima/notes"
+    },
+    {
+      "key": "ima-knowledge-base",
+      "path": "skills/ima/knowledge-base"
     }
   ]
 }
