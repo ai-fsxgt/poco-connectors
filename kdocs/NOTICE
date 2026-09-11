@@ -1,0 +1,20 @@
+金山文档连接器来源说明
+
+源资料：workbuddyskills-main/connectors/kdocs，Skill 版本 1.4.12。
+从源目录复制 SKILL.md 和 82 个 references 文档作为迁移基线；保留可复用的流程、枚举和业务说明。
+对授权、POCO 工具调用、已变更的官方接口、参数及重试约束作必要适配。
+源资料未包含独立 LICENSE 或 NOTICE，本包不另行声明这些资料的许可授权。
+源资料内容摘要（按 SKILL.md、路径排序的 references/*.md，以相对路径和内容生成）：
+SHA-256: 56eb9fa3cc91b9659cfa209b761b2bd6e473438ea1377a333eab2a83f396ca3c
+
+官方 MCP 地址：https://mcp-center.wps.cn/skill_hub/mcp
+工具目录抓取日期：2026-09-11，共 569 个工具。
+原始工具目录规范 JSON 的 SHA-256: 4398a6e5fed1d82cda0e8c5cbcbea10ac9feb170931fb1c7f05d38051d1ff0b4
+目录保留原始描述与 inputSchema，并记录每个原始工具定义的 SHA-256。
+风险、确认要求及稳定调用入口由本连接器明确登记，不采用上游统一的风险注解。
+授权使用 Token 表单，Provider 只依赖 Python 标准库与平台已有的 httpx，不捆绑可执行文件。
+图标为本次迁移新建的通用文档图标，不使用 WPS 商标素材。
+
+平台边界：单次 Provider 调用 30 秒、请求 2 MiB、输出 1 MiB。
+AI PPT、PDF 全文翻译等长任务未验证可在此时限内完成；超时不自动重新提交。
+部分旧版文字导出、演示主题切换及跨文件页面导入接口已从官方目录移除，本包不保留旧调用。

@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "kdocs",
+  "package_version": "1.4.12",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "productivity",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.documents.title",
+            "description_key": "capabilities.documents.description"
+          },
+          {
+            "title_key": "capabilities.spreadsheets.title",
+            "description_key": "capabilities.spreadsheets.description"
+          },
+          {
+            "title_key": "capabilities.knowledge.title",
+            "description_key": "capabilities.knowledge.description"
+          },
+          {
+            "title_key": "capabilities.safety.title",
+            "description_key": "capabilities.safety.description"
+          }
+        ]
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {
+            "title_key": "examples.report.title",
+            "description_key": "examples.report.description"
+          },
+          {
+            "title_key": "examples.table.title",
+            "description_key": "examples.table.description"
+          },
+          {
+            "title_key": "examples.knowledge.title",
+            "description_key": "examples.knowledge.description"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {
+        "type": "reauthorize",
+        "label_key": "actions.reauthorize"
+      },
+      {
+        "type": "open_service",
+        "label_key": "actions.openService",
+        "url": "https://www.kdocs.cn/latest"
+      }
+    ]
+  },
+  "connection_policy": "multiple_per_user",
+  "permission_key": "feature.connector.kdocs",
+  "configuration": {
+    "fields": []
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "token",
+        "type": "secret",
+        "label_key": "authorization.token.label",
+        "description_key": "authorization.token.description",
+        "placeholder_key": "authorization.token.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 16384
+      }
+    ],
+    "options": {
+      "type": "program"
+    }
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {
+      "type": "program"
+    }
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": []
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {
+        "tool": "search_tools",
+        "effect": "read",
+        "retry": "safe",
+        "confirmation": "not_required"
+      },
+      {
+        "tool": "execute_read_tool",
+        "effect": "read",
+        "retry": "safe",
+        "confirmation": "not_required"
+      },
+      {
+        "tool": "execute_write_tool",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "tool": "execute_confirmed_write_tool",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "execute_destructive_tool",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "execute_unknown_tool",
+        "effect": "unknown",
+        "retry": "never",
+        "confirmation": "user_required"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "key": "kdocs",
+      "path": "skills/kdocs"
+    }
+  ]
+}
