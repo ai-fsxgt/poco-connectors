@@ -1,0 +1,22 @@
+{
+  "name": "IMA",
+  "description": "检索用户已授权的 IMA 知识库并读取资料原文。",
+  "configuration.group": "服务配置",
+  "configuration.endpoint.label": "MCP 地址",
+  "configuration.endpoint.description": "IMA 官方 Streamable HTTP MCP 服务地址。",
+  "configuration.endpoint.placeholder": "https://ima.qq.com/mcp",
+  "authorization.title": "需要 IMA 授权",
+  "authorization.description": "输入 IMA MCP 授权流程提供的 Access Token。",
+  "authorization.accessToken.label": "IMA Access Token",
+  "authorization.accessToken.description": "输入 Token 本体，系统会自动添加 Bearer 前缀。",
+  "authorization.accessToken.placeholder": "输入 Access Token",
+  "capabilities.title": "支持的能力",
+  "capabilities.browse.title": "浏览知识库",
+  "capabilities.browse.description": "查看用户已授权的知识库及其中的文件列表。",
+  "capabilities.search.title": "检索知识",
+  "capabilities.search.description": "在指定知识库中按关键词搜索相关资料。",
+  "capabilities.content.title": "读取原文",
+  "capabilities.content.description": "获取知识库文件的原始内容用于整理和分析。",
+  "actions.reauthorize": "重新授权",
+  "actions.openService": "打开 IMA"
+}

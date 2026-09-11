@@ -1,0 +1,22 @@
+{
+  "name": "IMA",
+  "description": "Search authorized IMA knowledge bases and read source content.",
+  "configuration.group": "Service configuration",
+  "configuration.endpoint.label": "MCP endpoint",
+  "configuration.endpoint.description": "Official IMA Streamable HTTP MCP service endpoint.",
+  "configuration.endpoint.placeholder": "https://ima.qq.com/mcp",
+  "authorization.title": "IMA authorization required",
+  "authorization.description": "Enter the access token supplied by the IMA MCP authorization flow.",
+  "authorization.accessToken.label": "IMA access token",
+  "authorization.accessToken.description": "Enter the token value; the Bearer prefix is added automatically.",
+  "authorization.accessToken.placeholder": "Enter access token",
+  "capabilities.title": "Capabilities",
+  "capabilities.browse.title": "Browse knowledge bases",
+  "capabilities.browse.description": "List authorized knowledge bases and their files.",
+  "capabilities.search.title": "Search knowledge",
+  "capabilities.search.description": "Search a selected knowledge base by keyword.",
+  "capabilities.content.title": "Read source content",
+  "capabilities.content.description": "Retrieve the original content of knowledge base files for analysis.",
+  "actions.reauthorize": "Reauthorize",
+  "actions.openService": "Open IMA"
+}

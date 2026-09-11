@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "ima-mcp",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "knowledge",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.browse.title",
+            "description_key": "capabilities.browse.description"
+          },
+          {
+            "title_key": "capabilities.search.title",
+            "description_key": "capabilities.search.description"
+          },
+          {
+            "title_key": "capabilities.content.title",
+            "description_key": "capabilities.content.description"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {
+        "type": "reauthorize",
+        "label_key": "actions.reauthorize"
+      },
+      {
+        "type": "open_service",
+        "label_key": "actions.openService",
+        "url": "https://ima.qq.com/"
+      }
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.ima-mcp",
+  "configuration": {
+    "fields": [
+      {
+        "key": "endpoint",
+        "type": "url",
+        "label_key": "configuration.endpoint.label",
+        "description_key": "configuration.endpoint.description",
+        "placeholder_key": "configuration.endpoint.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "default": "https://ima.qq.com/mcp",
+        "max_length": 2048
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "static_credentials",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "access_token",
+        "type": "secret",
+        "label_key": "authorization.accessToken.label",
+        "description_key": "authorization.accessToken.description",
+        "placeholder_key": "authorization.accessToken.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 16384
+      }
+    ],
+    "options": {
+      "type": "static_credentials",
+      "verification": "mcp_initialize_and_list_tools",
+      "account_identity": "connection_id"
+    }
+  },
+  "runtime": {
+    "adapter": "remote_mcp",
+    "transport": "streamable_http",
+    "options": {
+      "type": "remote_mcp",
+      "endpoint": {
+        "configuration_field": "endpoint"
+      },
+      "credential_binding": {
+        "type": "http_header",
+        "name": "Authorization",
+        "scheme": "Bearer",
+        "credential_field": "access_token"
+      }
+    }
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {
+        "tool": "get_knowledge_base_list",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "search_knowledge",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "get_knowledge_list",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "fetch_media_content",
+        "effect": "read",
+        "retry": "safe"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "key": "ima",
+      "path": "skills/ima"
+    }
+  ]
+}
