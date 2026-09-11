@@ -8,6 +8,7 @@
 | --- | --- | --- | --- | --- |
 | [`agentkey/`](./agentkey/) | AgentKey | `agentkey` | `1.0.0` | 网页、社交媒体、金融、电商和企业等实时数据查询 |
 | [`dingtalk/`](./dingtalk/) | 钉钉 | `dingtalk` | `1.0.1` | 日程、待办、文档、云盘、聊天、通讯录及业务数据操作 |
+| [`feishu/`](./feishu/) | 飞书 | `feishu` | `1.0.0` | 日历、任务、文档、云盘、表格、审批、聊天、邮件及业务数据操作 |
 | [`weknora/`](./weknora/) | WeKnoraX 知识库 | `knowledge-base` | `1.0.2` | 检索用户已授权知识空间中的文档与知识 |
 
 ## 连接器目录结构

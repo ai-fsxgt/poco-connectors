@@ -555,11 +555,9 @@ def _binary(runtime_root: Path) -> Path:
     arch = {
         "x86_64": "amd64",
         "amd64": "amd64",
-        "aarch64": "arm64",
-        "arm64": "arm64",
     }.get(machine)
     if arch is None or platform.system() != "Linux":
-        raise ProgramError("unavailable", "钉钉连接器运行时仅支持 Linux amd64/arm64")
+        raise ProgramError("unavailable", "钉钉连接器运行时仅支持 Linux amd64")
     archive = _VENDOR_ROOT / f"dws-linux-{arch}.tar.gz"
     try:
         checksums = json.loads((_VENDOR_ROOT / "checksums.json").read_text())

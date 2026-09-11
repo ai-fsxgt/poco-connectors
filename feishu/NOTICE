@@ -1,0 +1,5 @@
+本连接器随包分发的 lark-cli 二进制来自 Lark Technologies 官方 v1.0.72 Linux amd64 发布归档。
+来源：https://github.com/larksuite/cli/releases/tag/v1.0.72
+归档 SHA-256：395e6b7e99e106afe5de77750f65b6d40421c8fec8e885b7a971cdf7c5d39d02
+
+连接器仅通过 Python Provider 注入凭据、限制命令风险并隔离临时工作目录；未对官方二进制重新编译或修改。

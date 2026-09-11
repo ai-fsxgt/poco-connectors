@@ -18,7 +18,7 @@ After copying, verify licensing and provenance, manifest paths, platform assumpt
 
 Use a default-deny tool policy. Writes and destructive actions use `retry: never`; sensitive writes and destructive actions require confirmation. At invocation, revalidate catalog effect and confirmation so callers cannot downgrade risk. Disable upstream SDK or CLI retries where ambiguous writes could repeat. Never commit credentials or user data.
 
-For vendored executables, pin the upstream version and commit, preserve patches and `PATCHES.md`, build deterministic archives per supported architecture, and update SHA-256 checksums with artifacts.
+For upstream CLIs and other connector executables, first look for an official release binary for the target platform and use that artifact when available. Build from source only when no suitable official binary exists or the user explicitly requests source changes. Bundled connector executables target Linux amd64 only. Do not add arm64, macOS, Windows, or other runtime builds unless the user explicitly changes this platform requirement. Pin the upstream version and commit, preserve official checksums and `PATCHES.md` when applicable, and update SHA-256 checksums with artifacts. Platform compatibility issues should be reported to the Poco platform owner instead of triggering an unrequested custom rebuild.
 
 ## Development Commands
 

@@ -1,0 +1,21 @@
+{
+  "name": "Feishu",
+  "description": "Connect Feishu workspaces and handle collaboration or business data within explicit permission and confirmation boundaries.",
+  "authorization.title": "Authorize a Feishu account",
+  "authorization.description": "Sign in with the Feishu application configured by your organization. OAuth access and Feishu app permissions are separate; an administrator must grant missing business permissions in the Feishu Open Platform.",
+  "capabilities.title": "Capabilities",
+  "capabilities.office.title": "Workplace collaboration",
+  "capabilities.office.description": "Work with calendars, tasks, documents, drive, mail, meetings, chat, and contacts.",
+  "capabilities.collaboration.title": "Business applications",
+  "capabilities.collaboration.description": "Work with Base, spreadsheets, approvals, attendance, OKR, Miaoda apps, and other Feishu business data.",
+  "capabilities.safety.title": "Action confirmation",
+  "capabilities.safety.description": "Read and ordinary write operations follow the Feishu command catalog; high-risk writes show exact arguments and require one-time confirmation.",
+  "actions.reauthorize": "Reauthorize",
+  "actions.openService": "Open Feishu",
+  "configuration.group": "Feishu application",
+  "configuration.appId.label": "App ID",
+  "configuration.appId.description": "The App ID of your Feishu Open Platform application.",
+  "configuration.appId.placeholder": "cli_xxxxxxxxxxxxxxxx",
+  "configuration.appSecret.label": "App Secret",
+  "configuration.appSecret.description": "The App Secret of your Feishu Open Platform application."
+}

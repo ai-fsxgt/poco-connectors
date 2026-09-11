@@ -131,13 +131,13 @@ def main() -> None:
     vendor = root / "provider" / "vendor"
     vendor.mkdir(exist_ok=True)
     checksums = {}
-    for arch in ("amd64", "arm64"):
+    for arch in ("amd64",):
         binary = args.binary_dir / f"poco-dws-linux-{arch}"
         archive = vendor / f"dws-linux-{arch}.tar.gz"
         write_runtime_archive(binary, archive)
         checksums[archive.name] = hashlib.sha256(archive.read_bytes()).hexdigest()
     (vendor / "checksums.json").write_text(json.dumps(checksums, indent=2) + "\n")
-    print(f"Built {len(commands)} commands and two Linux runtime archives")
+    print(f"Built {len(commands)} commands and one Linux runtime archive")
 
 
 if __name__ == "__main__":
