@@ -2,7 +2,7 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "dingtalk",
-  "package_version": "1.0.0",
+  "package_version": "1.0.1",
   "authorization_contract_version": "1",
   "default_locale": "zh-CN",
   "locales": ["zh-CN", "en"],

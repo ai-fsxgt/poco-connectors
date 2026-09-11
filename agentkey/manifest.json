@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "agentkey",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "research",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.web.title",
+            "description_key": "capabilities.web.description"
+          },
+          {
+            "title_key": "capabilities.social.title",
+            "description_key": "capabilities.social.description"
+          },
+          {
+            "title_key": "capabilities.market.title",
+            "description_key": "capabilities.market.description"
+          },
+          {
+            "title_key": "capabilities.business.title",
+            "description_key": "capabilities.business.description"
+          }
+        ]
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {"title_key": "examples.social.title", "description_key": "examples.social.description"},
+          {"title_key": "examples.finance.title", "description_key": "examples.finance.description"},
+          {"title_key": "examples.commerce.title", "description_key": "examples.commerce.description"},
+          {"title_key": "examples.github.title", "description_key": "examples.github.description"}
+        ]
+      }
+    ],
+    "connection_actions": [
+      {"type": "reauthorize", "label_key": "actions.reauthorize"},
+      {
+        "type": "open_service",
+        "label_key": "actions.openService",
+        "url": "https://console.agentkey.app/"
+      }
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.agentkey",
+  "configuration": {
+    "fields": [
+      {
+        "key": "endpoint",
+        "type": "url",
+        "label_key": "configuration.endpoint.label",
+        "description_key": "configuration.endpoint.description",
+        "placeholder_key": "configuration.endpoint.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "default": "https://api.agentkey.app/v1/mcp",
+        "max_length": 2048
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "redirect",
+    "fields": [],
+    "options": {"type": "program"}
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {"type": "program"}
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": ["credential_refresh"]
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {"tool": "find_tools", "effect": "read", "retry": "safe"},
+      {"tool": "describe_tool", "effect": "read", "retry": "safe"},
+      {"tool": "execute_tool", "effect": "read", "retry": "never"}
+    ]
+  },
+  "skills": [{"key": "agentkey", "path": "skills/agentkey"}]
+}

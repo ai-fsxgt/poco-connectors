@@ -6,6 +6,13 @@ Common product filters include `calendar`, `todo`, `doc`, `drive`, `chat`, `cont
 
 Search by the intended business action rather than guessing a command. Review required parameters, constraints, examples, effect, and confirmation from the returned catalog entry before execution.
 
+## Asynchronous message sends
+
+- `outcome: pending` and `openTaskId` only prove that DingTalk accepted the send task. They do not prove delivery.
+- When `meta.operation.next_invocation` is present, call the named Poco tool with its `arguments` exactly. Do not execute or translate the CLI-only `meta.operation.next_command`.
+- A personal send uses `chat.query_message_send_status`; a shortcut send uses `chat.shortcut_messages_query_send_status`. If structured follow-up metadata is missing, find the status command through `search_commands` instead of guessing.
+- Report delivery only after the status query returns a successful terminal state. Otherwise report the current pending or failed state.
+
 ## Runtime boundaries
 
 - Each invocation is isolated and has no persistent local DWS state.

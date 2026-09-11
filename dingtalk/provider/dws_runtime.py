@@ -146,6 +146,10 @@ _TOOL_POLICIES = {
     "dws_execute_confirmed_write": ("write", "user_required"),
     "dws_execute_destructive": ("destructive", None),
 }
+_ASYNC_SEND_STATUS_COMMANDS = {
+    "chat.send_personal_message": "chat.query_message_send_status",
+    "chat.shortcut_messages_send": "chat.shortcut_messages_query_send_status",
+}
 
 
 def _load_catalog() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
@@ -765,6 +769,30 @@ def _result(
     }
 
 
+def _add_async_send_next_invocation(command_key: str, payload: object) -> None:
+    status_command = _ASYNC_SEND_STATUS_COMMANDS.get(command_key)
+    if status_command is None or not isinstance(payload, dict):
+        return
+    data = payload.get("data")
+    result = data.get("result") if isinstance(data, dict) else None
+    open_task_id = result.get("openTaskId") if isinstance(result, dict) else None
+    if not isinstance(open_task_id, str) or not open_task_id:
+        return
+    meta = payload.setdefault("meta", {})
+    if not isinstance(meta, dict):
+        return
+    operation = meta.setdefault("operation", {})
+    if not isinstance(operation, dict):
+        return
+    operation["next_invocation"] = {
+        "tool": "execute_read_command",
+        "arguments": {
+            "command": status_command,
+            "flags": {"open-task-id": open_task_id},
+        },
+    }
+
+
 def invoke_tool(context: dict[str, Any]) -> dict[str, Any]:
     tool_name = context.get("tool_name")
     arguments = context.get("arguments")
@@ -812,4 +840,5 @@ def invoke_tool(context: dict[str, Any]) -> dict[str, Any]:
         if return_code != 0:
             raise _error_from_output(stdout, stderr)
         payload = _parse_stdout(stdout)
+        _add_async_send_next_invocation(command["canonical_path"], payload)
         return _result(payload, _collect_outputs(workspace))
