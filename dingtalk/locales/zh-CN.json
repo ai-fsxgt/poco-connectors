@@ -1,0 +1,21 @@
+{
+  "name": "钉钉",
+  "description": "连接钉钉办公空间，在明确权限与确认边界内处理协作和业务数据。",
+  "authorization.title": "授权钉钉账号",
+  "authorization.description": "使用组织配置的钉钉应用完成登录。授权范围与钉钉 PAT 权限独立，缺少业务权限时需由管理员在钉钉侧授予。",
+  "capabilities.title": "支持的能力",
+  "capabilities.office.title": "办公协同",
+  "capabilities.office.description": "处理日程、待办、文档、云盘、邮件、会议纪要、聊天和通讯录。",
+  "capabilities.collaboration.title": "业务应用",
+  "capabilities.collaboration.description": "处理智能表、表格、审批、考勤、招聘、报告等钉钉业务数据。",
+  "capabilities.safety.title": "操作确认",
+  "capabilities.safety.description": "普通写操作按钉钉目录策略执行；需确认写入与全部删除或高风险操作会展示完整参数并等待一次性确认。",
+  "actions.reauthorize": "重新授权",
+  "actions.openService": "打开钉钉",
+  "configuration.group": "钉钉应用配置",
+  "configuration.appKey.label": "AppKey",
+  "configuration.appKey.description": "钉钉开放平台应用的 Client ID（AppKey）。",
+  "configuration.appKey.placeholder": "dingxxxxxxxxxxxxxxxx",
+  "configuration.appSecret.label": "AppSecret",
+  "configuration.appSecret.description": "钉钉开放平台应用的 Client Secret（AppSecret）。"
+}

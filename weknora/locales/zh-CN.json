@@ -1,0 +1,19 @@
+{
+  "name": "知识库",
+  "description": "连接 WeKnoraX 企业知识库，供对话按需检索授权空间中的内容。",
+  "authorization.title": "授权访问",
+  "authorization.description": "在 WeKnoraX 授权页选择一个或多个空间。你可以随时重新授权并调整选择。",
+  "capabilities.title": "支持的能力",
+  "capabilities.search.title": "知识检索",
+  "capabilities.search.description": "检索已授权空间中的文档和知识，不修改任何内容。",
+  "actions.chooseSpaces": "选择知识空间",
+  "actions.openService": "打开知识库",
+  "configuration.group": "WeKnoraX 应用配置",
+  "configuration.baseUrl.label": "服务地址",
+  "configuration.baseUrl.description": "WeKnoraX 的 HTTP(S) Origin，不包含路径、参数或账号信息。",
+  "configuration.baseUrl.placeholder": "https://knowledge.example.com",
+  "configuration.clientId.label": "Client ID（应用 ID）",
+  "configuration.clientId.description": "WeKnoraX 集成应用的 Client ID，必须以 wkapp_ 开头。",
+  "configuration.clientSecret.label": "Client Secret（应用密钥）",
+  "configuration.clientSecret.description": "WeKnoraX 集成应用的 Client Secret，必须以 wks_ 开头。"
+}

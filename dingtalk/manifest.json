@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "dingtalk",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "productivity",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {"title_key": "capabilities.office.title", "description_key": "capabilities.office.description"},
+          {"title_key": "capabilities.collaboration.title", "description_key": "capabilities.collaboration.description"},
+          {"title_key": "capabilities.safety.title", "description_key": "capabilities.safety.description"}
+        ]
+      }
+    ],
+    "connection_actions": [
+      {"type": "reauthorize", "label_key": "actions.reauthorize"},
+      {"type": "open_service", "label_key": "actions.openService", "url_source": "connection_launch_url"}
+    ]
+  },
+  "connection_policy": "multiple_per_user",
+  "permission_key": "feature.connector.dingtalk",
+  "configuration": {
+    "fields": [
+      {
+        "key": "app_key",
+        "type": "text",
+        "label_key": "configuration.appKey.label",
+        "description_key": "configuration.appKey.description",
+        "placeholder_key": "configuration.appKey.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 255
+      },
+      {
+        "key": "app_secret",
+        "type": "secret",
+        "label_key": "configuration.appSecret.label",
+        "description_key": "configuration.appSecret.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 255
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "redirect",
+    "fields": [],
+    "options": {"type": "program"}
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {"type": "program"}
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": ["credential_refresh", "launch_url"]
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {"tool": "search_commands", "effect": "read", "retry": "safe"},
+      {"tool": "execute_read_command", "effect": "read", "retry": "safe"},
+      {"tool": "execute_write_command", "effect": "write", "retry": "never", "confirmation": "not_required"},
+      {"tool": "execute_confirmed_write_command", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "execute_destructive_command", "effect": "destructive", "retry": "never", "confirmation": "user_required"}
+    ]
+  },
+  "skills": [{"key": "dingtalk-workspace", "path": "skills/dingtalk-workspace"}]
+}

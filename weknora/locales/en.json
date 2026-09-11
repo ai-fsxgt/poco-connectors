@@ -1,0 +1,19 @@
+{
+  "name": "Knowledge Base",
+  "description": "Connect WeKnoraX enterprise knowledge bases for on-demand search across authorized spaces.",
+  "authorization.title": "Authorized access",
+  "authorization.description": "Choose one or more spaces on the WeKnoraX authorization page. Reauthorize at any time to change the selection.",
+  "capabilities.title": "Capabilities",
+  "capabilities.search.title": "Knowledge search",
+  "capabilities.search.description": "Search documents and knowledge in authorized spaces without modifying content.",
+  "actions.chooseSpaces": "Choose knowledge spaces",
+  "actions.openService": "Open knowledge base",
+  "configuration.group": "WeKnoraX application",
+  "configuration.baseUrl.label": "Service URL",
+  "configuration.baseUrl.description": "The WeKnoraX HTTP(S) origin, without a path, query, or credentials.",
+  "configuration.baseUrl.placeholder": "https://knowledge.example.com",
+  "configuration.clientId.label": "Client ID",
+  "configuration.clientId.description": "The WeKnoraX integration Client ID. It must start with wkapp_.",
+  "configuration.clientSecret.label": "Client Secret",
+  "configuration.clientSecret.description": "The WeKnoraX integration Client Secret. It must start with wks_."
+}

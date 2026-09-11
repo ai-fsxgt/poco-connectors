@@ -1,0 +1,21 @@
+{
+  "name": "DingTalk",
+  "description": "Connect DingTalk workspaces and handle collaboration or business data within explicit permission and confirmation boundaries.",
+  "authorization.title": "Authorize a DingTalk account",
+  "authorization.description": "Sign in with the DingTalk application configured by your organization. OAuth access and DingTalk PAT permissions are separate; an administrator must grant missing business permissions in DingTalk.",
+  "capabilities.title": "Capabilities",
+  "capabilities.office.title": "Workplace collaboration",
+  "capabilities.office.description": "Work with calendars, tasks, documents, drive, mail, minutes, chat, and contacts.",
+  "capabilities.collaboration.title": "Business applications",
+  "capabilities.collaboration.description": "Work with AI tables, spreadsheets, approvals, attendance, recruiting, reports, and other DingTalk data.",
+  "capabilities.safety.title": "Action confirmation",
+  "capabilities.safety.description": "Ordinary writes follow the DingTalk command policy. Confirmation-required writes and every destructive action show exact arguments and require one-time approval.",
+  "actions.reauthorize": "Reauthorize",
+  "actions.openService": "Open DingTalk",
+  "configuration.group": "DingTalk application",
+  "configuration.appKey.label": "AppKey",
+  "configuration.appKey.description": "The Client ID (AppKey) of your DingTalk Open Platform application.",
+  "configuration.appKey.placeholder": "dingxxxxxxxxxxxxxxxx",
+  "configuration.appSecret.label": "AppSecret",
+  "configuration.appSecret.description": "The Client Secret (AppSecret) of your DingTalk Open Platform application."
+}

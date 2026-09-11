@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "knowledge-base",
+  "package_version": "1.0.2",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "knowledge",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.search.title",
+            "description_key": "capabilities.search.description"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {
+        "type": "reauthorize",
+        "label_key": "actions.chooseSpaces"
+      },
+      {
+        "type": "open_service",
+        "label_key": "actions.openService",
+        "url_source": "connection_launch_url"
+      }
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.knowledge-base",
+  "configuration": {
+    "fields": [
+      {
+        "key": "base_url",
+        "type": "url",
+        "label_key": "configuration.baseUrl.label",
+        "description_key": "configuration.baseUrl.description",
+        "placeholder_key": "configuration.baseUrl.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "max_length": 2048
+      },
+      {
+        "key": "client_id",
+        "type": "text",
+        "label_key": "configuration.clientId.label",
+        "description_key": "configuration.clientId.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 7,
+        "max_length": 255
+      },
+      {
+        "key": "client_secret",
+        "type": "secret",
+        "label_key": "configuration.clientSecret.label",
+        "description_key": "configuration.clientSecret.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 5,
+        "max_length": 255
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "redirect",
+    "fields": [],
+    "options": {
+      "type": "program"
+    }
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {
+      "type": "program"
+    }
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": ["launch_url"]
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {
+        "tool": "search",
+        "effect": "read",
+        "retry": "safe"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "key": "knowledge-retrieval",
+      "path": "skills/knowledge-retrieval"
+    }
+  ]
+}
