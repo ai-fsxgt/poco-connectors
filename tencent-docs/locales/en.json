@@ -1,0 +1,20 @@
+{
+  "name": "Tencent Docs",
+  "description": "Connect Tencent Docs to create, read, edit, and manage online documents.",
+  "authorization.title": "Tencent Docs authorization required",
+  "authorization.description": "Paste the complete Authorization token from Tencent Docs.",
+  "authorization.token.label": "Tencent Docs token",
+  "authorization.token.description": "Enter the complete Authorization value, usually starting with Bearer.",
+  "authorization.token.placeholder": "Bearer ...",
+  "capabilities.title": "Capabilities",
+  "capabilities.documents.title": "Online documents",
+  "capabilities.documents.description": "Create, read, and edit Tencent Docs and smart documents.",
+  "capabilities.tables.title": "Tables and data",
+  "capabilities.tables.description": "Query and maintain online sheets, smart sheets, and their data.",
+  "capabilities.files.title": "File management",
+  "capabilities.files.description": "Search, import, move, copy, and manage cloud files.",
+  "capabilities.safety.title": "Risk controls",
+  "capabilities.safety.description": "Writes, deletions, and unknown-risk operations follow explicit policies.",
+  "actions.reauthorize": "Reauthorize",
+  "actions.openService": "Open Tencent Docs"
+}

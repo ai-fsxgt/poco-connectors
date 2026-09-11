@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "tencent-docs",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "productivity",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.documents.title",
+            "description_key": "capabilities.documents.description"
+          },
+          {
+            "title_key": "capabilities.tables.title",
+            "description_key": "capabilities.tables.description"
+          },
+          {
+            "title_key": "capabilities.files.title",
+            "description_key": "capabilities.files.description"
+          },
+          {
+            "title_key": "capabilities.safety.title",
+            "description_key": "capabilities.safety.description"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {
+        "type": "reauthorize",
+        "label_key": "actions.reauthorize"
+      },
+      {
+        "type": "open_service",
+        "label_key": "actions.openService",
+        "url": "https://docs.qq.com/home"
+      }
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.tencent-docs",
+  "configuration": {
+    "fields": []
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "token",
+        "type": "secret",
+        "label_key": "authorization.token.label",
+        "description_key": "authorization.token.description",
+        "placeholder_key": "authorization.token.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 16384
+      }
+    ],
+    "options": {
+      "type": "program"
+    }
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {
+      "type": "program"
+    }
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": []
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {
+        "tool": "search_tools",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "execute_read_tool",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "execute_write_tool",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "tool": "execute_confirmed_write_tool",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "execute_destructive_tool",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "execute_unknown_tool",
+        "effect": "unknown",
+        "retry": "never",
+        "confirmation": "user_required"
+      }
+    ]
+  },
+  "skills": []
+}

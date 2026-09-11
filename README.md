@@ -10,6 +10,7 @@
 | [`dingtalk/`](./dingtalk/) | 钉钉 | `dingtalk` | `1.0.1` | 日程、待办、文档、云盘、聊天、通讯录及业务数据操作 |
 | [`feishu/`](./feishu/) | 飞书 | `feishu` | `1.0.0` | 日历、任务、文档、云盘、表格、审批、聊天、邮件及业务数据操作 |
 | [`kdocs/`](./kdocs/) | 金山文档 | `kdocs` | `1.4.12` | 文档、表格、PDF、演示文稿、云盘与知识库操作 |
+| [`tencent-docs/`](./tencent-docs/) | 腾讯文档 | `tencent-docs` | `1.0.0` | 在线文档、表格、文件与知识库操作 |
 | [`weknora/`](./weknora/) | WeKnoraX 知识库 | `knowledge-base` | `1.0.2` | 检索用户已授权知识空间中的文档与知识 |
 
 ## 连接器目录结构

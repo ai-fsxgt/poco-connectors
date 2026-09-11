@@ -1,0 +1,20 @@
+{
+  "name": "腾讯文档",
+  "description": "连接腾讯文档，创建、读取、编辑和管理在线文档。",
+  "authorization.title": "需要腾讯文档授权",
+  "authorization.description": "粘贴从腾讯文档授权页获取的完整 Authorization Token。",
+  "authorization.token.label": "腾讯文档 Token",
+  "authorization.token.description": "输入完整的 Authorization 值，通常以 Bearer 开头。",
+  "authorization.token.placeholder": "Bearer ...",
+  "capabilities.title": "支持的能力",
+  "capabilities.documents.title": "在线文档",
+  "capabilities.documents.description": "创建、读取和编辑腾讯文档及智能文档。",
+  "capabilities.tables.title": "表格与数据",
+  "capabilities.tables.description": "查询和维护在线表格、智能表格及其数据。",
+  "capabilities.files.title": "文件管理",
+  "capabilities.files.description": "搜索、导入、移动、复制和管理云端文件。",
+  "capabilities.safety.title": "风险控制",
+  "capabilities.safety.description": "写入、删除和无法识别风险的操作按规则处理。",
+  "actions.reauthorize": "重新授权",
+  "actions.openService": "打开腾讯文档"
+}
