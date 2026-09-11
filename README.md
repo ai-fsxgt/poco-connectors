@@ -9,10 +9,6 @@
 | [`dingtalk/`](./dingtalk/) | 钉钉 | `dingtalk` | `1.0.0` | 日程、待办、文档、云盘、聊天、通讯录及业务数据操作 |
 | [`weknora/`](./weknora/) | WeKnoraX 知识库 | `knowledge-base` | `1.0.2` | 检索用户已授权知识空间中的文档与知识 |
 
-## 目录命名约束
-
-连接器目录必须使用稳定的、小写 kebab-case 名称，例如 `dingtalk/`、`weknora/`。目录名禁止包含 Poco 标识或版本号：不得使用 `poco-dingtalk/`、`dingtalk-1.0.0/` 或 `poco-dingtalk-1.0.0/`。版本只记录在连接器内部的 `manifest.json` 的 `package_version` 字段中；升级连接器时继续使用原目录，不创建带新版本号的并列目录。
-
 ## 连接器目录结构
 
 ```text
