@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "qq-mail",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "productivity",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.read.title",
+            "description_key": "capabilities.read.description"
+          },
+          {
+            "title_key": "capabilities.search.title",
+            "description_key": "capabilities.search.description"
+          },
+          {
+            "title_key": "capabilities.send.title",
+            "description_key": "capabilities.send.description"
+          },
+          {
+            "title_key": "capabilities.attachments.title",
+            "description_key": "capabilities.attachments.description"
+          },
+          {
+            "title_key": "capabilities.safety.title",
+            "description_key": "capabilities.safety.description"
+          }
+        ]
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {
+            "title_key": "examples.unread.title",
+            "description_key": "examples.unread.description"
+          },
+          {
+            "title_key": "examples.search.title",
+            "description_key": "examples.search.description"
+          },
+          {
+            "title_key": "examples.reply.title",
+            "description_key": "examples.reply.description"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {
+        "type": "reauthorize",
+        "label_key": "actions.reauthorize"
+      },
+      {
+        "type": "open_service",
+        "label_key": "actions.openService",
+        "url": "https://mail.qq.com/"
+      }
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.qq-mail",
+  "configuration": {
+    "fields": [
+      {
+        "key": "endpoint",
+        "type": "url",
+        "label_key": "configuration.endpoint.label",
+        "description_key": "configuration.endpoint.description",
+        "placeholder_key": "configuration.endpoint.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "default": "https://api.mail.qq.com/mcp",
+        "max_length": 2048
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "redirect",
+    "fields": [],
+    "options": {"type": "program"}
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {"type": "program"}
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": ["credential_refresh"]
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {"tool": "GetMe", "effect": "read", "retry": "safe"},
+      {"tool": "ListMessages", "effect": "read", "retry": "safe"},
+      {"tool": "GetMessage", "effect": "read", "retry": "safe"},
+      {"tool": "SearchMessages", "effect": "read", "retry": "safe"},
+      {"tool": "ListAttachments", "effect": "read", "retry": "safe"},
+      {"tool": "DownloadAttachment", "effect": "read", "retry": "safe"},
+      {
+        "tool": "SendMessage",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "ReplyMessage",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "ForwardMessage",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "DeleteMessage",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "key": "qq-mail",
+      "path": "skills/qq-mail"
+    }
+  ]
+}
