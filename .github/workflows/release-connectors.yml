@@ -1,0 +1,45 @@
+name: 发布连接器
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  package-and-release:
+    name: 打包并发布
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 打包连接器
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p dist
+
+          while IFS= read -r manifest; do
+            connector_dir="${manifest%/manifest.json}"
+            version="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["package_version"])' "$manifest")"
+            archive_name="${connector_dir}-${version}.zip"
+
+            (
+              cd "$connector_dir"
+              zip -X -r "../dist/$archive_name" . \
+                -x '.DS_Store' '*/.DS_Store' \
+                   '__pycache__/*' '*/__pycache__/*' \
+                   '*.pyc' '*.pyo' '*.zip'
+            )
+          done < <(find . -mindepth 2 -maxdepth 2 -name manifest.json -print | sed 's#^\./##' | sort)
+
+          test -n "$(find dist -maxdepth 1 -type f -name '*.zip' -print -quit)"
+
+      - name: 创建 GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.zip --title "$GITHUB_REF_NAME" --generate-notes
