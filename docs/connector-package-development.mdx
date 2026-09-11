@@ -1,0 +1,551 @@
+---
+title: 连接器安装包开发手册
+description: 第三方系统开发 Poco 连接器 ZIP 包所需的目录、清单、授权、运行协议、版本和验收规范。
+---
+
+Poco 连接器以 ZIP 安装包交付。管理员上传包后，Backend 校验清单和文件、保存不可变版本到 S3、创建连接器定义与功能权限；发布后，用户可以建立自己的连接，任务运行时按快照调用连接器工具并加载包内 Skill。
+
+连接器有两种实现方式：
+
+- 标准远程 MCP：适合已经提供 Streamable HTTP 或 SSE MCP 服务的系统。认证可以是无认证、静态凭据或 OAuth 2.0 授权码。
+- Python 程序：适合 REST API、非标准授权和需要自定义响应转换的系统。程序由 Backend 作为受信任代码运行。
+
+优先使用标准远程 MCP。只有标准清单无法表达协议时才提供 Python 程序。
+
+## 1. 包目录
+
+最小目录如下：
+
+```text
+my-connector/
+├── manifest.json
+└── locales/
+    ├── zh-CN.json
+    └── en.json
+```
+
+可选目录如下：
+
+```text
+my-connector/
+├── assets/
+│   └── icon.svg
+├── provider/
+│   └── main.py
+└── skills/
+    └── search-records/
+        ├── SKILL.md
+        └── references/
+            └── usage.md
+```
+
+ZIP 可以直接包含 `manifest.json`，也可以只包含一层同名目录。不要放入第二个包目录、绝对路径、`..` 路径、重复或文件与目录冲突的路径、符号链接或加密文件。系统忽略 `.DS_Store` 和 `__MACOSX`。压缩包不能超过 `MAX_UPLOAD_SIZE_MB`，并且硬上限为 100 MiB；解压内容不能超过压缩包允许大小的四倍，硬上限为 400 MiB。
+
+在包目录中执行以下命令可以生成结构最简单的归档：
+
+```bash
+zip -X -r ../my-connector-1.0.0.zip .
+```
+
+## 2. 清单基础字段
+
+`manifest.json` 不接受未声明字段。基础结构如下：
+
+```json
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "my-connector",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "productivity",
+    "sections": [],
+    "connection_actions": []
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.my-connector",
+  "configuration": { "fields": [] },
+  "auth": {
+    "strategy": "none",
+    "interaction": "none",
+    "fields": [],
+    "options": { "type": "none" }
+  },
+  "runtime": {},
+  "tool_policy": {
+    "default": "deny",
+    "rules": []
+  },
+  "skills": []
+}
+```
+
+字段约束：
+
+| 字段                             | 规则                                                             |
+| -------------------------------- | ---------------------------------------------------------------- |
+| `key`                            | 以小写字母开头，只能包含小写字母、数字、`_`、`-`，安装后不可更改 |
+| `package_version`                | 严格使用 `major.minor.patch`，例如 `1.2.0`                       |
+| `authorization_contract_version` | 标识凭据和授权身份契约；契约变化时必须修改                       |
+| `locales`                        | 每个值对应 `locales/<locale>.json`，必须包含 `default_locale`    |
+| `connection_policy`              | `single_per_user` 或 `multiple_per_user`                         |
+| `permission_key`                 | 必须等于 `feature.connector.<key>`                               |
+
+`manifest_revision` 由 Poco 对包内全部文件路径和内容计算，不需要写入清单。
+
+## 3. 管理员配置字段
+
+`configuration.fields` 描述安装和配置时由管理员填写的值。支持类型：
+
+- `text`
+- `secret`
+- `url`
+- `integer`
+- `boolean`
+- `select`
+
+字段示例：
+
+```json
+{
+  "key": "endpoint",
+  "type": "url",
+  "label_key": "configuration.endpoint.label",
+  "description_key": "configuration.endpoint.description",
+  "placeholder_key": "configuration.endpoint.placeholder",
+  "group_key": "configuration.group",
+  "required": true,
+  "max_length": 2048
+}
+```
+
+整数可使用 `minimum`、`maximum`；文本、密钥和 URL 可使用 `min_length`、`max_length`；`select` 必须声明唯一选项：
+
+```json
+{
+  "key": "region",
+  "type": "select",
+  "label_key": "configuration.region.label",
+  "required": true,
+  "default": "cn",
+  "options": [
+    { "value": "cn", "label_key": "configuration.region.cn" },
+    { "value": "global", "label_key": "configuration.region.global" }
+  ]
+}
+```
+
+`secret` 不允许默认值，服务端加密保存且不会回传明文。更新包时，仍存在于新清单中的配置会保留；已删除的字段会清除。管理员留空的已有密钥保持原值，新增加的必填密钥必须提供。
+
+## 4. 多语言、图标和详情内容
+
+每个语言文件都是扁平 JSON 字符串映射：
+
+```json
+{
+  "name": "示例连接器",
+  "description": "连接示例系统并查询业务记录。",
+  "configuration.group": "服务配置",
+  "configuration.endpoint.label": "MCP 地址",
+  "capabilities.title": "支持的能力",
+  "capabilities.search.title": "查询记录",
+  "capabilities.search.description": "按关键词读取业务记录。"
+}
+```
+
+清单中引用的每个 `*_key` 和选项 `label_key` 都必须在所有语言文件中存在。语言文件可以包含清单暂未引用的补充文案。
+
+`presentation.sections` 支持 `notice`、`capability_list`、`example_list`、`help_links`。每节可以声明 `title_key`、可选的 `description_key` 和 `items`。详情页动作支持：
+
+- `reauthorize`：重新走授权流程。
+- `open_service`：使用清单内固定 HTTP(S) `url`，或使用程序返回的 `connection_launch_url`。两者只能选一个。
+
+图标必须放在 `assets/` 下；SVG、PNG 等常见 MIME 类型均可，单个图标最大 512 KiB。资源 URL 带内容摘要并使用不可变缓存。
+
+## 5. 标准远程 MCP
+
+下面是静态 API Key 的完整核心配置：
+
+```json
+{
+  "auth": {
+    "strategy": "static_credentials",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "api_key",
+        "type": "secret",
+        "label_key": "authorization.apiKey.label",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      }
+    ],
+    "options": {
+      "type": "static_credentials",
+      "verification": "mcp_initialize_and_list_tools",
+      "account_identity": "connection_id"
+    }
+  },
+  "runtime": {
+    "adapter": "remote_mcp",
+    "transport": "streamable_http",
+    "options": {
+      "type": "remote_mcp",
+      "endpoint": { "configuration_field": "endpoint" },
+      "credential_binding": {
+        "type": "http_header",
+        "name": "Authorization",
+        "scheme": "Bearer",
+        "credential_field": "api_key"
+      }
+    }
+  }
+}
+```
+
+`transport` 可以是 `streamable_http` 或 `sse`。`endpoint.configuration_field` 必须指向一个必填 `url` 管理员配置字段。静态凭据首次提交时，Poco 会连接 MCP 服务并完成 initialize/list tools 校验。
+
+无认证 MCP 使用：
+
+```json
+{
+  "auth": {
+    "strategy": "none",
+    "interaction": "none",
+    "fields": [],
+    "options": { "type": "none" }
+  },
+  "runtime": {
+    "adapter": "remote_mcp",
+    "transport": "streamable_http",
+    "options": {
+      "type": "remote_mcp",
+      "endpoint": { "configuration_field": "endpoint" },
+      "credential_binding": { "type": "none" }
+    }
+  }
+}
+```
+
+OAuth 2.0 授权码可以声明固定端点：
+
+```json
+{
+  "auth": {
+    "strategy": "oauth_authorization_code",
+    "interaction": "redirect",
+    "fields": [],
+    "options": {
+      "type": "oauth_authorization_code",
+      "discovery": {
+        "type": "static",
+        "issuer": "https://identity.example.com",
+        "authorization_url": "https://identity.example.com/oauth/authorize",
+        "token_url": "https://identity.example.com/oauth/token",
+        "revocation_url": "https://identity.example.com/oauth/revoke",
+        "resource": "https://mcp.example.com"
+      },
+      "client_id_configuration_field": "client_id",
+      "client_secret_configuration_field": "client_secret",
+      "token_endpoint_auth_method": "client_secret_post",
+      "scopes": ["records.read"],
+      "account_identity": "connection_id"
+    }
+  }
+}
+```
+
+固定 `authorization_url`、`token_url` 和 `revocation_url` 必须与 `issuer` 同源。公共客户端将 `token_endpoint_auth_method` 设为 `none` 并省略 `client_secret_configuration_field`。MCP OAuth 元数据发现使用：
+
+```json
+{
+  "discovery": {
+    "type": "mcp",
+    "resource_configuration_field": "endpoint",
+    "expected_issuer": "https://identity.example.com"
+  }
+}
+```
+
+OAuth 回调统一登记为：
+
+```text
+${BACKEND_URL}/api/v1/connectors/oauth/callback
+```
+
+## 6. 工具白名单
+
+Poco 对工具使用默认拒绝策略。`tool_policy.rules` 必须逐个声明允许暴露的上游工具：
+
+```json
+{
+  "default": "deny",
+  "rules": [
+    { "tool": "search_records", "effect": "read", "retry": "safe" },
+    {
+      "tool": "update_record",
+      "effect": "write",
+      "retry": "never",
+      "confirmation": "not_required"
+    },
+    {
+      "tool": "delete_record",
+      "effect": "destructive",
+      "retry": "never",
+      "confirmation": "user_required"
+    }
+  ]
+}
+```
+
+`tool` 对应 MCP 上游工具名或程序返回的工具 `key`。`effect` 支持 `read`、`write`、`destructive`、`unknown`，`retry` 支持 `safe`、`never`，`confirmation` 支持 `not_required`、`user_required`。未列出的工具不会进入任务快照。
+
+只读工具可以省略 `confirmation`，默认 `not_required`。非只读工具必须显式声明确认策略并使用 `retry: "never"`；`destructive` 和 `unknown` 必须使用 `user_required`。需要确认的工具只允许在即时交互任务中调用，定时任务、后台任务和 OpenAPI 任务会直接拒绝。
+
+程序返回的 `effect`、`retry_policy` 与 `confirmation` 必须和清单规则一致。用户批准时，Poco 将连接器、账号、工具和完整参数绑定到一次性确认记录，并在调用第三方服务前消费；参数变化或重复调用都需要重新确认。更新包时，正在使用该连接器的未完成任务会阻止更新，因此一个 Run 始终使用同一包版本和工具集。
+
+## 7. 包内 Skill
+
+Skill 用于告诉 Agent 何时以及如何调用连接器工具：
+
+```json
+{
+  "skills": [
+    {
+      "key": "search-records",
+      "path": "skills/search-records"
+    }
+  ]
+}
+```
+
+每个目录必须包含 `SKILL.md`，路径必须位于 `skills/` 下。任务创建时，Backend 把包 key、版本、摘要、Skill 路径和 Skill 内容摘要写进快照；Executor Manager 从 S3 取得完全匹配的归档，逐项校验后再注入运行环境。
+
+建议 Skill 只说明调用时机、查询写法、结果解释和失败处理。不要在 Skill 中放管理员密钥、用户凭据或不受信任的远端指令。
+
+## 8. Python 程序协议
+
+当 `auth.strategy` 或 `runtime.adapter` 使用 `program` 时，清单必须声明：
+
+```json
+{
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": ["credential_refresh", "credential_revoke", "launch_url"]
+  }
+}
+```
+
+入口必须是 `provider/` 下的 `.py` 文件。每次调用时，Poco 会把完整的 `provider/` 目录复制到一次性临时目录，并在该目录启动禁用字节码写入的新进程；调用结束后立即删除临时目录。程序不得依赖安装包根目录作为当前工作目录，持久状态应保存到外部服务。程序从标准输入读取一个 JSON 对象，只向标准输出写一个 JSON 对象。不要向标准输出打印日志；诊断信息可以写入标准错误。
+
+请求信封固定为：
+
+```json
+{
+  "protocol_version": 1,
+  "operation": "tools_discover",
+  "package": {
+    "key": "my-connector",
+    "version": "1.0.0"
+  },
+  "context": {}
+}
+```
+
+成功响应固定为：
+
+```json
+{
+  "protocol_version": 1,
+  "ok": true,
+  "result": {}
+}
+```
+
+失败响应固定为：
+
+```json
+{
+  "protocol_version": 1,
+  "ok": false,
+  "error": {
+    "code": "unavailable",
+    "message": "Remote service is unavailable",
+    "retryable": true
+  }
+}
+```
+
+响应不能包含额外顶层字段。推荐错误码包括 `bad_request`、`action_forbidden`、`authorization_required`、`insufficient_scope`、`rate_limited`、`unavailable`；其他错误码按外部服务错误处理。
+
+### 操作清单
+
+| `operation`              | 主要输入                                                                        | `result`                                        |
+| ------------------------ | ------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `configuration_validate` | `configuration.public`、`configuration.secret`、`require_complete`              | `{}`                                            |
+| `authorization_identity` | `configuration`、`options`                                                      | `{ "identity": <任意 JSON> }`                   |
+| `authorization_begin`    | `configuration`、`options`、`intent`、`state`、`redirect_uri`、`code_challenge` | redirect、form 或 account                       |
+| `authorization_complete` | `configuration`、`options`、`intent`、`private_context`、`submission`           | authorized account                              |
+| `credential_refresh`     | `configuration`、`options`、`credential`                                        | `credential` 和可选 `granted_scopes`            |
+| `credential_revoke`      | `configuration`、`options`、`credential`                                        | `{}`                                            |
+| `tools_discover`         | 配置、凭据、连接元数据与版本上下文                                              | `{ "tools": [...] }`                            |
+| `tool_invoke`            | tools 上下文、`tool_name`、`arguments`                                          | tool result                                     |
+| `launch_url`             | `public_configuration`、`connection_metadata`                                   | `{ "url": "https://..." }` 或 `{ "url": null }` |
+
+只有在 `capabilities` 声明后，Poco 才会调用 `credential_refresh`、`credential_revoke` 或 `launch_url`。
+
+`authorization_begin` 的三种结果：
+
+```json
+{ "type": "redirect", "authorize_url": "https://...", "private_context": {} }
+```
+
+```json
+{ "type": "form" }
+```
+
+```json
+{
+  "type": "account",
+  "account": {
+    "external_account_id": "account-1",
+    "external_account_name": "Example",
+    "granted_scopes": [],
+    "public_metadata": {}
+  }
+}
+```
+
+返回类型必须与 `auth.interaction` 完全一致：`none` 返回 `account`，`form` 返回 `form`，`redirect` 返回 `redirect`。Poco 会拒绝不一致的响应。
+
+`authorization_complete` 返回 account 本体。可选凭据结构如下：
+
+```json
+{
+  "external_account_id": "account-1",
+  "external_account_name": "Example",
+  "avatar_url": null,
+  "granted_scopes": ["records.read"],
+  "credential": {
+    "values": { "access_token": "secret" },
+    "expires_at": "2026-09-08T12:00:00Z",
+    "refresh_expires_at": null
+  },
+  "public_metadata": {},
+  "invalidates_existing_credential": true
+}
+```
+
+`tools_discover` 中每个工具包含：
+
+```json
+{
+  "key": "search",
+  "upstream_name": "knowledge_search",
+  "description": "Search business records.",
+  "input_schema": {
+    "type": "object",
+    "properties": { "query": { "type": "string" } },
+    "required": ["query"],
+    "additionalProperties": false
+  },
+  "output_schema": null,
+  "effect": "read",
+  "retry_policy": "safe",
+  "confirmation": "not_required",
+  "source_revision": "search-v1"
+}
+```
+
+`tool_invoke` 返回：
+
+```json
+{
+  "content": [{ "type": "text", "text": "Matched 3 records" }],
+  "structured_content": { "items": [] },
+  "is_error": false,
+  "error": null
+}
+```
+
+内容类型支持 `text`、`image`、`audio`、`resource_link` 和 `resource`。图片、音频和二进制资源的 `data` 使用 base64。`is_error` 为 `true` 时必须同时返回 `error: {code, message, retryable}`。
+
+Python Executor 会将二进制 `resource.data` 解码并保存到当前任务工作区的 `connector-files/`，使用唯一文件名，并根据 MIME 类型添加可识别的扩展名；未提供 MIME 类型或无法识别扩展名时不添加扩展名。资源 `uri` 不作为本地写入路径。工具通过普通文本返回 `workspace_path`、`mime_type` 和 `size_bytes`，Agent 可使用现有工具继续处理文件，文件也沿用现有工作区查看、下载和归档流程。解码或保存失败会标记工具结果为错误，并提示不要为了取回文件而重复执行外部操作；其他内容仍保留。文本资源、图片和链接的处理方式不变。
+
+二进制资源仍受下方 1 MiB 响应上限约束，base64 和 JSON 开销计入大小；当前 Python SDK 不直接交付 `resource.blob`。
+
+### 运行限制
+
+- Backend 最多同时运行 16 个连接器程序；额外调用等待空闲槽。
+- `configuration_validate`、`authorization_identity`、`launch_url` 最长 10 秒，其他操作最长 30 秒。
+- 单次请求最大 2 MiB，标准输出响应最大 1 MiB，错误消息最大 2000 字符。
+- 进程使用 Backend 的 Python 3.12 解释器。平台 v1 稳定提供 Python 标准库和 `httpx`；程序不得依赖其他第三方包，也不会安装包内依赖。
+- 环境变量只保留代理、区域设置、PATH 和 TLS 证书相关变量。
+- 超时或调用取消时，Poco 会终止整个子进程组。
+
+程序是受信任代码，具备 Backend 进程身份可访问的文件和网络能力。只安装经过源码审查、依赖审查和来源验证的包。
+
+## 9. 授权契约与版本升级
+
+`authorization_contract_version` 参与授权指纹计算。程序连接器还通过 `authorization_identity` 返回真正决定凭据可用性的管理员配置，例如服务 Origin 和 Client ID。
+
+以下变化通常必须修改授权契约版本：
+
+- 凭据字段名称或含义变化。
+- scope、受众、租户或账号身份规则变化。
+- 旧凭据不能安全地用于新 API。
+
+只修改文案、图标、Skill、工具描述，或轮换不影响现有用户令牌的应用密钥时，不应改变授权身份。包更新后，Poco 仅在授权指纹变化时把已有连接标记为需要重新授权。
+
+每个 `<key, package_version>` 只能对应一份内容。更新必须提高版本号，不能覆盖已安装版本或降级。更新时保留连接器定义 UUID、排序、发布状态、仍声明的配置和用户连接；取消未提交的授权会话。存在未完成任务、正在处理的授权或活跃的凭据刷新租约时，更新会被拒绝。
+
+## 10. 本地校验
+
+在仓库根目录执行以下命令，只校验结构、清单引用、语言文件、资源和 Skill：
+
+```bash
+cd backend
+uv run python - <<'PY'
+from pathlib import Path
+from app.services.connectors.catalog import load_connector_package
+
+package = load_connector_package(Path("/absolute/path/to/my-connector"))
+print(package.manifest.key)
+print(package.manifest.package_version)
+print(package.manifest_revision)
+PY
+```
+
+程序包还应逐项测试自己声明的操作。至少覆盖：
+
+1. 管理员配置合法和非法输入。
+2. 首次授权、取消、重新授权和回调错误。
+3. 凭据过期、刷新、撤销和权限不足。
+4. 工具发现结果与 `tool_policy` 完全一致。
+5. 工具参数 schema、正常结果、空结果、远端错误和超时。
+6. `launch_url` 只能返回预期 HTTP(S) 站点。
+7. ZIP 根目录安装、升级和 S3 重新下载后的 Skill 校验。
+
+标准 MCP 连接器还要在真实服务上完成 initialize、tools/list 和 tools/call；OAuth 连接器要用真实账号验证 PKCE、回调 URI、scope、刷新和撤销。模拟服务只能证明 Poco 侧协议处理正确，不能替代真实系统兼容性验收。
+
+## 11. 安装与发布
+
+1. 管理员进入 **管理后台 → 连接器管理**。
+2. 点击“安装连接器”，选择 ZIP。
+3. Poco 先检查包并展示名称、key、版本、授权方式和管理员配置字段。
+4. 填完必填配置后安装。新连接器初始为草稿。
+5. 给需要使用它的功能角色分配 `feature.connector.<key>` 权限。
+6. 发布连接器，使用普通用户完成授权和工具调用验收。
+7. 更新时从该连接器行进入“更新包”，上传同 key 的更高版本。
+8. 不再使用时点击“移除”。存在未完成任务、正在处理的授权或凭据刷新时，系统会拒绝移除；其余情况下会立即停用连接器、删除 Poco 中的用户连接与凭据并撤回角色权限。需要调用 provider 撤销凭据时，系统会在撤销任务结束后自动删除定义和所有包版本；包缓存和 S3 归档由维护任务异步清理，失败时自动重试。
+
+外部系统的回调、出站网络、TLS 和凭据必须在生产环境单独验收。Poco 不会为失败的连接器请求切换到备用数据源，也不会掩盖真实授权错误。

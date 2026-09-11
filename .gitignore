@@ -226,4 +226,3 @@ uv.lock
 # macOS
 .DS_Store
 tmp
-/docs/
