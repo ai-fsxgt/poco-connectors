@@ -2,7 +2,7 @@
 
 ## Project Structure & Directory Naming
 
-Each root directory is an independently installable connector. Use lowercase kebab-case names like `dingtalk/` or `weknora/`; never include `poco` or a version. Keep versions only in `manifest.json.package_version`; upgrade in place. Keep all package files inside the connector; shared references live in `docs/`.
+Each root directory is an independently installable connector. Use lowercase kebab-case names like `dingtalk/` or `weknora/`; never include `poco` or a version. Keep versions only in `manifest.json.package_version`; upgrade in place. Keep all package files inside the connector; shared references live in `docs/`. When adding, removing, or changing the version of a connector, update the `README.md` "Current Connectors" list in the same change.
 
 ## Connector Architecture
 
