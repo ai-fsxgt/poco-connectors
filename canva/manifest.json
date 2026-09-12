@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "canva",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.png",
+    "category": "design",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {"title_key": "capabilities.designs.title", "description_key": "capabilities.designs.description"},
+          {"title_key": "capabilities.assets.title", "description_key": "capabilities.assets.description"},
+          {"title_key": "capabilities.export.title", "description_key": "capabilities.export.description"},
+          {"title_key": "capabilities.comments.title", "description_key": "capabilities.comments.description"}
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {"title_key": "examples.summary.title", "description_key": "examples.summary.description"},
+          {"title_key": "examples.generate.title", "description_key": "examples.generate.description"},
+          {"title_key": "examples.resize.title", "description_key": "examples.resize.description"},
+          {"title_key": "examples.template.title", "description_key": "examples.template.description"},
+          {"title_key": "examples.import.title", "description_key": "examples.import.description"}
+        ]
+      },
+      {
+        "type": "help_links",
+        "title_key": "help.title",
+        "items": [
+          {"title_key": "help.mcp.title", "url": "https://www.canva.dev/docs/mcp/"},
+          {"title_key": "help.registration.title", "url": "https://www.canva.dev/docs/mcp/troubleshooting/"}
+        ]
+      }
+    ],
+    "connection_actions": [
+      {"type": "reauthorize", "label_key": "actions.reauthorize"},
+      {"type": "open_service", "label_key": "actions.openService", "url": "https://www.canva.cn/"}
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.canva",
+  "configuration": {
+    "fields": [
+      {
+        "key": "endpoint",
+        "type": "url",
+        "label_key": "configuration.endpoint.label",
+        "description_key": "configuration.endpoint.description",
+        "placeholder_key": "configuration.endpoint.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "default": "https://mcp.canva.cn/mcp",
+        "max_length": 2048
+      },
+      {
+        "key": "client_id",
+        "type": "text",
+        "label_key": "configuration.clientId.label",
+        "description_key": "configuration.clientId.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      },
+      {
+        "key": "client_secret",
+        "type": "secret",
+        "label_key": "configuration.clientSecret.label",
+        "description_key": "configuration.clientSecret.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "oauth_authorization_code",
+    "interaction": "redirect",
+    "fields": [],
+    "options": {
+      "type": "oauth_authorization_code",
+      "discovery": {
+        "type": "mcp",
+        "resource_configuration_field": "endpoint",
+        "expected_issuer": "https://mcp.canva.cn"
+      },
+      "client_id_configuration_field": "client_id",
+      "client_secret_configuration_field": "client_secret",
+      "token_endpoint_auth_method": "client_secret_basic",
+      "scopes": [
+        "design:meta:read",
+        "design:content:read",
+        "design:content:write",
+        "folder:read",
+        "folder:write",
+        "brandtemplate:content:read",
+        "brandtemplate:meta:read",
+        "comment:read",
+        "comment:write",
+        "asset:read",
+        "asset:write",
+        "brandkit:read"
+      ],
+      "account_identity": "connection_id"
+    }
+  },
+  "runtime": {
+    "adapter": "remote_mcp",
+    "transport": "streamable_http",
+    "options": {
+      "type": "remote_mcp",
+      "endpoint": {"configuration_field": "endpoint"},
+      "credential_binding": {
+        "type": "http_header",
+        "name": "Authorization",
+        "scheme": "Bearer",
+        "credential_field": "access_token"
+      }
+    }
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {"tool": "upload-asset-from-url", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get-assets", "effect": "read", "retry": "safe"},
+      {"tool": "autofill-design", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get-brand-template-dataset", "effect": "read", "retry": "safe"},
+      {"tool": "search-brand-templates", "effect": "read", "retry": "safe"},
+      {"tool": "list-brand-kits", "effect": "read", "retry": "safe"},
+      {"tool": "create-design-from-brand-template", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "comment-on-design", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "reply-to-comment", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "list-comments", "effect": "read", "retry": "safe"},
+      {"tool": "list-replies", "effect": "read", "retry": "safe"},
+      {"tool": "search-designs", "effect": "read", "retry": "safe"},
+      {"tool": "get-design", "effect": "read", "retry": "safe"},
+      {"tool": "get-design-pages", "effect": "read", "retry": "safe"},
+      {"tool": "get-design-content", "effect": "read", "retry": "safe"},
+      {"tool": "get-presenter-notes", "effect": "read", "retry": "safe"},
+      {"tool": "get-export-formats", "effect": "read", "retry": "safe"},
+      {"tool": "generate-design", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "create-design-from-candidate", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "copy-design", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "import-design-from-url", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "resolve-shortlink", "effect": "read", "retry": "safe"},
+      {"tool": "export-design", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "create-folder", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "list-folder-items", "effect": "read", "retry": "safe"},
+      {"tool": "search-folders", "effect": "read", "retry": "safe"},
+      {"tool": "move-item-to-folder", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "resize-design", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "start-editing-transaction", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "perform-editing-operations", "effect": "unknown", "retry": "never", "confirmation": "user_required"},
+      {"tool": "commit-editing-transaction", "effect": "unknown", "retry": "never", "confirmation": "user_required"},
+      {"tool": "cancel-editing-transaction", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get-design-thumbnail", "effect": "read", "retry": "safe"}
+    ]
+  },
+  "skills": [{"key": "canva", "path": "skills/canva"}]
+}

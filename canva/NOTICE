@@ -1,0 +1,56 @@
+Canva 可画连接器来源说明
+
+来源：用户提供的 workbuddyskills-main/connectors/canva 目录。
+迁移日期：2026-09-12。
+源元数据与 Skill 版本：1.0.0；POCO package_version 独立管理，初始为 1.0.0。
+
+复用与适配：
+- icon.png 原样复制到 assets/icon.png。
+- skills/SKILL.md 先原样复制到 skills/canva/SKILL.md，再补充 POCO OAuth、
+  工具范围、编辑事务及调用限制，并关联 references/setup.md 授权配置指引。
+- connector-meta.json 的中英文名称、描述和五组示例原文用于 locales。
+- mcp.json 的中国区地址 https://mcp.canva.cn/mcp 保持不变；使用 POCO
+  原生远程 MCP 和 OAuth 授权码流程，不分发 Provider、运行依赖或真实凭据。
+- 源客户端 timeout: 60000 不属于 POCO 清单字段，不能沿用；长耗时设计生成
+  受 POCO 当前 30 秒远程调用上限限制。
+
+源文件 SHA-256：
+connector-meta.json
+  f0f27b6afee8b472cbd793f40ae9c94031beb34b9d390d4e9af6912af87a8ba1
+mcp.json
+  782dbaf080d726720ef1f7b44653cf92c0a3d0e598200a3ecd8ef746f7ef8d27
+icon.png
+  bc4960370daf880519977f457e89255d1b3a06b4b6f23fbeb021d83cd1a311c4
+skills/SKILL.md
+  9fd215b6195ba5b4cdd1136403214d17ab41880db1f2f1fcff519490226f9123
+
+接口依据（核对日期：2026-09-12）：
+- 中国区元数据确认 resource 为 https://mcp.canva.cn/mcp，issuer 为
+  https://mcp.canva.cn，支持授权码、刷新令牌、client_secret_basic 和 PKCE S256。
+  https://mcp.canva.cn/.well-known/oauth-protected-resource/mcp
+  https://mcp.canva.cn/.well-known/oauth-authorization-server
+- 授权范围覆盖设计、文件夹、模板读取、评论、素材及品牌套件读取，均在中国区
+  资源元数据公布范围内；未申请不涉及本包工具的帮助问答和模板写入权限。
+- 工具名称取自官方公开目录，共 33 个；文档没有提供可固定的服务版本或提交。
+  https://www.canva.dev/docs/mcp/tools/
+- 客户端注册、调用时限与事务行为参考官方说明：
+  https://www.canva.dev/docs/mcp/troubleshooting/
+  https://www.canva.dev/docs/mcp/tools/start-editing-transaction/
+  https://www.canva.dev/docs/mcp/tools/perform-editing-operations/
+  https://www.canva.dev/docs/mcp/tools/commit-editing-transaction/
+
+工具策略：
+- 未列入清单的工具默认拒绝；16 个只读工具允许安全重试。
+- 生成、导出等任务会创建服务端资源，按写入处理；14 个写入工具需要确认且
+  禁止重试。
+- perform-editing-operations 的效果取决于实际编辑操作，commit-editing-transaction
+  保存这些操作，两者按 unknown 处理，要求确认且禁止重试。
+- cancel-editing-transaction 丢弃未提交草稿，按 destructive 处理，要求确认
+  且禁止重试。
+
+许可与验证范围：
+所提供的源目录及仓库根目录未包含适用于该连接器的许可证或 Git 提交信息。
+本说明仅记录来源，不授予或推定源材料、图标及商标的再分发许可。
+官方公开文档主要面向国际版；工具目录据此编写，中国区真实工具、参数、套餐、
+回调准入和账户权限尚未完成验收。中国区公开 OAuth 元数据已通过只读请求核对，
+不代表真实客户端注册、OAuth 回调、刷新、撤销或工具调用验证已经完成。
