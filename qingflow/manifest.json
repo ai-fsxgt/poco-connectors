@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "qingflow",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.png",
+    "category": "productivity",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {"title_key": "capabilities.apps.title", "description_key": "capabilities.apps.description"},
+          {"title_key": "capabilities.records.title", "description_key": "capabilities.records.description"},
+          {"title_key": "capabilities.tasks.title", "description_key": "capabilities.tasks.description"},
+          {"title_key": "capabilities.analysis.title", "description_key": "capabilities.analysis.description"}
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {"title_key": "examples.createApp.title", "description_key": "examples.createApp.description"},
+          {"title_key": "examples.listApps.title", "description_key": "examples.listApps.description"},
+          {"title_key": "examples.pendingRecords.title", "description_key": "examples.pendingRecords.description"},
+          {"title_key": "examples.export.title", "description_key": "examples.export.description"}
+        ]
+      },
+      {
+        "type": "help_links",
+        "title_key": "help.title",
+        "items": [
+          {
+            "title_key": "help.mcp.title",
+            "url": "https://help-center.qingflow.com/docs/product-guides/qingflow-ai/atgqmmsnnnvogbo3/"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {"type": "reauthorize", "label_key": "actions.reauthorize"},
+      {"type": "open_service", "label_key": "actions.openService", "url": "https://qingflow.com/"}
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.qingflow",
+  "configuration": {
+    "fields": [
+      {
+        "key": "endpoint",
+        "type": "url",
+        "label_key": "configuration.endpoint.label",
+        "description_key": "configuration.endpoint.description",
+        "placeholder_key": "configuration.endpoint.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "default": "https://mcp.qingflow.com/mcp",
+        "max_length": 2048
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "static_credentials",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "token",
+        "type": "secret",
+        "label_key": "authorization.token.label",
+        "description_key": "authorization.token.description",
+        "placeholder_key": "authorization.token.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      }
+    ],
+    "options": {
+      "type": "static_credentials",
+      "verification": "mcp_initialize_and_list_tools",
+      "account_identity": "connection_id"
+    }
+  },
+  "runtime": {
+    "adapter": "remote_mcp",
+    "transport": "streamable_http",
+    "options": {
+      "type": "remote_mcp",
+      "endpoint": {"configuration_field": "endpoint"},
+      "credential_binding": {
+        "type": "http_header",
+        "name": "Authorization",
+        "scheme": "Bearer",
+        "credential_field": "token"
+      }
+    }
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {"tool": "auth_whoami", "effect": "read", "retry": "safe"},
+      {"tool": "workspace_list", "effect": "read", "retry": "safe"},
+      {"tool": "workspace_get", "effect": "read", "retry": "safe"},
+      {"tool": "app_list", "effect": "read", "retry": "safe"},
+      {"tool": "app_get", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_schema_apply", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_package_list", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_get", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_get_fields", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_get_layout", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_get_views", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_get_flow", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_flow_apply", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_app_publish_verify", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_layout_apply", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_app_views_apply", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_app_charts_apply", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_app_custom_buttons_apply", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_app_resolve", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_get_associated_resources", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_associated_resources_apply", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_app_release_edit_lock_if_mine", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_app_repair_code_blocks", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_app_get_buttons", "effect": "read", "retry": "safe"},
+      {"tool": "builder_app_get_charts", "effect": "read", "retry": "safe"},
+      {"tool": "builder_builder_tool_contract", "effect": "read", "retry": "safe"},
+      {"tool": "builder_solution_install", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_workspace_list", "effect": "read", "retry": "safe"},
+      {"tool": "builder_workspace_get", "effect": "read", "retry": "safe"},
+      {"tool": "builder_workspace_icon_catalog_get", "effect": "read", "retry": "safe"},
+      {"tool": "builder_button_style_catalog_get", "effect": "read", "retry": "safe"},
+      {"tool": "builder_role_search", "effect": "read", "retry": "safe"},
+      {"tool": "builder_role_create", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_member_search", "effect": "read", "retry": "safe"},
+      {"tool": "builder_portal_list", "effect": "read", "retry": "safe"},
+      {"tool": "builder_portal_get", "effect": "read", "retry": "safe"},
+      {"tool": "builder_portal_apply", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_portal_delete", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_package_get", "effect": "read", "retry": "safe"},
+      {"tool": "builder_package_apply", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "builder_auth_whoami", "effect": "read", "retry": "safe"},
+      {"tool": "record_list", "effect": "read", "retry": "safe"},
+      {"tool": "record_get", "effect": "read", "retry": "safe"},
+      {"tool": "record_insert", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "record_update", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "record_delete", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "record_access", "effect": "read", "retry": "safe"},
+      {"tool": "record_browse_schema_get", "effect": "read", "retry": "safe"},
+      {"tool": "record_logs_get", "effect": "read", "retry": "safe"},
+      {"tool": "record_export_start", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "record_export_status_get", "effect": "read", "retry": "safe"},
+      {"tool": "record_export_get", "effect": "read", "retry": "safe"},
+      {"tool": "record_export_direct", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "record_import_start", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "record_import_status_get", "effect": "read", "retry": "safe"},
+      {"tool": "record_import_schema_get", "effect": "read", "retry": "safe"},
+      {"tool": "record_import_template_get", "effect": "read", "retry": "safe"},
+      {"tool": "record_import_verify", "effect": "read", "retry": "safe"},
+      {"tool": "task_list", "effect": "read", "retry": "safe"},
+      {"tool": "task_get", "effect": "read", "retry": "safe"},
+      {"tool": "task_action_execute", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "task_workflow_log_get", "effect": "read", "retry": "safe"},
+      {"tool": "task_associated_report_detail_get", "effect": "read", "retry": "safe"},
+      {"tool": "chart_get", "effect": "read", "retry": "safe"},
+      {"tool": "view_get", "effect": "read", "retry": "safe"},
+      {"tool": "file_get_upload_info", "effect": "read", "retry": "safe"},
+      {"tool": "record_member_candidates", "effect": "read", "retry": "safe"},
+      {"tool": "record_department_candidates", "effect": "read", "retry": "safe"},
+      {"tool": "directory_search", "effect": "read", "retry": "safe"},
+      {"tool": "record_code_block_run", "effect": "unknown", "retry": "never", "confirmation": "user_required"},
+      {"tool": "record_code_block_schema_get", "effect": "read", "retry": "safe"},
+      {"tool": "portal_list", "effect": "read", "retry": "safe"},
+      {"tool": "portal_get", "effect": "read", "retry": "safe"},
+      {"tool": "feedback_submit", "effect": "write", "retry": "never", "confirmation": "user_required"}
+    ]
+  },
+  "skills": [{"key": "qingflow", "path": "skills/qingflow"}]
+}

@@ -1,0 +1,46 @@
+轻流连接器来源说明
+
+来源：用户提供的 workbuddyskills-main/connectors/qingflow 目录。
+迁移日期：2026-09-12。
+源 connector-meta.json 版本：1.0.0；源 Skill 作者字段：QingFlow。
+本包的 package_version 独立按 POCO 连接器版本管理。
+
+复用与适配：
+- icon.png 原样复制到 assets/icon.png。
+- skills/SKILL.md 先原样复制到 skills/qingflow/SKILL.md，再调整 POCO
+  授权说明、工具可用范围和运行限制；其余能力说明、参数和示例沿用源文件。
+- connector-meta.json、mcp.json、token-schema.json 中的名称、描述、示例、
+  服务地址和授权信息转换为 POCO manifest.json 与中英文 locales。
+- 源 QINGFLOW_TOKEN 映射为 POCO 的 secret 授权字段 token；不分发真实凭据。
+
+源文件 SHA-256：
+icon.png
+  619625e0e40d3c71a77a7ded0ad2a23623cd2618dbac0129aac473c53ecada04
+skills/SKILL.md
+  dad3f8661e085827ff8d692f6125a451bb77d6ab3da1d24b065b2c692611add7
+connector-meta.json
+  1dac70f5caaf08cbe0f3f422733516f62cc0e2858dd8172e1a2529499bc4bf65
+mcp.json
+  df97cafb73516d6f02c49e18d3ba9b9a73c82f319d35266c76ea2839749851e3
+token-schema.json
+  88a3fdfd171ce61db6d0a272b8a09e129a64d569630dd69c39d27676d4824621
+
+工具策略：
+- 仅开放源 Skill 已列出且适合远程调用的工具；未列出的工具默认拒绝。
+- POCO 每次调用独立创建 MCP 会话，因此不开放会话工作空间切换工具
+  workspace_select，不承诺跨调用保留工作空间选择。
+- 远程 MCP 无法直接读取 POCO 本地路径，因此不开放 file_upload_local、
+  builder_file_upload_local、record_import_repair_local。
+- 新增、修改、审批及导入导出任务创建标为 write；删除标为 destructive；
+  record_code_block_run 的效果取决于实际代码，标为 unknown。
+  上述操作均禁止自动重试并要求用户确认。
+
+许可与验证范围：
+所提供的源目录及仓库根目录未包含适用于本连接器的许可证或 Git 提交信息。
+本说明仅记录来源，不授予或推定源材料、图标及商标的再分发许可。
+工具名称及业务语义依据源 Skill；未使用真实轻流授权码完成 initialize、
+tools/list 或 tools/call 验收，不能将本地结构校验视为真实服务验收。
+
+官方服务：https://mcp.qingflow.com/mcp
+官方接入说明：
+https://help-center.qingflow.com/docs/product-guides/qingflow-ai/atgqmmsnnnvogbo3/
