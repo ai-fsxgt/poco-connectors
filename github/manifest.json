@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "github",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "category": "developer",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {"title_key": "capabilities.repos.title", "description_key": "capabilities.repos.description"},
+          {"title_key": "capabilities.issues.title", "description_key": "capabilities.issues.description"},
+          {"title_key": "capabilities.pullRequests.title", "description_key": "capabilities.pullRequests.description"},
+          {"title_key": "capabilities.users.title", "description_key": "capabilities.users.description"}
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {"title_key": "examples.search.title", "description_key": "examples.search.description"},
+          {"title_key": "examples.issues.title", "description_key": "examples.issues.description"},
+          {"title_key": "examples.review.title", "description_key": "examples.review.description"}
+        ]
+      },
+      {
+        "type": "help_links",
+        "title_key": "help.title",
+        "items": [
+          {
+            "title_key": "help.token.title",
+            "url": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
+          },
+          {
+            "title_key": "help.mcp.title",
+            "url": "https://github.com/github/github-mcp-server/blob/7d13a7ad6f2a17f351a6d77ce280c85ae1821f4d/docs/remote-server.md"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {"type": "reauthorize", "label_key": "actions.reauthorize"},
+      {"type": "open_service", "label_key": "actions.openService", "url": "https://github.com/"}
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.github",
+  "configuration": {
+    "fields": [
+      {
+        "key": "endpoint",
+        "type": "url",
+        "label_key": "configuration.endpoint.label",
+        "description_key": "configuration.endpoint.description",
+        "placeholder_key": "configuration.endpoint.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "default": "https://api.githubcopilot.com/mcp/",
+        "max_length": 2048
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "static_credentials",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "token",
+        "type": "secret",
+        "label_key": "authorization.token.label",
+        "description_key": "authorization.token.description",
+        "placeholder_key": "authorization.token.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      }
+    ],
+    "options": {
+      "type": "static_credentials",
+      "verification": "mcp_initialize_and_list_tools",
+      "account_identity": "connection_id"
+    }
+  },
+  "runtime": {
+    "adapter": "remote_mcp",
+    "transport": "streamable_http",
+    "options": {
+      "type": "remote_mcp",
+      "endpoint": {"configuration_field": "endpoint"},
+      "credential_binding": {
+        "type": "http_header",
+        "name": "Authorization",
+        "scheme": "Bearer",
+        "credential_field": "token"
+      }
+    }
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {"tool": "get_me", "effect": "read", "retry": "safe"},
+      {"tool": "get_team_members", "effect": "read", "retry": "safe"},
+      {"tool": "get_teams", "effect": "read", "retry": "safe"},
+      {"tool": "add_issue_comment", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get_label", "effect": "read", "retry": "safe"},
+      {"tool": "issue_read", "effect": "read", "retry": "safe"},
+      {"tool": "issue_write", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "list_issue_fields", "effect": "read", "retry": "safe"},
+      {"tool": "list_issue_types", "effect": "read", "retry": "safe"},
+      {"tool": "list_issues", "effect": "read", "retry": "safe"},
+      {"tool": "search_issues", "effect": "read", "retry": "safe"},
+      {"tool": "sub_issue_write", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "add_comment_to_pending_review", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "add_reply_to_pull_request_comment", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "create_pull_request", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "list_pull_requests", "effect": "read", "retry": "safe"},
+      {"tool": "merge_pull_request", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "pull_request_read", "effect": "read", "retry": "safe"},
+      {"tool": "pull_request_review_write", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "search_pull_requests", "effect": "read", "retry": "safe"},
+      {"tool": "update_pull_request", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "update_pull_request_branch", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "create_branch", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "create_or_update_file", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "create_repository", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "delete_file", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "delete_repository", "effect": "destructive", "retry": "never", "confirmation": "user_required"},
+      {"tool": "fork_repository", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get_commit", "effect": "read", "retry": "safe"},
+      {"tool": "get_file_contents", "effect": "read", "retry": "safe"},
+      {"tool": "get_latest_release", "effect": "read", "retry": "safe"},
+      {"tool": "get_release_by_tag", "effect": "read", "retry": "safe"},
+      {"tool": "get_tag", "effect": "read", "retry": "safe"},
+      {"tool": "list_branches", "effect": "read", "retry": "safe"},
+      {"tool": "list_commits", "effect": "read", "retry": "safe"},
+      {"tool": "list_releases", "effect": "read", "retry": "safe"},
+      {"tool": "list_repository_collaborators", "effect": "read", "retry": "safe"},
+      {"tool": "list_tags", "effect": "read", "retry": "safe"},
+      {"tool": "push_files", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "search_code", "effect": "read", "retry": "safe"},
+      {"tool": "search_commits", "effect": "read", "retry": "safe"},
+      {"tool": "search_repositories", "effect": "read", "retry": "safe"},
+      {"tool": "search_users", "effect": "read", "retry": "safe"}
+    ]
+  },
+  "skills": [{"key": "github", "path": "skills/github"}]
+}

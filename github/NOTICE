@@ -1,0 +1,45 @@
+GitHub 连接器来源说明
+
+来源：用户提供的 workbuddyskills-main/connectors/github 目录。
+迁移日期：2026-09-12。
+本包的 package_version 独立按 POCO 连接器版本管理，初始版本为 1.0.0。
+
+复用与适配：
+- mcp.json 中的官方服务地址 https://api.githubcopilot.com/mcp/ 保持不变，
+  转换为 POCO 原生 remote_mcp / streamable_http 配置。
+- skill/SKILL.md 先原样复制到 skills/github/SKILL.md，再补充 POCO 的 PAT
+  授权、工具范围与操作指引；移除源客户端的 allowed-tools: Read,Write,Bash
+  限定，工具权限由 POCO 清单白名单控制。
+- 源目录未提供元数据、图标、授权字段或工具目录；本包补充中英文文案与 PAT
+  secret 字段，不携带真实凭据。调用时限由 POCO 管理，不沿用 timeout: 600。
+
+源文件 SHA-256：
+mcp.json
+  34e11cfd852a9b026e1a77166a2fbcea285510d726b7201b73c4301b7bb65e05
+skill/SKILL.md
+  3e324a440f77942f9a964aeb95cef42b1817b773d24c98c8637dec6af3b158ef
+
+工具白名单依据：
+官方项目：https://github.com/github/github-mcp-server
+文档版本：v1.12.1
+提交：7d13a7ad6f2a17f351a6d77ce280c85ae1821f4d
+工具名称取自该提交 README.md 的 Context、Repositories、Issues、Pull Requests
+和 Users 五组，共 43 个；混合方法的写入语义同时参考 pkg/github/__toolsnaps__/
+中的 sub_issue_write.snap 和 pull_request_review_write.snap。
+https://github.com/github/github-mcp-server/blob/7d13a7ad6f2a17f351a6d77ce280c85ae1821f4d/README.md
+
+工具策略：
+- 未列入清单的工具默认拒绝；不开放额外工具集、实验工具或旧名称别名。
+- 26 个只读工具允许安全重试；13 个写入工具禁止重试且需要用户确认。
+- delete_file、delete_repository、sub_issue_write、pull_request_review_write
+  按破坏性操作处理，禁止重试并需要用户确认。后两个工具包含移除关系或删除
+  评审的方法，因此按最高风险统一分类，不允许调用者通过参数降低风险。
+
+许可与验证范围：
+所提供的源目录及仓库根目录未包含适用于该连接器的许可证或 Git 提交信息。
+本说明仅记录来源，不授予或推定源材料的再分发许可。
+官方 github-mcp-server 源码采用 MIT License；本包仅依据其工具接口事实编写
+清单和操作说明，不捆绑官方服务端源码、可执行文件或文档副本。
+固定的官方版本仅用于审查工具白名单，不代表远程服务已固定为该版本。
+未使用真实 GitHub PAT 完成 initialize、tools/list 或 tools/call 验收；
+本地结构校验不能替代真实账号权限及远程服务验收。

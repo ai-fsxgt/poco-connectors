@@ -9,6 +9,7 @@
 | [`agentkey/`](./agentkey/) | AgentKey | `agentkey` | `1.0.0` | 网页、社交媒体、金融、电商和企业等实时数据查询 |
 | [`dingtalk/`](./dingtalk/) | 钉钉 | `dingtalk` | `1.0.2` | 日程、待办、文档、云盘、聊天、通讯录及业务数据操作 |
 | [`feishu/`](./feishu/) | 飞书 | `feishu` | `1.0.0` | 日历、任务、文档、云盘、表格、审批、聊天、邮件及业务数据操作 |
+| [`github/`](./github/) | GitHub | `github` | `1.0.0` | 仓库与代码搜索、文件提交、Issue 管理、PR 评审与合并、用户及团队查询 |
 | [`ima/`](./ima/) | IMA | `ima-mcp` | `1.1.0` | 笔记与知识库的搜索、读取、创建、导入及文件上传 |
 | [`kdocs/`](./kdocs/) | 金山文档 | `kdocs` | `1.4.12` | 文档、表格、PDF、演示文稿、云盘与知识库操作 |
 | [`qingflow/`](./qingflow/) | 轻流 | `qingflow` | `1.0.0` | 应用搭建、表单记录、审批流程、数据导入导出及图表查询 |
