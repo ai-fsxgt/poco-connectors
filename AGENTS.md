@@ -4,6 +4,10 @@
 
 Each root directory is an independently installable connector. Use lowercase kebab-case names like `dingtalk/` or `weknora/`; never include `poco` or a version. Keep versions only in `manifest.json.package_version`; upgrade in place. Keep all package files inside the connector; shared references live in `docs/`. When adding, removing, or changing the version of a connector, update the `README.md` "Current Connectors" list in the same change.
 
+### Required Assets Directory
+
+Every newly created or migrated connector must include an `assets/` directory, even when no icon is provided. Generating icon files is optional; the user may add custom icons later. If the directory would otherwise be empty, include `assets/.gitkeep` so Git preserves it. Before completing authoring or migration, verify that `assets/` exists; when packaging, verify that the final ZIP also includes this directory.
+
 ### Connector Versioning
 
 When updating an existing connector, keep its manifest `key` unchanged because the key is the installed connector identity. Increase `manifest.json.package_version` for every package content update; use a minor version bump for new capabilities (for example, `1.0.0` to `1.1.0`). Do not use an upstream Skill or source release version as the connector package version. Keep the README version and manifest version synchronized.
