@@ -14,6 +14,7 @@
 | [`github/`](./github/) | GitHub | `github` | `1.0.0` | 仓库与代码搜索、文件提交、Issue 管理、PR 评审与合并、用户及团队查询 |
 | [`ima/`](./ima/) | IMA | `ima-mcp` | `1.1.0` | 笔记与知识库的搜索、读取、创建、导入及文件上传 |
 | [`kdocs/`](./kdocs/) | 金山文档 | `kdocs` | `1.4.12` | 文档、表格、PDF、演示文稿、云盘与知识库操作 |
+| [`netease-mail/`](./netease-mail/) | 网易邮箱 | `netease-mail` | `1.0.0` | 邮件收发、搜索、附件获取、文件夹查询及已读状态管理 |
 | [`qingflow/`](./qingflow/) | 轻流 | `qingflow` | `1.0.0` | 应用搭建、表单记录、审批流程、数据导入导出及图表查询 |
 | [`qq-mail/`](./qq-mail/) | QQ 邮箱 | `qq-mail` | `1.0.0` | 邮件读取、搜索、发送、回复、转发、删除与附件获取 |
 | [`tencent-docs/`](./tencent-docs/) | 腾讯文档 | `tencent-docs` | `1.0.0` | 在线文档、表格、文件与知识库操作 |

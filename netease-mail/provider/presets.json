@@ -1,0 +1,114 @@
+{
+  "163.com": {
+    "imapHost": "imap.163.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.163.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "vip.163.com": {
+    "imapHost": "imap.vip.163.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.vip.163.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "126.com": {
+    "imapHost": "imap.126.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.126.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "vip.126.com": {
+    "imapHost": "imap.vip.126.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.vip.126.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "188.com": {
+    "imapHost": "imap.188.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.188.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "vip.188.com": {
+    "imapHost": "imap.vip.188.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.vip.188.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "yeah.net": {
+    "imapHost": "imap.yeah.net",
+    "imapPort": 993,
+    "smtpHost": "smtp.yeah.net",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "qq.com": {
+    "imapHost": "imap.qq.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.qq.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "foxmail.com": {
+    "imapHost": "imap.qq.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.qq.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "gmail.com": {
+    "imapHost": "imap.gmail.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.gmail.com",
+    "smtpPort": 587,
+    "secure": false
+  },
+  "outlook.com": {
+    "imapHost": "outlook.office365.com",
+    "imapPort": 993,
+    "smtpHost": "smtp-mail.outlook.com",
+    "smtpPort": 587,
+    "secure": false
+  },
+  "hotmail.com": {
+    "imapHost": "outlook.office365.com",
+    "imapPort": 993,
+    "smtpHost": "smtp-mail.outlook.com",
+    "smtpPort": 587,
+    "secure": false
+  },
+  "sina.com": {
+    "imapHost": "imap.sina.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.sina.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "sohu.com": {
+    "imapHost": "imap.sohu.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.sohu.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "139.com": {
+    "imapHost": "imap.139.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.139.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "aliyun.com": {
+    "imapHost": "imap.aliyun.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.aliyun.com",
+    "smtpPort": 465,
+    "secure": true
+  }
+}

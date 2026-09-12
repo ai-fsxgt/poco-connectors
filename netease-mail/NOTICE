@@ -1,0 +1,44 @@
+# 网易邮箱连接器来源说明
+
+POCO 包标识：netease-mail；初始包版本：1.0.0。
+
+## 来源与复用
+
+来源：workbuddyskills-main/connectors/netease-mail。
+源目录包含 token-schema.json、skills/SKILL.md 及两份 Node.js bundle，无独立图标、POCO Provider 或远程 MCP 地址。
+
+- 先原样复制源 Skill，再替换 WorkBuddy 命令、环境变量授权及本地附件路径为 POCO 工具、授权表单和文件资源。
+- 授权字段的中英文标签、描述与占位文案取自 token-schema.json；字段名按 POCO 清单要求改为 email、authorization_code。
+- provider/presets.json 直接提取合并两份 bundle 的 PROVIDER_PRESETS，保留全部 16 个域名的服务器、端口和 TLS 模式。预设不代表服务商仍支持授权码认证。
+- manifest.json 以本仓库 baidu-netdisk/manifest.json 为基线适配。Provider 的凭据表单、固定工具策略、协议错误与脱敏处理复用该连接器的组织方式。
+- 源目录没有图标，省略可选 icon 字段。未复制凭据、缓存、用户数据或第三方 bundle。
+
+源文件 SHA-256：
+
+- token-schema.json: a2c54a3c04924dddf461dacfad9027657b1daefe57866ff28e5b92d2f832ec50
+- skills/SKILL.md: 4501eae108b391c49bf6189f407e1d538d48ef28b6e77c4e42a0f83531744cd6
+- skills/scripts/imap.bundle.js: 9decf3482b9b2478536bac59d483afcd91297ab15d5521441a4d4b85637b5e97
+- skills/scripts/smtp.bundle.js: d5c062c4f6c82d3be04c5bf5163925dc3a99698a6c84d8bed19b42515997167d
+
+源连接器及上级目录未发现适用的许可证文件或 Git 提交信息，不推定额外授权。仓库另一个 skills/imap-smtp-email/package.json 声明 MIT，但该文件不在本源连接器目录内，不能据此认定本连接器的许可。
+
+## 平台适配
+
+- 依据 POCO manifest Schema、程序 runner、Backend Dockerfile 与连接器开发手册，采用 Python 3.12 标准库 imaplib、smtplib、email，无新增依赖和二进制。Node.js bundle 无法在 POCO 保证的运行时中直接复用。
+- Provider 和两份 JSON 资源均放在 provider/ 内，按入口位置加载，不依赖安装包根目录、用户环境变量或跨调用本地状态。
+- 网易 IMAP ID 保留源行为，客户端身份改为 poco。中文搜索使用 UTF-8 literal；文件夹名称使用 IMAP modified UTF-7。邮件按 UID 操作，读取使用只读选择及 BODY.PEEK[]。
+- 源脚本的 SINCE 时间筛选只有日期精度；适配后基于 INTERNALDATE 精确筛选分钟和小时，先取索引再按 limit 读取正文。
+- 所有 TLS 连接校验证书。587 端口必须先 STARTTLS 再认证。移除源脚本的自动重试及 rejectUnauthorized: false 行为。
+- 9 个固定工具，默认拒绝未知名称。读取工具 6 个；写入工具 3 个。发信使用 user_required，已读状态标记使用 not_required；全部写入 retry: never。调用前从包内定义重新取风险策略和参数 Schema，不接受调用方覆盖。发信的一次性确认由 POCO 在调用 Provider 前校验并消费，Provider 不臆造确认凭据字段。
+- 发信通过 Base64 内容传附件；下载通过 resource.data 返回，POCO 负责写入任务工作区。请求上限 2 MiB、响应上限 1 MiB，包含编码及 JSON 开销，超限显式报错。不会读取 Backend 任意文件或返回已经清理的临时路径。
+- 授权检查 IMAP 登录、INBOX 访问及 SMTP 登录，不发送测试邮件。无刷新、撤销、OAuth、自定义服务器、删除、回复或转发能力。
+- 发送结果区分 accepted 与 refused，部分拒绝作为错误返回明细。超时或连接中断不自动重发；SMTP 接受不等于最终投递成功。
+
+## 协议依据
+
+- Python 3.12 imaplib：https://docs.python.org/3.12/library/imaplib.html
+- Python 3.12 smtplib：https://docs.python.org/3.12/library/smtplib.html
+- IMAP4rev1：https://www.rfc-editor.org/rfc/rfc3501.html
+- IMAP ID：https://www.rfc-editor.org/rfc/rfc2971.html
+
+迁移阶段仅做本地源码、JSON、协议及引用检查。未使用真实邮箱账号，未验证真实认证、查询、附件及发信，也未执行后台安装、后端包加载或发布打包。

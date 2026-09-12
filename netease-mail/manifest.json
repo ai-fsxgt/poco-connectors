@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "netease-mail",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "category": "productivity",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.read.title",
+            "description_key": "capabilities.read.description"
+          },
+          {
+            "title_key": "capabilities.search.title",
+            "description_key": "capabilities.search.description"
+          },
+          {
+            "title_key": "capabilities.send.title",
+            "description_key": "capabilities.send.description"
+          },
+          {
+            "title_key": "capabilities.attachments.title",
+            "description_key": "capabilities.attachments.description"
+          },
+          {
+            "title_key": "capabilities.mailboxes.title",
+            "description_key": "capabilities.mailboxes.description"
+          }
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {
+            "title_key": "examples.unread.title",
+            "description_key": "examples.unread.description"
+          },
+          {
+            "title_key": "examples.search.title",
+            "description_key": "examples.search.description"
+          },
+          {
+            "title_key": "examples.send.title",
+            "description_key": "examples.send.description"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {
+        "type": "reauthorize",
+        "label_key": "actions.reauthorize"
+      },
+      {
+        "type": "open_service",
+        "label_key": "actions.openService",
+        "url": "https://mail.163.com/"
+      }
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.netease-mail",
+  "configuration": {
+    "fields": []
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "email",
+        "type": "text",
+        "label_key": "authorization.email.label",
+        "description_key": "authorization.email.description",
+        "placeholder_key": "authorization.email.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 320
+      },
+      {
+        "key": "authorization_code",
+        "type": "secret",
+        "label_key": "authorization.authorization_code.label",
+        "description_key": "authorization.authorization_code.description",
+        "placeholder_key": "authorization.authorization_code.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      }
+    ],
+    "options": {
+      "type": "program"
+    }
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {
+      "type": "program"
+    }
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": []
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {
+        "tool": "check",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "search",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "fetch",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "download",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "mark_read",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "tool": "mark_unread",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "tool": "list_mailboxes",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "send",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "test_connection",
+        "effect": "read",
+        "retry": "safe"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "key": "netease-mail",
+      "path": "skills/netease-mail"
+    }
+  ]
+}
