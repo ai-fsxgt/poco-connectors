@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "baidu-netdisk",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "category": "productivity",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.browse.title",
+            "description_key": "capabilities.browse.description"
+          },
+          {
+            "title_key": "capabilities.search.title",
+            "description_key": "capabilities.search.description"
+          },
+          {
+            "title_key": "capabilities.manage.title",
+            "description_key": "capabilities.manage.description"
+          },
+          {
+            "title_key": "capabilities.share.title",
+            "description_key": "capabilities.share.description"
+          }
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {
+            "title_key": "examples.browse.title",
+            "description_key": "examples.browse.description"
+          },
+          {
+            "title_key": "examples.search.title",
+            "description_key": "examples.search.description"
+          },
+          {
+            "title_key": "examples.copy.title",
+            "description_key": "examples.copy.description"
+          },
+          {
+            "title_key": "examples.share.title",
+            "description_key": "examples.share.description"
+          }
+        ]
+      },
+      {
+        "type": "help_links",
+        "title_key": "help.title",
+        "items": [
+          {
+            "title_key": "help.mcp.title",
+            "url": "https://github.com/baidu-netdisk/mcp"
+          },
+          {
+            "title_key": "help.authorization.title",
+            "url": "https://pan.baidu.com/union/doc/Wm9sl0i0j"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {
+        "type": "reauthorize",
+        "label_key": "actions.reauthorize"
+      },
+      {
+        "type": "open_service",
+        "label_key": "actions.openService",
+        "url": "https://pan.baidu.com/"
+      }
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.baidu-netdisk",
+  "configuration": {
+    "fields": []
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "access_token",
+        "type": "secret",
+        "label_key": "authorization.token.label",
+        "description_key": "authorization.token.description",
+        "placeholder_key": "authorization.token.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      }
+    ],
+    "options": {
+      "type": "program"
+    }
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {
+      "type": "program"
+    }
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": []
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {
+        "tool": "file_list",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "file_doc_list",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "file_image_list",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "file_video_list",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "file_meta",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "file_keyword_search",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "file_semantics_search",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "user_info",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "get_quota",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "make_dir",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "file_copy",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "file_move",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "file_rename",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "file_upload_by_url",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "file_sharelink_set",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "key": "baidu-netdisk",
+      "path": "skills/baidu-netdisk"
+    }
+  ]
+}

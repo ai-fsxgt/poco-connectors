@@ -1,0 +1,45 @@
+# 百度网盘连接器来源说明
+
+POCO 包标识：baidu-netdisk；初始包版本：1.0.0。
+
+## WorkBuddy 源连接器
+
+来源：workbuddyskills-main/connectors/baidu-netdisk。源目录只有 mcp.json 和 skills/SKILL.md，没有图标、Provider 或独立元数据文件。
+保留官方 SSE 地址；先原样复制 Skill，再调整 POCO 授权、实际工具范围、风险和错误处理说明。原 Skill 的版本字段为 1.2.0，不作为 POCO 包版本。
+未在源连接器及其上级仓库根目录发现适用许可证或 Git 提交信息；不推定额外授权。
+
+源文件 SHA-256：
+
+- mcp.json: 114d3530f6b77b28601150ad10cd54af9fdd2d94aff67e73f2566bd34c0b7301
+- skills/SKILL.md: 5e01bd1ca56020a7e8f68e1270181580dee0b14893f05cd549f74d66295aa247
+
+## 官方参考资料
+
+- 仓库：https://github.com/baidu-netdisk/mcp
+- 固定提交：b3983d330fea79c7b72e6b7014803e1830148d2c（2025-09-23）。
+- README.md 与 LICENSE 原样保存于 skills/baidu-netdisk/references/upstream/；适用原 MIT License，Copyright (c) 2025 baidu-netdisk。
+- 该提交仅固定参考文档与工具名称依据，不代表远程服务使用同一提交。
+
+原样保留文件 SHA-256：
+
+- README.md: 73c88e994058f53d5c25068329e18c1596710fce8bed136252192a38425da2fb
+- LICENSE: 92b317148da69d4659396cc14c599d308c75d40bd2ec27a613e48af2e7a3bce8
+
+## 实现与能力边界
+
+- Provider 为本次 POCO 协议与 SSE 适配实现。MCP 内容转换函数和稳定摘要逻辑复用本仓库 tencent-docs/provider/main.py；内容转换替换服务名，并按协议拒绝缺少内容、资源名称或包含冲突载荷的结果。
+- 原 WorkBuddy 目录无可复用 Provider。官方 Python 示例依赖平台 v1 不保证提供的 mcp、dotenv，包含 LLM 对话循环及自动重试，不能直接作为 POCO 单次调用入口。
+- 运行环境依据 POCO 清单 Schema、程序 runner 及开发手册确认：Backend Python 3.12、标准库和 httpx；无需二进制或新增依赖。
+- 接入固定官方地址 https://mcp-pan.baidu.com/sse，令牌仅在运行时作为 access_token 查询参数传递。官方 SSE 消息地址必须同源，不跟随 HTTP 重定向，不自动重试。
+- 固定 15 个工具白名单：9 个 read、2 个 write、4 个 destructive。文件管理接口因接受覆盖参数统一采用 destructive；全部非只读操作使用 never 重试策略和 user_required 确认策略。
+- 工具发现取实际服务 Schema，与固定策略合并生成摘要；调用前重新检查工具目录和风险，未知名称默认拒绝。一次性用户确认由 POCO 在调用 Provider 前校验并消费。
+- file_del 与 file_upload_stdio 不在源 Skill 的能力范围，未开放。下载和本地文件操作也未加入。
+- 官方 README 将文本保存工具和 URL 转存工具均标为 file_upload_by_url，尚无有效授权核实文本工具名及 Schema。当前不开放文本保存，不编造工具名，也不使用 REST 或本地上传替代。
+- 原 Skill 中的 OCR、正文、分类和扩展名筛选仅在当前服务 Schema 支持时使用。
+- 源目录无图标，清单省略可选 icon 字段。
+
+## 服务核验
+
+2026-09-12 以不带凭据的连接核实 SSE 握手：serverInfo.name 为 MCP SSE Server，version 为 1.0.0，protocolVersion 为 2024-11-05；未授权 tools/list 返回空列表。
+明确无效的测试字符串被服务以 HTTP 400、errno 2003、auth fail:token fail 拒绝，没有使用真实凭据。
+以上仅证明公开协议与认证失败行为。真实授权成功、实际工具目录及 Schema、账号数据、写入和业务错误仍需部署环境验收；迁移阶段未执行后台安装、后端包加载或发布打包。
