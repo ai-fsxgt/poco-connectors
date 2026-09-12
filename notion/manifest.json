@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "notion",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "category": "productivity",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {"title_key": "capabilities.capture.title", "description_key": "capabilities.capture.description"},
+          {"title_key": "capabilities.meeting.title", "description_key": "capabilities.meeting.description"},
+          {"title_key": "capabilities.research.title", "description_key": "capabilities.research.description"},
+          {"title_key": "capabilities.spec.title", "description_key": "capabilities.spec.description"}
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {"title_key": "examples.capture.title", "description_key": "examples.capture.description"},
+          {"title_key": "examples.meeting.title", "description_key": "examples.meeting.description"},
+          {"title_key": "examples.research.title", "description_key": "examples.research.description"},
+          {"title_key": "examples.spec.title", "description_key": "examples.spec.description"}
+        ]
+      },
+      {
+        "type": "help_links",
+        "title_key": "help.title",
+        "items": [
+          {"title_key": "help.mcp.title", "url": "https://developers.notion.com/guides/mcp/overview"},
+          {"title_key": "help.registration.title", "url": "https://developers.notion.com/guides/mcp/build-mcp-client"},
+          {"title_key": "help.tools.title", "url": "https://developers.notion.com/guides/mcp/mcp-supported-tools"}
+        ]
+      }
+    ],
+    "connection_actions": [
+      {"type": "reauthorize", "label_key": "actions.reauthorize"},
+      {"type": "open_service", "label_key": "actions.openService", "url": "https://www.notion.so/"}
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.notion",
+  "configuration": {
+    "fields": [
+      {
+        "key": "endpoint",
+        "type": "url",
+        "label_key": "configuration.endpoint.label",
+        "description_key": "configuration.endpoint.description",
+        "placeholder_key": "configuration.endpoint.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "default": "https://mcp.notion.com/mcp",
+        "max_length": 2048
+      },
+      {
+        "key": "client_id",
+        "type": "text",
+        "label_key": "configuration.clientId.label",
+        "description_key": "configuration.clientId.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      },
+      {
+        "key": "client_secret",
+        "type": "secret",
+        "label_key": "configuration.clientSecret.label",
+        "description_key": "configuration.clientSecret.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "oauth_authorization_code",
+    "interaction": "redirect",
+    "fields": [],
+    "options": {
+      "type": "oauth_authorization_code",
+      "discovery": {
+        "type": "mcp",
+        "resource_configuration_field": "endpoint",
+        "expected_issuer": "https://mcp.notion.com"
+      },
+      "client_id_configuration_field": "client_id",
+      "client_secret_configuration_field": "client_secret",
+      "token_endpoint_auth_method": "client_secret_basic",
+      "scopes": ["default"],
+      "account_identity": "connection_id"
+    }
+  },
+  "runtime": {
+    "adapter": "remote_mcp",
+    "transport": "streamable_http",
+    "options": {
+      "type": "remote_mcp",
+      "endpoint": {"configuration_field": "endpoint"},
+      "credential_binding": {
+        "type": "http_header",
+        "name": "Authorization",
+        "scheme": "Bearer",
+        "credential_field": "access_token"
+      }
+    }
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {"tool": "notion-search", "effect": "read", "retry": "safe"},
+      {"tool": "notion-ai-search", "effect": "read", "retry": "safe"},
+      {"tool": "notion-fetch", "effect": "read", "retry": "safe"},
+      {"tool": "notion-query-data-sources", "effect": "read", "retry": "safe"},
+      {"tool": "notion-get-async-task", "effect": "read", "retry": "safe"},
+      {"tool": "notion-create-pages", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "notion-create-database", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "notion-create-comment", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "notion-update-page", "effect": "destructive", "retry": "never", "confirmation": "user_required"}
+    ]
+  },
+  "skills": [
+    {"key": "notion-knowledge-capture", "path": "skills/knowledge-capture"},
+    {"key": "notion-meeting-intelligence", "path": "skills/meeting-intelligence"},
+    {"key": "notion-research-documentation", "path": "skills/research-documentation"},
+    {"key": "notion-spec-to-implementation", "path": "skills/spec-to-implementation"}
+  ]
+}

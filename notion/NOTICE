@@ -1,0 +1,92 @@
+Notion 连接器来源说明
+
+来源：用户提供的 workbuddyskills-main/connectors/notion 目录。
+移植日期：2026-09-12。
+Poco package_version 独立管理，初始版本为 1.0.0。
+源目录没有连接器版本、图标、许可证或 Git 提交信息；其仓库根目录也未附许可证。
+
+复用与适配：
+- 原样复制源目录中 4 个 Skill 及其 reference、examples，共 51 个 Markdown 文件，
+  然后仅修改平台称呼、工具命名、调用约定、旧接口示例和相关权限说明。
+- 保留其余通用模板、业务内容和目录结构，不重新生成同义材料。
+- 源 mcp.json 的服务地址 https://mcp.notion.com/mcp 转入 Poco manifest。
+  不分发 WorkBuddy 客户端配置、评测文件、缓存、用户数据或凭据。
+- 新增 Poco manifest、中英文文案及 SETUP.md；使用原生远程 MCP，无 Provider、
+  第三方运行依赖或随包二进制。源目录无图标，不自行重建图标。
+- 四个 Skill 内的 Notion: 工具前缀去除；Claude 专属表述调整为通用助手或 Poco Agent。
+- 内容检索按当前工作区返回的工具权限选择；旧 insert_content_after 示例改为
+  update_content，数据库创建说明以当前 MCP Schema 为准，数据源 ID 示例不携带 URI 前缀。
+- 异步写入通过任务 ID 查询结果；内部会议材料与对外议程按各自读者范围保存和关联。
+
+接口与策略依据（核对日期：2026-09-12）：
+https://developers.notion.com/guides/mcp/build-mcp-client
+https://developers.notion.com/guides/mcp/mcp-supported-tools
+https://mcp.notion.com/.well-known/oauth-protected-resource/mcp
+https://mcp.notion.com/.well-known/oauth-authorization-server
+
+公开元数据确认 issuer 为 https://mcp.notion.com，scope 为 default，支持
+client_secret_basic、PKCE S256、授权码和刷新令牌。客户端注册由管理员预先完成。
+官方远程工具没有本包可固定的服务版本或提交；清单逐项允许 9 个工具，不跟随上游自动扩权。
+其中 5 个只读工具允许安全重试；3 个创建工具为写入；notion-update-page 可删除或替换
+原有内容，按 destructive 处理。所有非只读工具要求确认并使用 retry: never。
+
+许可与验证范围：
+本说明记录来源，不授予或推定源材料与 Notion 商标的再分发许可。
+已用启用证书校验的系统 curl 读取公开 OAuth 元数据，并核对无凭据 initialize 返回 401。
+本机 Python 的 HTTPS 检查遇到证书信任链错误；未修改证书配置或关闭 TLS 校验。
+这些检查不代表客户端注册、OAuth 回调、令牌刷新或账户操作已通过验收。
+本次不创建发布 ZIP，也不调用 Poco Backend Loader；最终包发布时再执行发布验证。
+
+源材料 SHA-256（迁移前，路径相对于源 notion/，不包含评测及缓存）：
+0e80c48b68ca704d9dfad478008fde066ca62528beeb9d54f2445f458a020b4e  mcp.json
+42e8c7634c25c59155ec04c5451da7ca34c5711084c53625fdf37b4af9bf0d19  skills/knowledge-capture/SKILL.md
+84e651a2e9d8d3664991982c728a07aaab99416afa07e0300d9a9987b07baa47  skills/knowledge-capture/examples/conversation-to-faq.md
+5071ecb227d49da79161fe0f73ebb6b93644e82b998e88baf85ecf35658a42e9  skills/knowledge-capture/examples/decision-capture.md
+f99aa34a1f901b6d2934e7518bc6391b46eb3b87a3768cb6f575f4de1bfdc4e4  skills/knowledge-capture/examples/how-to-guide.md
+c770d3fcc998138643d4835a528e030a952799f84eb8848674fe832775eb524c  skills/knowledge-capture/reference/database-best-practices.md
+c9f49dd1b87f25979f9b7eb940d96f21bc92ea47535bd5ca267925f8365bc2dd  skills/knowledge-capture/reference/decision-log-database.md
+c45a6c7a5ac86042fd27b37f6e833d3429aa046c76f7abf098512100bb555bae  skills/knowledge-capture/reference/documentation-database.md
+2d15fcfb382a6fd266347d210d4127abd85779920b3be0ed86ba3022852a9d99  skills/knowledge-capture/reference/faq-database.md
+5a836600dc6cd52d1f656e806ad3d023f4b065d755a0e6d361fab10129423170  skills/knowledge-capture/reference/how-to-guide-database.md
+dab940fa3bea3de950a7eb9c39a222301587ed251dd8a911b368641fd9649b06  skills/knowledge-capture/reference/learning-database.md
+290df0abcae57199263d1c1d10819ad4fcf0fb1de9af434acd8ebb0fc6615bd2  skills/knowledge-capture/reference/team-wiki-database.md
+8abefc02d5e25ceab841d7bbad5b14da3e4e05ba468cbd0f457a1466e4fd27fd  skills/meeting-intelligence/SKILL.md
+1345fa36112f3ba1c486b3098a2838155629087fed3e304c8121bb96fc29840b  skills/meeting-intelligence/examples/customer-meeting.md
+2b712d8cee09d0d04774604418db30c13491e52d0630cda42eeaa3787b677d15  skills/meeting-intelligence/examples/executive-review.md
+0cafd9495114cce7db53fc69513564305818ed28a00f7ea77b347219c3b76634  skills/meeting-intelligence/examples/project-decision.md
+dd685f0b5ab1f84ff997e3912e2464631974b67dbc35bb31297f1873068db00f  skills/meeting-intelligence/examples/sprint-planning.md
+685c89be4b278c4b897d3a7295d4eb8b29fb786a27e13f640712e8ea6a9e0639  skills/meeting-intelligence/reference/brainstorming-template.md
+9f74a016a430c39263fdd1d4b7f1c808fb7b79f0f79a83ccc32b8bb1dea432bc  skills/meeting-intelligence/reference/decision-meeting-template.md
+986075597ff9674c04be326a90db8cc0ed1e6bdd3fc1e044ba96ca9794d6d4b4  skills/meeting-intelligence/reference/one-on-one-template.md
+d0d8c6a55fd43ebef6f209ff1f1050d18af395c48bd8bf9b6aa633ac0b59d978  skills/meeting-intelligence/reference/retrospective-template.md
+07974127c2862787f96cbf92b4a7e50783bc447f1cf6ceb1fb857f67153e3964  skills/meeting-intelligence/reference/sprint-planning-template.md
+e38d17649e59aedd164b68fe99e21ae975429ddd54ac39843f418a56e689d3d2  skills/meeting-intelligence/reference/status-update-template.md
+949d369594ea4d2c78fcbda94f2dad804caa07edb92a23369531df472dd40ad0  skills/meeting-intelligence/reference/template-selection-guide.md
+05175c669c1fabc5234eeae647219caadd84703d718af64fafd246e9e3c130a6  skills/research-documentation/SKILL.md
+73b06953410282783daa9e160f761cbf36aa2ad19ae6fa0fb864f66da877c132  skills/research-documentation/examples/competitor-analysis.md
+63996687d036fd7e3bd6b332761dab2d6f5537c05a3f2536136cf01e1dff7347  skills/research-documentation/examples/market-research.md
+dab0de1d211b65f4bc870015f521673726fec346fb769dbae9cb780df06f0efc  skills/research-documentation/examples/technical-investigation.md
+132c61543a6b25d01589bc69d98742aa75620bcb0e47a4a73e59c48b91f794f2  skills/research-documentation/examples/trip-planning.md
+1722e28a49da711d43ba93cc18bbba2c80758adfa6521e7287eb288eee30138e  skills/research-documentation/reference/advanced-search.md
+c6df50c5d5db2f12fefb7b6e8ae040de9d27fde8e4797bc8ce8ad2f868701fb6  skills/research-documentation/reference/citations.md
+4e0eccd50a4fd18cd7e30b5d05d3c733477be69ead74f1cfec7a045e7009fb69  skills/research-documentation/reference/comparison-format.md
+32fc24d13b555adc160db1b7fafbfd10185af9a6af6f37b1fab19d8dcf798aae  skills/research-documentation/reference/comparison-template.md
+ab1ff091790e87b9cb7c6c9436fff680a0d33c076e16f8a986fe8f95b0f095fb  skills/research-documentation/reference/comprehensive-report-format.md
+9f699332dc20737f3be7911f99901720037392bffdd18b3d5d9cc52d4ac8c0e5  skills/research-documentation/reference/comprehensive-report-template.md
+1c94f00efdce37250daa3ca1e43b106668effebb23cfd5fdb6b321f792f7b1e7  skills/research-documentation/reference/format-selection-guide.md
+f16fa16bb5caf9fc9286689e4e6c48798bc4439c4806f7c867e965f2dcc1bb38  skills/research-documentation/reference/quick-brief-format.md
+d608219370794b9d3e2c0d525c790ead3356e3db36f4597e058795b2bf079dbd  skills/research-documentation/reference/quick-brief-template.md
+c57fa37848439234d38f57386711d649faeae5b8951ea84329ed0b04e7f8a2ef  skills/research-documentation/reference/research-summary-format.md
+68bf8e8bb3910cab79af242f1f8758a5e7694aec5a557f60e6058062a6cffd6e  skills/research-documentation/reference/research-summary-template.md
+76c035adf07dba1a05b471194071ae495518c118af1a7541a6faf81701b5d1cb  skills/spec-to-implementation/SKILL.md
+f4f8f4385dcdf4c97715597baa4f1c7d6243fc37cb06d92a10bd4520394bf4be  skills/spec-to-implementation/examples/api-feature.md
+b844c60a5d3715968cf5f0abda78eea1ddae9abc016a4da3009557707c18ddac  skills/spec-to-implementation/examples/database-migration.md
+41885663e7b9ed7a43de87cbe2bfd1e95ac7311007c89a5e777751e245a4ce97  skills/spec-to-implementation/examples/ui-component.md
+9b996c1ecf763e51353615166866215fef338fa7e62d9f090f47ace54920ebdc  skills/spec-to-implementation/reference/milestone-summary-template.md
+483a446eacbffef745736b5e2ddb562d980071251324a77f5e111f5bf6bc8a3e  skills/spec-to-implementation/reference/progress-tracking.md
+8f4de83c90e89646a87be184b1606471e695ee27960576f26639e03059d2c718  skills/spec-to-implementation/reference/progress-update-template.md
+976065135583ae60ae553313b71d3b1d0835fb256e9fed67c1ce1cc6fa365406  skills/spec-to-implementation/reference/quick-implementation-plan.md
+f502b7e37374cb0e429826aa9b2c3b1778da230072a9429259aa85a46b96d768  skills/spec-to-implementation/reference/spec-parsing.md
+88642fa5b45d6d457d36c947831b3e33b52d8a55e6d44dab29adad297f952e6c  skills/spec-to-implementation/reference/standard-implementation-plan.md
+d1c988d6467020213cfea33b8725bff06b8aab739f31cf06444b7f837f508264  skills/spec-to-implementation/reference/task-creation-template.md
+e191b76eedfd0335339df1bb9f7357ba9774cf7d7989ae370a904a510e32401b  skills/spec-to-implementation/reference/task-creation.md
