@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "tapd",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.png",
+    "category": "productivity",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {"title_key": "capabilities.workitems.title", "description_key": "capabilities.workitems.description"},
+          {"title_key": "capabilities.planning.title", "description_key": "capabilities.planning.description"},
+          {"title_key": "capabilities.collaboration.title", "description_key": "capabilities.collaboration.description"},
+          {"title_key": "capabilities.knowledge.title", "description_key": "capabilities.knowledge.description"}
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {"title_key": "examples.todo.title", "description_key": "examples.todo.description"},
+          {"title_key": "examples.breakdown.title", "description_key": "examples.breakdown.description"},
+          {"title_key": "examples.iteration.title", "description_key": "examples.iteration.description"},
+          {"title_key": "examples.bug.title", "description_key": "examples.bug.description"},
+          {"title_key": "examples.timesheet.title", "description_key": "examples.timesheet.description"}
+        ]
+      },
+      {
+        "type": "help_links",
+        "title_key": "help.title",
+        "items": [
+          {"title_key": "help.tapd.title", "url": "https://www.tapd.cn/help/view"}
+        ]
+      }
+    ],
+    "connection_actions": [
+      {"type": "reauthorize", "label_key": "actions.reauthorize"},
+      {"type": "open_service", "label_key": "actions.openService", "url": "https://www.tapd.cn/"}
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.tapd",
+  "configuration": {
+    "fields": [
+      {
+        "key": "endpoint",
+        "type": "url",
+        "label_key": "configuration.endpoint.label",
+        "description_key": "configuration.endpoint.description",
+        "placeholder_key": "configuration.endpoint.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "default": "https://websocket.tapd.cn/mcp/mcp",
+        "max_length": 2048
+      },
+      {
+        "key": "client_id",
+        "type": "text",
+        "label_key": "configuration.clientId.label",
+        "description_key": "configuration.clientId.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      },
+      {
+        "key": "client_secret",
+        "type": "secret",
+        "label_key": "configuration.clientSecret.label",
+        "description_key": "configuration.clientSecret.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "oauth_authorization_code",
+    "interaction": "redirect",
+    "fields": [],
+    "options": {
+      "type": "oauth_authorization_code",
+      "discovery": {
+        "type": "mcp",
+        "resource_configuration_field": "endpoint",
+        "expected_issuer": "https://websocket.tapd.cn/mcp"
+      },
+      "client_id_configuration_field": "client_id",
+      "client_secret_configuration_field": "client_secret",
+      "token_endpoint_auth_method": "client_secret_post",
+      "scopes": ["user"],
+      "account_identity": "connection_id"
+    }
+  },
+  "runtime": {
+    "adapter": "remote_mcp",
+    "transport": "streamable_http",
+    "options": {
+      "type": "remote_mcp",
+      "endpoint": {"configuration_field": "endpoint"},
+      "credential_binding": {
+        "type": "http_header",
+        "name": "Authorization",
+        "scheme": "Bearer",
+        "credential_field": "access_token"
+      }
+    }
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {"tool": "get_user_participant_projects", "effect": "read", "retry": "safe"},
+      {"tool": "get_workspace_info", "effect": "read", "retry": "safe"},
+      {"tool": "get_stories_or_tasks", "effect": "read", "retry": "safe"},
+      {"tool": "get_story_or_task_count", "effect": "read", "retry": "safe"},
+      {"tool": "create_story_or_task", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "update_story_or_task", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get_stories_fields_info", "effect": "read", "retry": "safe"},
+      {"tool": "get_stories_fields_lable", "effect": "read", "retry": "safe"},
+      {"tool": "get_entity_custom_fields", "effect": "read", "retry": "safe"},
+      {"tool": "get_workitem_types", "effect": "read", "retry": "safe"},
+      {"tool": "get_bug", "effect": "read", "retry": "safe"},
+      {"tool": "get_bug_count", "effect": "read", "retry": "safe"},
+      {"tool": "create_bug", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "update_bug", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get_related_bugs", "effect": "read", "retry": "safe"},
+      {"tool": "get_iterations", "effect": "read", "retry": "safe"},
+      {"tool": "create_iteration", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "update_iteration", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get_comments", "effect": "read", "retry": "safe"},
+      {"tool": "create_comments", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "update_comments", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get_tcases", "effect": "read", "retry": "safe"},
+      {"tool": "create_or_update_tcases", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "create_tcases_batch", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get_wiki", "effect": "read", "retry": "safe"},
+      {"tool": "create_wiki", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "update_wiki", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get_workflows_all_transitions", "effect": "read", "retry": "safe"},
+      {"tool": "get_workflows_status_map", "effect": "read", "retry": "safe"},
+      {"tool": "get_workflows_last_steps", "effect": "read", "retry": "safe"},
+      {"tool": "get_timesheets", "effect": "read", "retry": "safe"},
+      {"tool": "add_timesheets", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "update_timesheets", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get_image", "effect": "read", "retry": "safe"},
+      {"tool": "get_entity_attachments", "effect": "read", "retry": "safe"},
+      {"tool": "get_todo", "effect": "read", "retry": "safe"},
+      {"tool": "entity_relations", "effect": "write", "retry": "never", "confirmation": "user_required"},
+      {"tool": "get_release_info", "effect": "read", "retry": "safe"},
+      {"tool": "get_commit_msg", "effect": "read", "retry": "safe"}
+    ]
+  },
+  "skills": [{"key": "tapd-skill", "path": "skills/tapd"}]
+}

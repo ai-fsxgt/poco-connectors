@@ -1,0 +1,48 @@
+TAPD 连接器来源说明
+
+来源：用户提供的 workbuddyskills-main/connectors/tapd 目录。
+迁移日期：2026-09-12。
+源 Skill 版本：1.0.0；作者字段：TAPD。
+Poco package_version 独立管理，初始为 1.0.0。
+
+复用与适配：
+- icon.png 原样复制到 assets/icon.png。
+- skills/tapd-skill.md 先原样复制到 skills/tapd/SKILL.md，保留源名称、
+  工具参数与业务流程；补充 Poco 调用约定，调整授权和令牌刷新说明，
+  移除不属于 TAPD MCP 工具的企业微信群机器人 Webhook 发送章节。
+- connector-meta.json 的名称、中英文描述和五组示例原文用于 locales。
+- mcp.json 的服务地址 https://websocket.tapd.cn/mcp/mcp 保持不变，
+  转换为 Poco 原生远程 MCP 配置，不分发 Provider、运行依赖或真实凭据。
+- 新增 references/setup.md 说明 OAuth 客户端注册、回调地址和验收步骤。
+
+源文件 SHA-256：
+connector-meta.json
+  83de20f2df340a785bbe4ac1a4d3536a6c0016478146b657c41c2b75c209a8ce
+mcp.json
+  b54f0d3c6a559632bb62c20685880debbaf84369e4fed67b3aa2f587677714bf
+icon.png
+  22562995648f508d103b416ca2b19662d07fbfa943666af8a724fad2a4647d1e
+skills/tapd-skill.md
+  25804565074d67421c447ab27b9e20b4281e9bfe85df0a718bcc71ed904e483e
+
+接口依据（核对日期：2026-09-12）：
+- 受保护资源为 https://websocket.tapd.cn/mcp/mcp，授权方为
+  https://websocket.tapd.cn/mcp，权限为 user，Bearer 令牌通过请求头传递。
+  https://websocket.tapd.cn/.well-known/oauth-protected-resource/mcp/mcp
+- OAuth 元数据声明授权码、刷新令牌、client_secret_post、PKCE S256、
+  客户端注册和撤销端点。
+  https://websocket.tapd.cn/.well-known/oauth-authorization-server/mcp
+- 未带凭据的 MCP initialize 请求返回 HTTP 401 Unauthorized。
+
+工具策略：
+- 白名单使用源 Skill 的 39 个上游工具名称，未列出的工具默认拒绝。
+- 24 个只读工具允许安全重试；15 个写入工具禁止自动重试并要求用户确认。
+- entity_relations 会创建需求与缺陷的关联，按写入处理。
+- get_stories_fields_lable 保留源工具名称的拼写，不擅自更名。
+
+许可与验证范围：
+所提供的源目录及仓库根目录未包含适用于该连接器的许可证或 Git 提交信息。
+本说明仅记录来源，不授予或推定源材料、图标及商标的再分发许可。
+工具名称及业务语义依据源 Skill，未使用真实账号完成客户端注册、OAuth
+回调、令牌刷新或撤销、授权后的工具发现和调用。公开元数据与本地结构检查
+不能替代真实服务验收；本次未生成发布 ZIP 或执行 Poco 后端加载器校验。
