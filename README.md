@@ -8,7 +8,7 @@
 | --- | --- | --- | --- | --- |
 | [`agentkey/`](./agentkey/) | AgentKey | `agentkey` | `1.0.0` | 网页、社交媒体、金融、电商和企业等实时数据查询 |
 | [`baidu-netdisk/`](./baidu-netdisk/) | 百度网盘 | `baidu-netdisk` | `1.0.1` | 文件浏览与检索、文件整理、分享链接、容量查询及 URL 转存 |
-| [`canva/`](./canva/) | Canva可画 | `canva` | `1.0.0` | 设计生成与编辑、素材和品牌资源、模板填充、导入导出及评论协作 |
+| [`canva/`](./canva/) | Canva可画 | `canva` | `1.1.0` | 设计生成与编辑、素材和品牌资源、模板填充、导入导出及评论协作 |
 | [`dingtalk/`](./dingtalk/) | 钉钉 | `dingtalk` | `1.0.2` | 日程、待办、文档、云盘、聊天、通讯录及业务数据操作 |
 | [`feishu/`](./feishu/) | 飞书 | `feishu` | `1.0.0` | 日历、任务、文档、云盘、表格、审批、聊天、邮件及业务数据操作 |
 | [`github/`](./github/) | GitHub | `github` | `1.0.1` | 仓库与代码搜索、文件提交、Issue 管理、PR 评审与合并、用户及团队查询 |

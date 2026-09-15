@@ -3,7 +3,7 @@ name: canva
 description: "Use Canva's design capabilities: create and edit designs, manage assets and brand resources, search the asset library, export designs, and add comments."
 description_zh: "让AI助手无缝调用Canva可画的设计能力，包括创建设计、编辑设计、管理素材和品牌资源、搜索资源库、导出设计以及添加评论等。"
 description_en: "Access Canva's design capabilities: design creation and editing, asset and brand management, search, export, commenting, and more."
-version: "1.0.0"
+version: "1.1.0"
 ---
 
 # Canva可画 Skill
@@ -12,8 +12,8 @@ version: "1.0.0"
 
 ## POCO 授权
 
-- 管理员按 [安装与授权配置](references/setup.md) 注册并配置 OAuth 客户端；每位用户在 POCO 中点击连接，通过可画官方页面登录授权。
-- POCO 负责 PKCE S256、访问令牌注入及可用刷新令牌的更新。不要要求用户在对话或工具参数中提供 Client Secret、授权码或令牌。
+- 管理员按 [安装与授权配置](references/setup.md) 将 Poco 回调地址加入可画允许列表；连接器会为每次连接自动注册 OAuth 客户端。
+- POCO 负责 PKCE S256、OAuth 客户端凭据加密、访问令牌注入及可用刷新令牌的更新。不要要求用户在对话或工具参数中提供 Client Secret、授权码或令牌。
 - 本包只连接中国区服务。官方工具文档作为接口参考，不代表国际版和中国区的工具、套餐或权限完全一致。
 
 ## 功能能力
