@@ -1,6 +1,6 @@
 # 腾讯会议工具 — 会议报告
 
-> 本文示例中的工具名对应 Poco Provider；`--flag value` 仅表示把参数转换为同名 `snake_case` 字段后传入工具 arguments。
+> 本文保留源 CLI 示例用于解释参数含义。Poco 实际调用以工具 JSON Schema 为准，字段使用 `snake_case`。
 
 > **前置条件：** 已完成腾讯会议连接器授权。
 
@@ -42,8 +42,6 @@ report_participants \
 | `--end <time>` | 否 | —     | 查询结束时间（ISO 8601，含时区）                     |
 | `--page-token <token>` | 否 | —     | 分页游标，首页不传；后续翻页传入上一次响应的 `next_page_token` |
 | `--page-size <n>` | 否 | `100` | 每页数量，默认 100，最大 100                       |
-| `--pos <n>` | 否 | —     | ⚠️ **已弃用**：分页起始位置，请改用 `--page-token`     |
-| `--size <n>` | 否 | —     | ⚠️ **已弃用**：每页数量，请改用 `--page-size`        |
 
 ---
 
@@ -67,7 +65,6 @@ report_waiting_room_log \
 | `--meeting-id <id>` | ✅ | —     | 会议 ID                                    |
 | `--page-token <token>` | 否 | —     | 分页游标，首页不传；后续翻页传入上一次响应的 `next_page_token` |
 | `--page-size <n>` | 否 | `100` | 每页数量，默认 100，最大 100                       |
-| `--page <n>` | 否 | —     | ⚠️ **已弃用**：页码，请改用 `--page-token`         |
 
 ---
 

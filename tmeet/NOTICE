@@ -1,0 +1,18 @@
+Tencent Meeting Connector Provenance
+
+Source connector:
+  /Users/wyf/PythonProject/workbuddyskills-main/connectors/tmeet
+
+Upstream CLI:
+  Name: @tencentcloud/tmeet
+  Version inspected: 1.0.11
+  Repository: https://github.com/TencentCloud/tencentmeeting-cli
+  Git commit: e9a0af279aa2cef5d85a4b3a6cd69f735e233c9c
+  npm integrity: sha512-N/TdgdxP+D09y9SschrrdCfMe+sGncIZlHUH9czTjAunC/b/Ck3CFO2BplYcm+lnlPPvguOjD0s8qp3GmJO41Q==
+
+The upstream CLI binary is not bundled. Its device authorization flow persists
+local credentials and polls beyond Poco's isolated Program invocation window.
+This connector therefore adapts the upstream command schemas and REST request
+shapes to Poco protocol v1, while Poco stores OAuth credentials.
+
+No upstream source code or executable is included in this package.

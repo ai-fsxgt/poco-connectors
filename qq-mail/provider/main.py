@@ -19,8 +19,6 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
-import certifi
-
 _ROOT = Path(__file__).resolve().parent
 _PRESETS = json.loads((_ROOT / "presets.json").read_text())
 _CATALOG = json.loads((_ROOT / "tools.json").read_text())
@@ -41,7 +39,7 @@ _TOOL_POLICIES = {
 
 
 def _ssl_context() -> ssl.SSLContext:
-    return ssl.create_default_context(cafile=certifi.where())
+    return ssl.create_default_context()
 
 
 class ProgramError(Exception):

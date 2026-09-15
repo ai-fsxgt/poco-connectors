@@ -3,7 +3,7 @@ name: qq-mail
 description: "通过 IMAP/SMTP 连接 QQ 邮箱，支持收发邮件、搜索、附件下载和已读状态管理。触发关键词：QQ 邮箱、邮件、发邮件、收件箱、foxmail、email、inbox、send mail。"
 description_zh: "通过 IMAP/SMTP 连接 QQ 邮箱，支持收发邮件、搜索、附件下载和已读状态管理。触发关键词：QQ 邮箱、邮件、发邮件、收件箱、foxmail、email、inbox。"
 description_en: "Connect to QQ Mail via IMAP/SMTP to send, receive and search messages, download attachments, and manage read status. Supports qq.com and foxmail.com addresses."
-version: "1.1.0"
+version: "1.1.1"
 ---
 
 # QQ 邮箱收发技能（IMAP/SMTP）

@@ -5,8 +5,8 @@ Poco 连接器使用腾讯会议开放平台的第三方应用 OAuth 2.0，不�
 管理员需要先在腾讯会议开放平台创建并配置第三方应用：
 
 1. 在应用的基础信息和凭证页面获取企业 ID、应用 ID（SDK ID）和客户密钥。
-2. 将 Poco 后端的公开 HTTPS 地址加入应用的授权回调域名。
-3. 回调地址格式为 `<Poco 后端地址>/api/v1/connectors/oauth/callback`。
+2. 在应用的“安全配置 → 授权回调域名”填写 Poco 后端的公开 HTTPS 地址。当前部署填写 `https://agent-api.fsxgt.cn`。
+3. 当前部署实际发起授权时使用的完整回调地址为 `https://agent-api.fsxgt.cn/api/v1/connectors/oauth/callback`。腾讯会议配置的是可信回调域名，授权请求携带的是完整回调地址，两者不能混淆。
 4. 根据连接器实际使用的会议、录制、报告、通讯录和会中控制能力配置权限范围。
 5. 在 Poco 的腾讯会议连接器配置中填写企业 ID、应用 ID 和客户密钥。
 

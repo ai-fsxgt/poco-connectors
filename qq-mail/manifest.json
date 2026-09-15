@@ -2,7 +2,7 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "qq-mail",
-  "package_version": "1.1.0",
+  "package_version": "1.1.1",
   "authorization_contract_version": "2",
   "default_locale": "zh-CN",
   "locales": [

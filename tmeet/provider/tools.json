@@ -1,0 +1,437 @@
+[
+  {
+    "key": "meeting_create",
+    "description": "创建腾讯会议，包括普通会议和周期性会议。",
+    "effect": "write",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subject": {"type": "string", "minLength": 1, "maxLength": 200, "description": "会议主题。"},
+        "start": {"type": "string", "format": "date-time", "description": "含时区的 ISO 8601 开始时间。"},
+        "end": {"type": "string", "format": "date-time", "description": "含时区的 ISO 8601 结束时间。"},
+        "password": {"type": "string", "pattern": "^[0-9]{4,6}$", "description": "4 至 6 位数字会议密码。"},
+        "timezone": {"type": "string", "minLength": 1, "maxLength": 64, "description": "IANA 时区，例如 Asia/Shanghai。"},
+        "meeting_type": {"type": "integer", "enum": [0, 1], "default": 0, "description": "0 普通会议，1 周期性会议。"},
+        "join_type": {"type": "integer", "enum": [1, 2, 3], "description": "1 所有成员，2 仅受邀，3 仅企业内部。"},
+        "waiting_room": {"type": "boolean", "description": "是否开启等候室。"},
+        "recurring_type": {"type": "integer", "minimum": 0, "maximum": 4, "description": "周期类型。"},
+        "until_type": {"type": "integer", "enum": [0, 1], "description": "0 按日期结束，1 按次数结束。"},
+        "until_count": {"type": "integer", "minimum": 1, "maximum": 500, "description": "周期重复次数。"},
+        "until_date": {"type": "string", "format": "date-time", "description": "含时区的周期结束日期时间。"},
+        "invitees": {"type": "array", "items": {"type": "string", "minLength": 1}, "maxItems": 100, "uniqueItems": true, "description": "受邀成员 open_id 数组。"},
+        "water_mark_type": {"type": "integer", "enum": [0, 1, 2], "description": "0 单排，1 双排，2 关闭。"},
+        "audio_watermark": {"type": "boolean", "description": "是否开启音频水印。"},
+        "auto_record_type": {"type": "string", "enum": ["none", "local", "cloud"], "description": "主持人入会后的自动录制方式。"},
+        "auto_asr": {"type": "boolean", "description": "是否开启自动转写。"}
+      },
+      "required": ["subject", "start", "end"]
+    }
+  },
+  {
+    "key": "meeting_update",
+    "description": "更新会议主题、时间、周期规则、邀请人或会议设置。",
+    "effect": "write",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 2,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1, "description": "会议 ID。"},
+        "subject": {"type": "string", "minLength": 1, "maxLength": 200},
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"},
+        "password": {"type": "string", "pattern": "^[0-9]{4,6}$"},
+        "timezone": {"type": "string", "minLength": 1, "maxLength": 64},
+        "meeting_type": {"type": "integer", "enum": [0, 1]},
+        "join_type": {"type": "integer", "enum": [1, 2, 3]},
+        "waiting_room": {"type": "boolean"},
+        "recurring_type": {"type": "integer", "minimum": 0, "maximum": 4},
+        "until_type": {"type": "integer", "enum": [0, 1]},
+        "until_count": {"type": "integer", "minimum": 1, "maximum": 500},
+        "until_date": {"type": "string", "format": "date-time"},
+        "sub_meeting_id": {"type": "string", "minLength": 1},
+        "invitees": {"type": "array", "items": {"type": "string", "minLength": 1}, "maxItems": 100, "uniqueItems": true},
+        "invitees_type": {"type": "string", "enum": ["add", "remove", "replace"]},
+        "water_mark_type": {"type": "integer", "enum": [0, 1, 2]},
+        "audio_watermark": {"type": "boolean"},
+        "auto_record_type": {"type": "string", "enum": ["none", "local", "cloud"]},
+        "auto_asr": {"type": "boolean"}
+      },
+      "required": ["meeting_id"]
+    }
+  },
+  {
+    "key": "meeting_cancel",
+    "description": "取消普通会议、周期性会议或单场子会议。",
+    "effect": "destructive",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "sub_meeting_id": {"type": "string", "minLength": 1},
+        "meeting_type": {"type": "integer", "enum": [0, 1], "default": 0}
+      },
+      "required": ["meeting_id"]
+    }
+  },
+  {
+    "key": "meeting_get",
+    "description": "按会议 ID 或会议号获取会议详情。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "meeting_code": {"type": "string", "minLength": 1}
+      },
+      "anyOf": [
+        {"required": ["meeting_id"]},
+        {"required": ["meeting_code"]}
+      ]
+    }
+  },
+  {
+    "key": "meeting_list",
+    "description": "查询待开始或进行中的会议。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"},
+        "show_all_sub": {"type": "integer", "enum": [0, 1]},
+        "page_token": {"type": "string"},
+        "page_size": {"type": "integer", "minimum": 1, "maximum": 20, "default": 20}
+      }
+    }
+  },
+  {
+    "key": "meeting_list_ended",
+    "description": "查询已结束会议。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"},
+        "page_token": {"type": "string"},
+        "page_size": {"type": "integer", "minimum": 1, "maximum": 30, "default": 30}
+      }
+    }
+  },
+  {
+    "key": "meeting_invitees_list",
+    "description": "查询会议受邀成员。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "page_token": {"type": "string"},
+        "page_size": {"type": "integer", "minimum": 1, "maximum": 30, "default": 30}
+      },
+      "required": ["meeting_id"]
+    }
+  },
+  {
+    "key": "meeting_invitees_add",
+    "description": "向会议添加受邀成员。",
+    "effect": "write",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "invitees": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "maxItems": 100, "uniqueItems": true}
+      },
+      "required": ["meeting_id", "invitees"]
+    }
+  },
+  {
+    "key": "meeting_invitees_remove",
+    "description": "从会议移除受邀成员。",
+    "effect": "destructive",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "invitees": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "maxItems": 100, "uniqueItems": true}
+      },
+      "required": ["meeting_id", "invitees"]
+    }
+  },
+  {
+    "key": "meeting_invitees_replace",
+    "description": "替换会议完整受邀成员列表；空数组表示清空。",
+    "effect": "destructive",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "invitees": {"type": "array", "items": {"type": "string", "minLength": 1}, "maxItems": 100, "uniqueItems": true}
+      },
+      "required": ["meeting_id", "invitees"]
+    }
+  },
+  {
+    "key": "record_list",
+    "description": "按会议 ID、会议号或完整时间范围查询云录制。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "meeting_code": {"type": "string", "minLength": 1},
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"},
+        "page_token": {"type": "string"},
+        "page_size": {"type": "integer", "minimum": 1, "maximum": 30, "default": 30}
+      },
+      "anyOf": [
+        {"required": ["meeting_id"]},
+        {"required": ["meeting_code"]},
+        {"required": ["start", "end"]}
+      ]
+    }
+  },
+  {
+    "key": "record_address",
+    "description": "获取会议录制文件下载地址。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_record_id": {"type": "string", "minLength": 1},
+        "page_token": {"type": "string"},
+        "page_size": {"type": "integer", "minimum": 1, "maximum": 30, "default": 30}
+      },
+      "required": ["meeting_record_id"]
+    }
+  },
+  {
+    "key": "record_smart_minutes",
+    "description": "获取录制文件智能纪要。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_file_id": {"type": "string", "minLength": 1},
+        "lang": {"type": "string", "enum": ["default", "zh", "en", "ja"], "default": "default"},
+        "pwd": {"type": "string"}
+      },
+      "required": ["record_file_id"]
+    }
+  },
+  {
+    "key": "record_transcript_get",
+    "description": "获取录制转写详情。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_file_id": {"type": "string", "minLength": 1},
+        "meeting_id": {"type": "string", "minLength": 1},
+        "pid": {"type": "string"},
+        "limit": {"type": "string"}
+      },
+      "required": ["record_file_id"]
+    }
+  },
+  {
+    "key": "record_transcript_paragraphs",
+    "description": "获取录制转写段落列表。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_file_id": {"type": "string", "minLength": 1},
+        "meeting_id": {"type": "string", "minLength": 1}
+      },
+      "required": ["record_file_id"]
+    }
+  },
+  {
+    "key": "record_transcript_search",
+    "description": "在录制转写内容中搜索关键词。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_file_id": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1},
+        "meeting_id": {"type": "string", "minLength": 1}
+      },
+      "required": ["record_file_id", "text"]
+    }
+  },
+  {
+    "key": "record_permission_apply_prepare",
+    "description": "预览录制权限申请信息。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_record_id": {"type": "string", "minLength": 1},
+        "meeting_id": {"type": "string", "minLength": 1}
+      },
+      "required": ["meeting_record_id"]
+    }
+  },
+  {
+    "key": "record_permission_apply_commit",
+    "description": "提交录制权限申请。",
+    "effect": "write",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_record_id": {"type": "string", "minLength": 1},
+        "meeting_id": {"type": "string", "minLength": 1}
+      },
+      "required": ["meeting_record_id"]
+    }
+  },
+  {
+    "key": "report_participants",
+    "description": "查询会议参会人报告。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "sub_meeting_id": {"type": "string", "minLength": 1},
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"},
+        "page_token": {"type": "string"},
+        "page_size": {"type": "integer", "minimum": 1, "maximum": 100, "default": 100}
+      },
+      "required": ["meeting_id"]
+    }
+  },
+  {
+    "key": "report_waiting_room_log",
+    "description": "查询会议等候室成员报告。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "page_token": {"type": "string"},
+        "page_size": {"type": "integer", "minimum": 1, "maximum": 100, "default": 100}
+      },
+      "required": ["meeting_id"]
+    }
+  },
+  {
+    "key": "contact_search",
+    "description": "按姓名搜索企业通讯录成员，可用职位和部门过滤。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "username": {"type": "string", "minLength": 1},
+        "job_title": {"type": "string"},
+        "department_name": {"type": "string"}
+      },
+      "required": ["username"]
+    }
+  },
+  {
+    "key": "contact_lookup_by_phone",
+    "description": "按手机号批量查找企业通讯录成员。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "phones": {"type": "array", "items": {"type": "string", "pattern": "^1[3-9][0-9]{9}$"}, "minItems": 1, "maxItems": 50, "uniqueItems": true}
+      },
+      "required": ["phones"]
+    }
+  },
+  {
+    "key": "contact_lookup_by_email",
+    "description": "按邮箱批量查找企业通讯录成员。",
+    "effect": "read",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "emails": {"type": "array", "items": {"type": "string", "format": "email", "maxLength": 100}, "minItems": 1, "maxItems": 50, "uniqueItems": true}
+      },
+      "required": ["emails"]
+    }
+  },
+  {
+    "key": "control_call",
+    "description": "呼叫成员加入会议。",
+    "effect": "write",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "users": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "maxItems": 20, "uniqueItems": true}
+      },
+      "required": ["meeting_id", "users"]
+    }
+  },
+  {
+    "key": "control_kick",
+    "description": "将普通、SIP 或 PSTN 成员踢出会议。",
+    "effect": "destructive",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "meeting_id": {"type": "string", "minLength": 1},
+        "allow_rejoin": {"type": "boolean", "default": true},
+        "users": {"type": "array", "items": {"type": "string", "minLength": 1}, "maxItems": 20, "uniqueItems": true},
+        "sip_users": {"type": "array", "items": {"type": "string", "minLength": 1}, "maxItems": 20, "uniqueItems": true},
+        "pstn_users": {"type": "array", "items": {"type": "string", "minLength": 1}, "maxItems": 20, "uniqueItems": true}
+      },
+      "required": ["meeting_id"],
+      "anyOf": [
+        {"required": ["users"]},
+        {"required": ["sip_users"]},
+        {"required": ["pstn_users"]}
+      ]
+    }
+  },
+  {
+    "key": "tshoot_feedback",
+    "description": "向腾讯会议提交脱敏后的工具问题反馈。",
+    "effect": "write",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "category": {"type": "string", "enum": ["tool_not_found", "tool_error", "tool_inadequate", "unexpected_result", "suggestion"]},
+        "intent": {"type": "string", "minLength": 1, "maxLength": 200},
+        "actions_tried": {"type": "string", "maxLength": 500},
+        "result": {"type": "string", "maxLength": 500},
+        "tool_name": {"type": "string"},
+        "error_code": {"type": "string"}
+      },
+      "required": ["category", "intent"]
+    }
+  }
+]

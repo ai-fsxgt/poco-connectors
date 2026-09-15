@@ -1,6 +1,6 @@
 # 腾讯会议工具 — 会中控制
 
-> 本文示例中的工具名对应 Poco Provider；`--flag value` 仅表示把参数转换为同名 `snake_case` 字段后传入工具 arguments。
+> 本文保留源 CLI 示例用于解释参数含义。Poco 实际调用以工具 JSON Schema 为准；`users`、`sip_users` 和 `pstn_users` 使用字符串数组。
 
 > **前置条件：** 已完成腾讯会议连接器授权，且会议必须处于进行中状态。
 

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "canva",
-  "package_version": "1.1.0",
-  "authorization_contract_version": "2",
+  "package_version": "1.1.1",
+  "authorization_contract_version": "3",
   "default_locale": "zh-CN",
   "locales": ["zh-CN", "en"],
   "presentation": {
@@ -71,14 +71,59 @@
         "required": true,
         "default": "https://mcp.canva.cn/mcp",
         "max_length": 2048
+      },
+      {
+        "key": "client_id",
+        "type": "text",
+        "label_key": "configuration.clientId.label",
+        "description_key": "configuration.clientId.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      },
+      {
+        "key": "client_secret",
+        "type": "secret",
+        "label_key": "configuration.clientSecret.label",
+        "description_key": "configuration.clientSecret.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
       }
     ]
   },
   "auth": {
-    "strategy": "program",
+    "strategy": "oauth_authorization_code",
     "interaction": "redirect",
     "fields": [],
-    "options": {"type": "program"}
+    "options": {
+      "type": "oauth_authorization_code",
+      "discovery": {
+        "type": "mcp",
+        "resource_configuration_field": "endpoint",
+        "expected_issuer": "https://mcp.canva.cn"
+      },
+      "client_id_configuration_field": "client_id",
+      "client_secret_configuration_field": "client_secret",
+      "token_endpoint_auth_method": "client_secret_basic",
+      "scopes": [
+        "design:meta:read",
+        "design:content:read",
+        "design:content:write",
+        "folder:read",
+        "folder:write",
+        "brandtemplate:content:read",
+        "brandtemplate:meta:read",
+        "comment:read",
+        "comment:write",
+        "asset:read",
+        "asset:write",
+        "brandkit:read"
+      ],
+      "account_identity": "connection_id"
+    }
   },
   "runtime": {
     "adapter": "remote_mcp",
@@ -93,12 +138,6 @@
         "credential_field": "access_token"
       }
     }
-  },
-  "program": {
-    "protocol_version": 1,
-    "runtime": "python",
-    "entrypoint": "provider/main.py",
-    "capabilities": ["credential_refresh", "credential_revoke"]
   },
   "tool_policy": {
     "default": "deny",

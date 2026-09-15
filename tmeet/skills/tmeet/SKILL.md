@@ -1,6 +1,6 @@
 ---
 name: tmeet-skill
-version: 1.0.7
+version: 1.1.1
 description: "腾讯会议 Poco 连接器：OAuth 授权、会议管理（创建/更新/取消/查询/受邀者）、录制管理（列表/下载地址/智能纪要/转写/录制权限申请）、会议报告（参会人/等候室）、通讯录、会中控制和问题反馈。当用户需要操作腾讯会议，或遇到工具缺失、调用失败、能力不足等情况时使用本技能。"
 metadata:
   connector: "tmeet"
@@ -29,7 +29,7 @@ metadata:
 
 ## Poco 工具映射
 
-源文档中的 CLI 命令对应以下工具名：`meeting_*`、`record_*`、`report_*`、`contact_*`、`control_*` 和 `tshoot_feedback`。各命令示例中的长参数转换为工具的同名 `snake_case` 字段，例如 `--meeting-id` 对应 `meeting_id`；调用时传入 Provider 返回的工具 Schema 所要求的对象参数。
+源文档中的 CLI 命令对应以下工具名：`meeting_*`、`record_*`、`report_*`、`contact_*`、`control_*` 和 `tshoot_feedback`。参考文档中的 CLI 参数仅用于解释含义；实际调用必须使用 Provider 返回的严格 JSON Schema。字段使用 `snake_case`，列表字段使用 JSON 数组，不传逗号分隔字符串。
 
 源 CLI 的本地日志导出、状态查询和登出不属于 Poco 工具；分别由连接器授权页和平台连接管理负责。
 
@@ -52,45 +52,39 @@ Provider 直接返回腾讯会议 API 的结构化 JSON，并同时提供文本�
 
 ## 分页
 
-所有支持分页的查询/列表类命令统一采用 **`--page-token` + `--page-size`** 方案；原有的 `--page` / `--pos` / `--pid` / `--size` / `--limit` 参数均已标记为 **已弃用**，仅为兼容保留，**模型不得主动使用**。
+所有支持分页的查询和列表工具统一采用 **`page_token` + `page_size`**，连接器不暴露源 CLI 的旧页码或偏移参数。`record_transcript_get` 的 `pid` 和 `limit` 是转写段落查询参数，不属于旧分页兼容字段。
 
 | 参数 | 说明 |
 |------|------|
-| `--page-token <token>` | 分页游标。**首次查询不传**；翻页时将上一次响应 `data.next_page_token` 的值原样传入 |
-| `--page-size <n>` | 每页数量，不同命令默认值与上限不同，详见各子命令文档 |
+| `page_token` | 分页游标。**首次查询不传**；翻页时将上一次响应 `data.next_page_token` 的值原样传入 |
+| `page_size` | 每页数量，不同工具的默认值与上限以工具 Schema 为准 |
 
 **使用准则**：
 
-- **优先使用 `--page-token` 翻页**：调用下一页时，必须从上一次响应的 `data.next_page_token` 字段取值传入 `--page-token`，不得自行拼接、递增或猜测该值。
+- **使用 `page_token` 翻页**：调用下一页时，必须从上一次响应的 `data.next_page_token` 字段取值传入 `page_token`，不得自行拼接、递增或猜测该值。
 - **到达末页的判定**：当响应中的 `next_page_token` 为空字符串或字段缺失时，即为最后一页，不再继续翻页。
-- **禁止使用已弃用参数**：即便用户对话中使用了"第 X 页"、"偏移 Y 条"等表达，也应以 `--page-token` 分页策略实现（首次查询 → 读取 `next_page_token` → 继续翻页），**不得**使用 `--page` / `--pos` / `--pid` / `--size` / `--limit`。
+- **禁止构造旧分页参数**：即便用户使用“第 X 页”或“偏移 Y 条”等表达，也应先查询首页，读取 `next_page_token` 后逐页继续。
 - **`record transcript-search` 暂不支持分页**，无需传入分页参数。
 
 **典型翻页流程**：
 
-```bash
-# 1) 首次查询（不传 --page-token）
-record_list --meeting-id "100000000" --page-size 30
-
-# 2) 从响应中取出 data.next_page_token，继续翻页
-record_list \
-  --meeting-id "100000000" \
-  --page-token "<next_page_token>" \
-  --page-size 30
+```json
+{"meeting_id": "100000000", "page_size": 30}
+{"meeting_id": "100000000", "page_token": "<next_page_token>", "page_size": 30}
 ```
 
 ## 工具总览
 
 ```
-meeting_create / meeting_update / meeting_cancel / meeting_get / meeting_get_by_code
-meeting_list / meeting_list_ended / meeting_search
+meeting_create / meeting_update / meeting_cancel / meeting_get
+meeting_list / meeting_list_ended
 meeting_invitees_list / meeting_invitees_add / meeting_invitees_remove / meeting_invitees_replace
 contact_search / contact_lookup_by_phone / contact_lookup_by_email
 record_list / record_address / record_smart_minutes / record_transcript_get
-record_transcript_paragraphs / record_transcript_search / record_search
+record_transcript_paragraphs / record_transcript_search
 record_permission_apply_prepare / record_permission_apply_commit
-report_participants / report_waiting_room_log / report_participants_export / report_job_result
-control_call / control_kick / control_waiting_room / tshoot_feedback
+report_participants / report_waiting_room_log
+control_call / control_kick / tshoot_feedback
 ```
 
 ## 工具详情

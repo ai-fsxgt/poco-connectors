@@ -16,6 +16,22 @@ When updating an existing connector, keep its manifest `key` unchanged because t
 
 Before choosing Python, Node, or a bundled executable, verify the manifest schema, Provider runner, and target OS/architecture; a runtime installed elsewhere does not prove support. Prefer remote MCP, using a program adapter only when required. For large APIs or CLIs, expose a pinned searchable catalog and few stable dispatchers instead of thousands of tools. Treat invocations as isolated: omit commands needing a daemon, persistent local state, or unbounded listeners. Synchronize the manifest, locales, bundled Skill, and references with actual behavior.
 
+### Poco Core Boundary
+
+Connectors must adapt to Poco's existing manifest schema, Provider protocol, and runtime contracts. Do not modify the Poco backend, frontend, executor, shared schemas, loaders, or other main-program code to make a connector install or run unless the user separately and explicitly approves a Poco core change. If the connector cannot satisfy the existing contract, stop and report the limitation instead of changing Poco core.
+
+### Mandatory Architecture Gate
+
+Before proposing or implementing a connector migration, read `docs/connector-package-development.mdx` completely, inventory the source connector, and state the architecture decision: upstream protocol, authorization type, Poco manifest support, selected runtime, required dependencies, target platform, and any source behavior that cannot be preserved. Do not begin implementation until this decision has been reviewed under the repository approval workflow.
+
+- If the upstream service is a standard remote MCP endpoint, use Poco's `remote_mcp` adapter. Never implement MCP initialization, discovery, invocation, session handling, or JSON-RPC transport in a Provider, and never add an MCP SDK or an SDK availability check to such a connector.
+- A Provider is only justified for REST APIs, non-standard authorization, or transformations that the manifest cannot express. Python Providers may import only the Python standard library and `httpx`; audit imports before completion instead of assuming a dependency available on the developer machine exists in Poco.
+- Do not use a Program authorization Provider as a bridge to `remote_mcp` when the manifest cannot bind the generated credential. Use an upstream authorization mode that Poco can express, such as a pre-registered fixed OAuth client, or report the platform limitation. Do not duplicate the MCP transport to work around that limitation.
+- OAuth client registration does not bypass an upstream redirect URI allowlist. Document the exact Poco callback URL, require it to be registered or approved upstream, and treat `Invalid redirect URI` as an upstream client/allowlist configuration failure.
+- For CLI sources, inspect the official artifact before reimplementing it. Verify Linux amd64 availability, licensing, checksums, persistent state, daemons, interactive behavior, and execution duration against Poco's isolated invocation contract. If the official CLI is incompatible, record why; a direct REST adaptation must pin the inspected upstream version and preserve its exact command set, strict input schemas, validation, request shapes, and risk policy.
+- Never invent extra tools during migration or publish placeholder schemas such as an empty `properties` object with `additionalProperties: true`. The manifest policy, discovered tools, bundled Skill, references, and actual Provider handlers must describe the same capability set.
+- Before packaging, perform an architecture audit in addition to syntax checks: confirm there is no duplicated platform transport or authorization layer, no unsupported runtime dependency, no unpinned source behavior, and no manifest reference to a removed Provider or asset.
+
 ## Migration & Source Reuse
 
 Before creating files during a migration, inventory reusable material from the source connector. Directly copy platform-neutral content whose purpose and semantics already match, including documentation, general Skills, references, API schemas and catalogs, icons and other assets, configuration, and provider code. Preserve reusable files verbatim instead of regenerating or paraphrasing equivalent content. When adaptation is required, copy the source file as the baseline and make only the necessary Poco-specific changes. Do not rebuild a reusable asset from scratch without a concrete incompatibility; this reuse-first workflow avoids unnecessary implementation time, review churn, and model-token usage.

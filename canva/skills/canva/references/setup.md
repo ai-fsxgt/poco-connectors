@@ -1,58 +1,72 @@
 # Canva 可画安装与授权配置
 
-本包使用中国区 MCP 服务和 OAuth 动态客户端注册（DCR）。管理员不需要手动创建或填写 OAuth Client ID、Client Secret；连接器会在用户发起连接时，使用 Poco 当前的真实回调地址注册独立客户端。
+本包使用中国区 MCP 服务以及 Poco 原生 OAuth 授权码流程。OAuth 客户端必须提前注册，并登记当前 Poco 部署使用的完整回调地址。连接器不执行动态客户端注册，也不在 Provider 中实现 MCP 或 OAuth 协议。
 
-## 1. 确定并登记回调地址
+## 1. 确认并登记回调地址
 
-回调地址由 Poco 后端的公开 HTTPS 地址决定：
+Poco 的连接器 OAuth 回调格式为：
 
 ```text
 ${BACKEND_URL}/api/v1/connectors/oauth/callback
 ```
 
-例如后端地址为 `https://poco.example.com`，完整回调地址就是：
+当前部署对应的完整地址为：
 
 ```text
-https://poco.example.com/api/v1/connectors/oauth/callback
+https://agent-api.fsxgt.cn/api/v1/connectors/oauth/callback
 ```
 
-必须将完整地址提交给可画并加入 OAuth 回调地址允许列表。协议、域名、端口、路径和末尾斜杠都必须与实际授权请求完全一致；连接器不能绕过可画的允许列表校验。
+必须将这一完整 HTTPS 地址提交给可画并加入 MCP OAuth 回调地址允许列表。协议、域名、端口、路径和末尾斜杠都必须与授权请求中的 `redirect_uri` 完全一致。收到 `Invalid redirect URI` 表示上游没有接受该地址，连接器无法绕过这一校验。
 
-## 2. 配置 Poco
+## 2. 注册 OAuth 客户端
 
-管理员只需保留以下配置：
+若中国区服务允许手动注册，可使用其注册端点创建固定客户端。注册前先完成上一步的回调地址允许列表申请：
+
+```bash
+curl --fail-with-body --silent --show-error \
+  'https://mcp.canva.cn/register' \
+  --header 'Content-Type: application/json' \
+  --data-binary @- <<'JSON'
+{
+  "client_name": "Poco Canva 可画",
+  "redirect_uris": [
+    "https://agent-api.fsxgt.cn/api/v1/connectors/oauth/callback"
+  ],
+  "response_types": ["code"],
+  "grant_types": ["authorization_code", "refresh_token"],
+  "token_endpoint_auth_method": "client_secret_basic",
+  "scope": "design:meta:read design:content:read design:content:write folder:read folder:write brandtemplate:content:read brandtemplate:meta:read comment:read comment:write asset:read asset:write brandkit:read"
+}
+JSON
+```
+
+保存返回的 `client_id` 和 `client_secret`。若注册端点仍返回回调地址错误，应联系可画完成中国区 MCP 接入和回调地址审批，不能改用动态注册或修改 Poco 主程序规避。
+
+## 3. 配置 Poco
 
 | 管理员字段 | 填写内容 |
 | --- | --- |
-| MCP 服务地址 | `https://mcp.canva.cn/mcp` |
+| MCP 服务地址 | 保留 `https://mcp.canva.cn/mcp` |
+| OAuth Client ID | 上一步返回的 `client_id` |
+| OAuth Client Secret | 同一客户端返回的 `client_secret` |
 
-连接器固定校验中国区服务地址，防止 OAuth 客户端凭据或用户令牌发送到其他服务。
+Poco 使用 MCP OAuth 元数据发现授权和令牌端点，校验签发方为 `https://mcp.canva.cn`，并使用 PKCE S256。客户端使用 `client_secret_basic` 完成令牌端点认证，访问令牌由 Poco 以 `Authorization: Bearer` 注入远程 MCP 请求。
 
-## 3. 用户授权流程
+## 4. 验收
 
-1. 用户在 Poco 中点击连接可画。
-2. Provider 使用本次授权的真实 `redirect_uri` 向 `https://mcp.canva.cn/register` 注册 OAuth 客户端。
-3. Provider 使用注册结果、PKCE S256 和所需权限生成官方授权地址。
-4. 用户登录并同意授权后，可画携带授权码返回 Poco。
-5. Provider 在服务端换取访问令牌和刷新令牌；客户端密钥和令牌均由 Poco 加密保存。
-6. 访问令牌过期后，Poco 使用该连接自己的客户端凭据和刷新令牌续期。
+- 确认授权请求中的 `redirect_uri` 与登记地址逐字一致。
+- 使用真实账号完成登录回调、令牌交换、刷新和重新授权。
+- 先调用 `search-designs` 或 `get-design` 等只读工具验证工具发现和令牌注入。
+- 写操作须通过 Poco 确认；写入超时或结果不确定时不要自动重试。
+- 中国区实际工具、权限和套餐必须以真实账号返回为准。
+- Canva 建议为 `generate-design` 预留 60 秒，而 Poco 当前远程调用上限为 30 秒；连接器包不能自行改变平台时限。
 
-每次连接使用独立的动态客户端，避免管理员手动注册的回调地址与当前部署地址不一致。不要在聊天、日志、包文件或 Git 中记录客户端密钥、授权码和令牌。
-
-## 4. 验收与已知限制
-
-- 先验证登录回调、授权范围和工具发现，再执行 `search-designs` 或 `get-design` 等只读查询。
-- 通过用户确认后，验证所需的生成、模板填充、编辑提交、导入、导出及评论能力。
-- 验证令牌过期后的刷新、用户撤销授权后的错误提示，以及实际账号权限和套餐限制。
-- 可用工具以中国区服务实际返回且被本包允许的工具为准，不把国际版套餐说明作为中国区承诺。
-- Canva 当前推荐 CIMD，并将 DCR 标记为兼容能力。Poco 尚未支持 CIMD，因此本包使用中国区服务当前仍公开支持的 DCR；如果服务停止提供 DCR，需要先为 Poco 增加 CIMD 支持。
-- Canva 建议 `generate-design` 使用 60 秒超时，Poco 当前远程调用上限为 30 秒。结果不确定时先核对状态，不自动重复提交写入。
-- 发布前需使用已进入允许列表的真实回调地址完成 OAuth、刷新、撤销和工具调用验收。
+本地结构和协议检查不能代替真实 OAuth 与账号验收。发布前必须使用已进入允许列表的回调地址完成上述真实验证。
 
 ## 来源
 
 - [中国区受保护资源元数据](https://mcp.canva.cn/.well-known/oauth-protected-resource/mcp)
 - [中国区 OAuth 服务元数据](https://mcp.canva.cn/.well-known/oauth-authorization-server)
-- [官方 MCP 接入说明](https://www.canva.dev/docs/mcp/)
-- [官方手动注册与超时说明](https://www.canva.dev/docs/mcp/troubleshooting/)
-- [官方工具目录](https://www.canva.dev/docs/mcp/tools/)
+- [Canva MCP 接入说明](https://www.canva.dev/docs/mcp/)
+- [Canva MCP 手动注册与故障排查](https://www.canva.dev/docs/mcp/troubleshooting/)
+- [Canva MCP 工具目录](https://www.canva.dev/docs/mcp/tools/)
