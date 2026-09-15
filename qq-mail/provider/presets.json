@@ -1,0 +1,16 @@
+{
+  "qq.com": {
+    "imapHost": "imap.qq.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.qq.com",
+    "smtpPort": 465,
+    "secure": true
+  },
+  "foxmail.com": {
+    "imapHost": "imap.qq.com",
+    "imapPort": 993,
+    "smtpHost": "smtp.qq.com",
+    "smtpPort": 465,
+    "secure": true
+  }
+}

@@ -1,1050 +1,632 @@
+import base64
+import binascii
 import hashlib
+import imaplib
 import json
+import re
+import signal
+import smtplib
+import ssl
 import sys
-from collections.abc import Collection
+import time
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
+from email import policy
+from email.message import EmailMessage
+from email.parser import BytesParser
+from email.utils import format_datetime, make_msgid
+from pathlib import Path
 from typing import Any
-from urllib.parse import urlencode, urlsplit
+from urllib.parse import quote
 
-import httpx
+import certifi
 
-_ENDPOINT = "https://api.mail.qq.com/mcp"
-_RESOURCE = "https://api.mail.qq.com"
-_ISSUER = "https://wx.mail.qq.com"
-_RESOURCE_METADATA_URL = "https://api.mail.qq.com/.well-known/oauth-protected-resource"
-_AUTHORIZATION_METADATA_URL = (
-    "https://wx.mail.qq.com/.well-known/oauth-authorization-server"
-)
-_MCP_PROTOCOL_VERSION = "2025-06-18"
-_SCOPES = "alias:read mail:read mail:send mail:delete"
-_MAX_TOOL_PAGES = 5
-_MAX_RESPONSE_BYTES = 950_000
-
+_ROOT = Path(__file__).resolve().parent
+_PRESETS = json.loads((_ROOT / "presets.json").read_text())
+_CATALOG = json.loads((_ROOT / "tools.json").read_text())
+_MAX_REQUEST_BYTES = 2 * 1024 * 1024
+_MAX_RESPONSE_BYTES = 1024 * 1024
+_SOCKET_TIMEOUT = 8
 _TOOL_POLICIES = {
-    "GetMe": ("read", "safe", "not_required"),
-    "ListMessages": ("read", "safe", "not_required"),
-    "GetMessage": ("read", "safe", "not_required"),
-    "SearchMessages": ("read", "safe", "not_required"),
-    "ListAttachments": ("read", "safe", "not_required"),
-    "DownloadAttachment": ("read", "safe", "not_required"),
-    "SendMessage": ("write", "never", "user_required"),
-    "ReplyMessage": ("write", "never", "user_required"),
-    "ForwardMessage": ("write", "never", "user_required"),
-    "DeleteMessage": ("destructive", "never", "user_required"),
+    "check": ("read", "safe", "not_required"),
+    "search": ("read", "safe", "not_required"),
+    "fetch": ("read", "safe", "not_required"),
+    "download": ("read", "safe", "not_required"),
+    "list_mailboxes": ("read", "safe", "not_required"),
+    "test_connection": ("read", "safe", "not_required"),
+    "mark_read": ("write", "never", "not_required"),
+    "mark_unread": ("write", "never", "not_required"),
+    "send": ("write", "never", "user_required"),
 }
-_CONFIRMED_TOOLS = {
-    name
-    for name, (_, _, confirmation) in _TOOL_POLICIES.items()
-    if confirmation == "user_required"
-}
+
+
+def _ssl_context() -> ssl.SSLContext:
+    return ssl.create_default_context(cafile=certifi.where())
 
 
 class ProgramError(Exception):
-    def __init__(
-        self,
-        code: str,
-        message: str,
-        *,
-        retryable: bool = False,
-    ) -> None:
+    def __init__(self, code: str, message: str) -> None:
         super().__init__(message)
         self.code = code
         self.message = message
-        self.retryable = retryable
 
 
-class UpstreamConfirmationRequired(Exception):
-    def __init__(self, token: str) -> None:
-        super().__init__("QQ 邮箱操作需要上游确认")
-        self.token = token
+def _credentials(values: Any) -> tuple[str, str, dict[str, Any]]:
+    if not isinstance(values, dict):
+        raise ProgramError("authorization_required", "请填写邮箱地址和授权码")
+    email = values.get("email")
+    password = values.get("authorization_code")
+    if not all(isinstance(value, str) and value.strip() for value in (email, password)):
+        raise ProgramError("authorization_required", "请填写邮箱地址和授权码")
+    email, password = email.strip(), password.strip()
+    if len(email) > 320 or len(password) > 4096:
+        raise ProgramError("bad_request", "邮箱地址或授权码长度超过限制")
+    if any(char in password for char in "\r\n\x00"):
+        raise ProgramError("bad_request", "授权码不能包含换行或空字符")
+    if not re.fullmatch(r"[^@\s<>\"\\]+@[^@\s]+", email) or not email.isascii():
+        raise ProgramError("bad_request", "请填写完整邮箱地址")
+    local, domain = email.rsplit("@", 1)
+    domain = domain.lower()
+    if domain not in _PRESETS:
+        raise ProgramError("bad_request", "仅支持 QQ 邮箱和 Foxmail 邮箱地址")
+    return f"{local}@{domain}", password, _PRESETS[domain]
 
 
-def _configuration_endpoint(context: dict[str, Any]) -> str:
-    configuration = context.get("configuration")
-    if not isinstance(configuration, dict):
-        return ""
-    public = configuration.get("public")
-    if not isinstance(public, dict):
-        return ""
-    value = public.get("endpoint")
-    return value.strip() if isinstance(value, str) else ""
-
-
-def _require_string(
-    value: object,
-    label: str,
-    *,
-    maximum: int = 4096,
-    error_code: str = "bad_request",
-) -> str:
-    if not isinstance(value, str) or not value.strip():
-        raise ProgramError(error_code, f"{label}不能为空")
-    normalized = value.strip()
-    if len(normalized) > maximum:
-        raise ProgramError(error_code, f"{label}过长")
-    return normalized
-
-
-def _validated_url(
-    value: object,
-    label: str,
-    *,
-    https_only: bool = True,
-    error_code: str = "external_error",
-) -> str:
-    url = _require_string(
-        value,
-        label,
-        maximum=2048,
-        error_code=error_code,
-    )
-    parsed = urlsplit(url)
-    allowed_schemes = {"https"} if https_only else {"http", "https"}
-    if (
-        parsed.scheme.lower() not in allowed_schemes
-        or not parsed.netloc
-        or parsed.username is not None
-        or parsed.password is not None
-        or parsed.fragment
-    ):
-        raise ProgramError(error_code, f"{label}不是安全的 HTTP(S) 地址")
-    return url
-
-
-def _origin(url: str) -> str:
-    parsed = urlsplit(url)
-    return f"{parsed.scheme.lower()}://{parsed.netloc.lower()}"
-
-
-def _require_official_endpoint(context: dict[str, Any]) -> str:
-    endpoint = _configuration_endpoint(context)
-    if endpoint != _ENDPOINT:
-        raise ProgramError(
-            "bad_request",
-            "QQ 邮箱 MCP 服务地址必须使用官方地址",
-        )
-    return endpoint
-
-
-def _response_error(response: httpx.Response, action: str) -> ProgramError:
-    if response.status_code == 401:
-        return ProgramError(
-            "authorization_required",
-            "QQ 邮箱授权已失效，请重新授权",
-        )
-    if response.status_code == 400:
-        try:
-            payload = response.json()
-        except ValueError:
-            payload = None
-        if isinstance(payload, dict) and payload.get("error") in {
-            "invalid_grant",
-            "invalid_token",
-        }:
-            return ProgramError(
-                "authorization_required",
-                "QQ 邮箱授权已失效，请重新授权",
-            )
-    if response.status_code == 403:
-        return ProgramError(
-            "insufficient_scope",
-            "QQ 邮箱当前授权范围不足，请重新授权",
-        )
-    if response.status_code == 429:
-        return ProgramError(
-            "rate_limited",
-            "QQ 邮箱当前请求过多，请稍后重试",
-        )
-    if response.status_code >= 500:
-        return ProgramError(
-            "unavailable",
-            f"QQ 邮箱 {action}服务暂时不可用",
-            retryable=True,
-        )
-    return ProgramError(
-        "external_error",
-        f"QQ 邮箱 {action}请求被拒绝（HTTP {response.status_code}）",
-    )
-
-
-def _json_object(response: httpx.Response, action: str) -> dict[str, Any]:
-    try:
-        payload = response.json()
-    except ValueError as exc:
-        raise ProgramError(
-            "external_error",
-            f"QQ 邮箱 {action}服务未返回有效 JSON",
-        ) from exc
-    if not isinstance(payload, dict):
-        raise ProgramError(
-            "external_error",
-            f"QQ 邮箱 {action}服务响应格式错误",
-        )
-    return payload
-
-
-def _request_json(
-    client: httpx.Client,
-    method: str,
-    url: str,
-    *,
-    action: str,
-    expected_statuses: Collection[int] = (200,),
-    **kwargs: Any,
-) -> dict[str, Any]:
-    try:
-        response = client.request(method, url, **kwargs)
-    except httpx.RequestError as exc:
-        raise ProgramError(
-            "unavailable",
-            f"QQ 邮箱 {action}服务连接失败",
-            retryable=True,
-        ) from exc
-    if response.status_code not in expected_statuses:
-        raise _response_error(response, action)
-    return _json_object(response, action)
-
-
-def _oauth_endpoints(client: httpx.Client) -> dict[str, str]:
-    resource_metadata = _request_json(
-        client,
-        "GET",
-        _RESOURCE_METADATA_URL,
-        action="OAuth 资源发现",
-    )
-    resource = _validated_url(
-        resource_metadata.get("resource"),
-        "QQ 邮箱 OAuth 资源",
-    )
-    if resource.rstrip("/") != _RESOURCE:
-        raise ProgramError(
-            "external_error",
-            "QQ 邮箱 OAuth 资源与官方地址不匹配",
-        )
-    authorization_servers = resource_metadata.get("authorization_servers")
-    if not isinstance(authorization_servers, list) or _ISSUER not in {
-        str(item).rstrip("/") for item in authorization_servers
-    }:
-        raise ProgramError("external_error", "QQ 邮箱 OAuth 授权方不受信任")
-
-    metadata = _request_json(
-        client,
-        "GET",
-        _AUTHORIZATION_METADATA_URL,
-        action="OAuth 授权发现",
-    )
-    issuer = _validated_url(metadata.get("issuer"), "QQ 邮箱 OAuth Issuer")
-    if issuer.rstrip("/") != _ISSUER:
-        raise ProgramError("external_error", "QQ 邮箱 OAuth Issuer 不匹配")
-
-    endpoints = {
-        "issuer": _ISSUER,
-        "resource": resource.rstrip("/"),
-        "authorization_url": _validated_url(
-            metadata.get("authorization_endpoint"),
-            "QQ 邮箱 OAuth 授权端点",
-        ),
-        "token_url": _validated_url(
-            metadata.get("token_endpoint"),
-            "QQ 邮箱 OAuth 令牌端点",
-        ),
-        "registration_url": _validated_url(
-            metadata.get("registration_endpoint"),
-            "QQ 邮箱 OAuth 注册端点",
-        ),
+def _validate(value: Any, schema: dict[str, Any], path: str = "arguments") -> None:
+    expected = schema["type"]
+    types = {
+        "object": dict,
+        "array": list,
+        "string": str,
+        "integer": int,
+        "boolean": bool,
     }
-    if _origin(endpoints["resource"]) != _RESOURCE or any(
-        _origin(endpoints[key]) != _ISSUER
-        for key in ("issuer", "authorization_url", "token_url", "registration_url")
-    ):
-        raise ProgramError(
-            "external_error",
-            "QQ 邮箱 OAuth 端点与 Issuer 不同源",
-        )
+    if type(value) is not types[expected]:
+        raise ProgramError("bad_request", f"{path} 必须为 {expected}")
+    if expected == "object":
+        properties = schema["properties"]
+        if set(value) - properties.keys() or set(schema["required"]) - value.keys():
+            raise ProgramError("bad_request", f"{path} 含未知参数或缺少必填参数")
+        for key, item in value.items():
+            _validate(item, properties[key], f"{path}.{key}")
+    elif expected == "array":
+        if len(value) < schema.get("minItems", 0) or len(value) > schema.get(
+            "maxItems", sys.maxsize
+        ):
+            raise ProgramError("bad_request", f"{path} 数量超出允许范围")
+        for item in value:
+            _validate(item, schema["items"], f"{path}[]")
+        if schema.get("uniqueItems") and len(set(value)) != len(value):
+            raise ProgramError("bad_request", f"{path} 不能包含重复值")
+    elif expected == "string":
+        if len(value) < schema.get("minLength", 0) or len(value) > schema.get(
+            "maxLength", sys.maxsize
+        ):
+            raise ProgramError("bad_request", f"{path} 长度超出允许范围")
+        if "pattern" in schema and re.fullmatch(schema["pattern"], value) is None:
+            raise ProgramError("bad_request", f"{path} 格式错误")
+    elif expected == "integer":
+        if value < schema["minimum"] or value > schema["maximum"]:
+            raise ProgramError("bad_request", f"{path} 数值超出允许范围")
 
-    response_types = metadata.get("response_types_supported")
-    grant_types = metadata.get("grant_types_supported")
-    pkce_methods = metadata.get("code_challenge_methods_supported")
-    auth_methods = metadata.get("token_endpoint_auth_methods_supported")
-    scopes = metadata.get("scopes_supported")
-    if not isinstance(response_types, list) or "code" not in response_types:
-        raise ProgramError("external_error", "QQ 邮箱 OAuth 不支持授权码流程")
-    if not isinstance(grant_types, list) or not {
-        "authorization_code",
-        "refresh_token",
-    }.issubset(set(grant_types)):
-        raise ProgramError(
-            "external_error",
-            "QQ 邮箱 OAuth 不支持所需授权类型",
+
+def _tool_spec(name: str) -> dict[str, Any]:
+    if name not in _TOOL_POLICIES or name not in _CATALOG:
+        raise ProgramError("action_forbidden", "该工具未获连接器授权")
+    effect, retry, confirmation = _TOOL_POLICIES[name]
+    tool = {
+        "key": name,
+        "upstream_name": name,
+        **_CATALOG[name],
+        "output_schema": None,
+        "effect": effect,
+        "retry_policy": retry,
+        "confirmation": confirmation,
+    }
+    source = json.dumps(tool, ensure_ascii=False, sort_keys=True).encode()
+    tool["source_revision"] = hashlib.sha256(source).hexdigest()
+    return tool
+
+
+def _imap_ok(response: tuple[str, list], operation: str) -> list:
+    status, data = response
+    if status != "OK":
+        detail = " ".join(
+            item.decode("utf-8", errors="replace")
+            for item in data
+            if isinstance(item, bytes)
         )
-    if not isinstance(pkce_methods, list) or "S256" not in pkce_methods:
-        raise ProgramError("external_error", "QQ 邮箱 OAuth 不支持 PKCE S256")
-    if not isinstance(auth_methods, list) or "none" not in auth_methods:
-        raise ProgramError("external_error", "QQ 邮箱 OAuth 不支持公共客户端")
-    if not isinstance(scopes, list) or not set(_SCOPES.split()).issubset(set(scopes)):
-        raise ProgramError("external_error", "QQ 邮箱 OAuth 缺少所需授权范围")
-    return endpoints
+        raise ProgramError("external_error", f"{operation} 失败：{detail}")
+    return data
+
+
+def _imap_quote(value: str) -> str:
+    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+@contextmanager
+def _imap_session(email: str, password: str, preset: dict[str, Any]):
+    client = imaplib.IMAP4_SSL(
+        preset["imapHost"],
+        preset["imapPort"],
+        ssl_context=_ssl_context(),
+        timeout=_SOCKET_TIMEOUT,
+    )
+    try:
+        try:
+            client.login(_imap_quote(email), password)
+        except imaplib.IMAP4.abort:
+            raise
+        except imaplib.IMAP4.error as exc:
+            raise ProgramError(
+                "authorization_required",
+                "IMAP 认证失败，请检查授权码及 IMAP 服务是否已开启",
+            ) from exc
+        yield client
+    finally:
+        # 直接关闭连接，不使用可能清除已删除邮件的 CLOSE/EXPUNGE。
+        client.shutdown()
+
+
+@contextmanager
+def _smtp_session(email: str, password: str, preset: dict[str, Any]):
+    tls_context = _ssl_context()
+    if preset["secure"]:
+        client = smtplib.SMTP_SSL(
+            preset["smtpHost"],
+            preset["smtpPort"],
+            timeout=_SOCKET_TIMEOUT,
+            context=tls_context,
+        )
+    else:
+        client = smtplib.SMTP(
+            preset["smtpHost"], preset["smtpPort"], timeout=_SOCKET_TIMEOUT
+        )
+    try:
+        if not preset["secure"]:
+            client.starttls(context=tls_context)
+        client.login(email, password)
+        yield client
+    finally:
+        # DATA 成功后 QUIT 失败不能把已发送邮件报告为需要重发。
+        client.close()
+
+
+def _encode_mailbox(name: str) -> str:
+    def encode(match: re.Match) -> str:
+        encoded = base64.b64encode(match[0].encode("utf-16-be")).decode()
+        return "&" + encoded.rstrip("=").replace("/", ",") + "-"
+
+    return re.sub(r"[^\x20-\x7e]+", encode, name.replace("&", "&-"))
+
+
+def _decode_mailbox(name: str) -> str:
+    def decode(match: re.Match) -> str:
+        encoded = match[1]
+        if not encoded:
+            return "&"
+        encoded = encoded.replace(",", "/")
+        return base64.b64decode(
+            encoded + "=" * (-len(encoded) % 4), validate=True
+        ).decode("utf-16-be")
+
+    return re.sub(r"&([^-]*)-", decode, name)
+
+
+def _select(client: imaplib.IMAP4_SSL, mailbox: str, *, readonly: bool = True) -> None:
+    _imap_ok(
+        client.select(_imap_quote(_encode_mailbox(mailbox)), readonly=readonly),
+        "打开邮箱文件夹",
+    )
+
+
+def _list_mailboxes(client: imaplib.IMAP4_SSL) -> dict[str, Any]:
+    boxes = []
+    quoted = rb'"((?:[^"\\]|\\.)*)"'
+    pattern = rb"\(([^)]*)\) (NIL|" + quoted + rb") (.+)"
+    for row in _imap_ok(client.list(), "列出邮箱文件夹"):
+        # imaplib 在 LIST literal 后保留一个空的行尾片段。
+        if row is None or row == b"":
+            continue
+        metadata, literal = row if isinstance(row, tuple) else (row, None)
+        match = re.fullmatch(pattern, metadata)
+        if match is None:
+            raise ProgramError("external_error", "IMAP 返回了无效的文件夹列表")
+        raw_name = literal if literal is not None else match[4]
+        if literal is None and raw_name.startswith(b'"'):
+            raw_name = re.sub(rb"\\(.)", rb"\1", raw_name[1:-1])
+        delimiter = match[3]
+        boxes.append(
+            {
+                "name": _decode_mailbox(raw_name.decode("ascii")),
+                "delimiter": re.sub(rb"\\(.)", rb"\1", delimiter).decode("ascii")
+                if delimiter is not None
+                else None,
+                "attributes": match[1].decode("ascii").split(),
+            }
+        )
+    return {"mailboxes": boxes}
+
+
+def _search_uids(
+    client: imaplib.IMAP4_SSL, arguments: dict[str, Any], since: datetime | None
+) -> list[int]:
+    criteria = []
+    for option in ("unseen", "seen"):
+        if arguments.get(option):
+            criteria.append(option.upper())
+    if since is not None:
+        # SEARCH SINCE 只有日期精度；留出时区边界，再用 INTERNALDATE 精确筛选。
+        day = since - timedelta(days=1)
+        months = (
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        )
+        criteria.extend(["SINCE", f"{day.day:02d}-{months[day.month - 1]}-{day.year}"])
+    criteria = criteria or ["ALL"]
+    filters = [
+        (key.upper(), arguments[key]) for key in ("from", "subject") if key in arguments
+    ]
+    matches = None
+    # imaplib 每条命令支持一个 literal；多个文本条件分别搜索后取交集。
+    for key, value in filters or [(None, None)]:
+        terms = list(criteria)
+        if key is not None:
+            client.literal = value.encode("utf-8")
+            terms.append(key)
+        charset = ["CHARSET", "UTF-8"] if key is not None else []
+        data = _imap_ok(client.uid("SEARCH", *charset, *terms), "搜索邮件")
+        found = {int(uid) for row in data if row for uid in row.split()}
+        matches = found if matches is None else matches & found
+    return sorted(matches)
+
+
+def _metadata(row: bytes) -> dict[str, Any]:
+    uid = re.search(rb"\bUID (\d+)\b", row)
+    received = imaplib.Internaldate2tuple(row)
+    if uid is None or received is None:
+        raise ProgramError("external_error", "邮件缺少 UID 或服务器收信时间")
+    return {
+        "uid": int(uid[1]),
+        "received_at": datetime.fromtimestamp(time.mktime(received), timezone.utc),
+        "flags": [flag.decode("ascii") for flag in imaplib.ParseFlags(row)],
+    }
+
+
+def _fetch_messages(
+    client: imaplib.IMAP4_SSL, uids: list[int]
+) -> dict[int, tuple[EmailMessage, dict]]:
+    data = _imap_ok(
+        client.uid(
+            "FETCH", ",".join(map(str, uids)), "(UID FLAGS INTERNALDATE BODY.PEEK[])"
+        ),
+        "读取邮件",
+    )
+    messages = {}
+    for index, row in enumerate(data):
+        if isinstance(row, tuple):
+            # 服务器可以把 UID/FLAGS/INTERNALDATE 放在正文 literal 之后。
+            if index + 1 >= len(data) or not isinstance(data[index + 1], bytes):
+                raise ProgramError("external_error", "邮件正文响应缺少结束片段")
+            metadata = _metadata(row[0] + b" " + data[index + 1])
+            messages[metadata["uid"]] = (
+                BytesParser(policy=policy.default).parsebytes(row[1]),
+                metadata,
+            )
+    if set(uids) - messages.keys():
+        raise ProgramError(
+            "external_error", "邮件 UID 不存在或邮件已被移走，请重新查询"
+        )
+    return messages
+
+
+def _attachment_parts(message: EmailMessage) -> list[EmailMessage]:
+    if (
+        message.get_content_disposition() == "attachment"
+        or message.get_filename()
+        or message.get("Content-ID")
+    ):
+        return [message]
+    return [part for child in message.iter_parts() for part in _attachment_parts(child)]
+
+
+def _attachment_bytes(part: EmailMessage) -> bytes:
+    if part.get_content_type() == "message/rfc822":
+        return part.get_payload(0).as_bytes(policy=policy.SMTP)
+    if part.is_multipart():
+        return part.as_bytes(policy=policy.SMTP)
+    return part.get_payload(decode=True)
+
+
+def _attachment_info(part: EmailMessage) -> dict[str, Any]:
+    return {
+        "filename": part.get_filename(),
+        "content_type": part.get_content_type(),
+        "size": len(_attachment_bytes(part)),
+    }
+
+
+def _message_result(message: EmailMessage, metadata: dict[str, Any]) -> dict[str, Any]:
+    plain = message.get_body(preferencelist=("plain",))
+    html = message.get_body(preferencelist=("html",))
+    text = plain.get_content() if plain is not None else None
+    return {
+        "uid": metadata["uid"],
+        "from": str(message["From"]) if message["From"] is not None else None,
+        "to": str(message["To"]) if message["To"] is not None else None,
+        "subject": str(message["Subject"]) if message["Subject"] is not None else None,
+        "date": str(message["Date"]) if message["Date"] is not None else None,
+        "received_at": metadata["received_at"].isoformat(),
+        "text": text,
+        "html": html.get_content() if html is not None else None,
+        "snippet": text[:200] if text is not None else None,
+        "flags": metadata["flags"],
+        "attachments": [_attachment_info(part) for part in _attachment_parts(message)],
+    }
+
+
+def _read_messages(
+    client: imaplib.IMAP4_SSL, arguments: dict[str, Any], default_limit: int
+) -> dict[str, Any]:
+    since = None
+    if "recent" in arguments:
+        recent = arguments["recent"]
+        seconds = int(recent[:-1]) * {"m": 60, "h": 3600, "d": 86400}[recent[-1]]
+        try:
+            since = datetime.now(timezone.utc) - timedelta(seconds=seconds)
+        except OverflowError as exc:
+            raise ProgramError("bad_request", "recent 时间范围过大") from exc
+    uids = _search_uids(client, arguments, since)
+    if not uids:
+        return {"messages": []}
+    data = _imap_ok(
+        client.uid("FETCH", ",".join(map(str, uids)), "(UID FLAGS INTERNALDATE)"),
+        "读取邮件索引",
+    )
+    metadata = [_metadata(row) for row in data if isinstance(row, bytes)]
+    selected = sorted(
+        (item for item in metadata if since is None or item["received_at"] >= since),
+        key=lambda item: (item["received_at"], item["uid"]),
+        reverse=True,
+    )[: arguments.get("limit", default_limit)]
+    if not selected:
+        return {"messages": []}
+    messages = _fetch_messages(client, [item["uid"] for item in selected])
+    return {"messages": [_message_result(*messages[item["uid"]]) for item in selected]}
+
+
+def _download(message: EmailMessage, arguments: dict[str, Any]) -> dict[str, Any]:
+    attachments, resources = [], []
+    for index, part in enumerate(_attachment_parts(message), 1):
+        if "file" in arguments and part.get_filename() != arguments["file"]:
+            continue
+        info = _attachment_info(part)
+        uri = f"qq-mail://attachment/{arguments['uid']}/{index}"
+        attachments.append({**info, "uri": uri})
+        resources.append(
+            {
+                "type": "resource",
+                "uri": uri,
+                "mime_type": info["content_type"],
+                "data": base64.b64encode(_attachment_bytes(part)).decode("ascii"),
+            }
+        )
+    if "file" in arguments and not attachments:
+        raise ProgramError("bad_request", "该邮件中没有指定名称的附件")
+    return _tool_result(
+        {"uid": arguments["uid"], "attachments": attachments}, resources
+    )
+
+
+def _mark(
+    client: imaplib.IMAP4_SSL, name: str, arguments: dict[str, Any]
+) -> dict[str, Any]:
+    uids = arguments["uids"]
+    # UID STORE 会静默忽略不存在的 UID，写前先确认目标仍存在。
+    data = _imap_ok(
+        client.uid("SEARCH", None, "UID", ",".join(map(str, uids))), "检查邮件 UID"
+    )
+    existing = {int(uid) for row in data if row for uid in row.split()}
+    if set(uids) != existing:
+        raise ProgramError("bad_request", "部分邮件 UID 不存在，请重新查询")
+    action = "+FLAGS" if name == "mark_read" else "-FLAGS"
+    data = _imap_ok(
+        client.uid("STORE", ",".join(map(str, uids)), action, r"(\Seen)"), "标记邮件"
+    )
+    changed = set()
+    for row in data:
+        if isinstance(row, bytes):
+            match = re.search(rb"\bUID (\d+)\b", row)
+            if match and (b"\\Seen" in imaplib.ParseFlags(row)) == (
+                name == "mark_read"
+            ):
+                changed.add(int(match[1]))
+    if changed != set(uids):
+        raise ProgramError(
+            "external_error", "未确认全部邮件的标记结果，请重新查询状态；不要自动重试"
+        )
+    return {"uids": uids, "action": name}
+
+
+def _build_message(
+    email: str, arguments: dict[str, Any]
+) -> tuple[EmailMessage, list[str]]:
+    message = EmailMessage()
+    message["From"] = arguments.get("from", email)
+    message["To"] = arguments["to"]
+    for key in ("cc", "bcc"):
+        if key in arguments:
+            message[key] = arguments[key]
+    recipients = []
+    for key in ("From", "To", "Cc", "Bcc"):
+        header = message[key]
+        if header is None:
+            continue
+        if (
+            header.defects
+            or not header.addresses
+            or any(not address.domain for address in header.addresses)
+        ):
+            raise ProgramError("bad_request", f"{key} 邮箱地址格式错误")
+        if key == "From" and len(header.addresses) != 1:
+            raise ProgramError("bad_request", "只允许一个发件人地址")
+        if key != "From":
+            recipients.extend(address.addr_spec for address in header.addresses)
+    message["Subject"] = arguments["subject"]
+    message["Date"] = format_datetime(datetime.now(timezone.utc))
+    message["Message-ID"] = make_msgid(domain=email.rsplit("@", 1)[1])
+    message.set_content(
+        arguments.get("body", ""), subtype="html" if arguments.get("html") else "plain"
+    )
+    for attachment in arguments.get("attachments", []):
+        try:
+            content = base64.b64decode(attachment["data"], validate=True)
+        except (ValueError, binascii.Error) as exc:
+            raise ProgramError(
+                "bad_request", "附件 data 必须是有效的标准 Base64 编码"
+            ) from exc
+        maintype, subtype = attachment["mime_type"].split("/", 1)
+        message.add_attachment(
+            content, maintype=maintype, subtype=subtype, filename=attachment["filename"]
+        )
+    return message, list(dict.fromkeys(recipients))
+
+
+def _send(
+    email: str, password: str, preset: dict[str, Any], arguments: dict[str, Any]
+) -> dict[str, Any]:
+    message, recipients = _build_message(email, arguments)
+    with _smtp_session(email, password, preset) as client:
+        refused = client.send_message(message, to_addrs=recipients)
+    result = {
+        "message_id": str(message["Message-ID"]),
+        "accepted": [address for address in recipients if address not in refused],
+        "refused": [
+            {
+                "address": address,
+                "code": code,
+                "message": reason.decode("utf-8", errors="replace"),
+            }
+            for address, (code, reason) in refused.items()
+        ],
+    }
+    error = None
+    if refused:
+        error = {
+            "code": "external_error",
+            "message": "部分收件人被拒绝；已接受的收件人可能已收到邮件，请勿重复整封发送",
+            "retryable": False,
+        }
+    return _tool_result(result, error=error)
+
+
+def _check_connection(
+    email: str, password: str, preset: dict[str, Any]
+) -> dict[str, Any]:
+    with _imap_session(email, password, preset) as client:
+        _select(client, "INBOX")
+    with _smtp_session(email, password, preset):
+        pass
+    return {"email": email, "imap": "connected", "smtp": "connected"}
+
+
+def _tool_result(
+    data: dict[str, Any], resources: list | None = None, *, error: dict | None = None
+) -> dict[str, Any]:
+    return {
+        "content": [
+            {"type": "text", "text": json.dumps(data, ensure_ascii=False)},
+            *(resources or []),
+        ],
+        "structured_content": data,
+        "is_error": error is not None,
+        "error": error,
+    }
 
 
 def configuration_validate(context: dict[str, Any]) -> dict[str, Any]:
-    endpoint = _configuration_endpoint(context)
-    if not endpoint and not context.get("require_complete"):
-        return {}
-    _require_official_endpoint(context)
+    configuration = context.get("configuration", {})
+    if (
+        not isinstance(configuration, dict)
+        or set(configuration) - {"public", "secret"}
+        or any(not isinstance(value, dict) or value for value in configuration.values())
+    ):
+        raise ProgramError("bad_request", "QQ 邮箱连接器没有管理员配置项")
     return {}
 
 
-def authorization_identity(context: dict[str, Any]) -> dict[str, Any]:
-    _require_official_endpoint(context)
+def authorization_identity(_context: dict[str, Any]) -> dict[str, Any]:
     return {
-        "identity": {
-            "endpoint": _ENDPOINT,
-            "issuer": _ISSUER,
-            "resource": _RESOURCE,
-            "scopes": _SCOPES.split(),
-        }
+        "identity": {"service": "qq-mail", "authorization_contract_version": "2"}
     }
 
 
-def authorization_begin(context: dict[str, Any]) -> dict[str, Any]:
-    _require_official_endpoint(context)
-    redirect_uri = _validated_url(
-        context.get("redirect_uri"),
-        "OAuth 回调地址",
-        https_only=False,
-        error_code="bad_request",
-    )
-    state = _require_string(context.get("state"), "OAuth state")
-    code_challenge = _require_string(
-        context.get("code_challenge"),
-        "PKCE code challenge",
-    )
-
-    with httpx.Client(timeout=8.0, follow_redirects=False) as client:
-        endpoints = _oauth_endpoints(client)
-        registration = _request_json(
-            client,
-            "POST",
-            endpoints["registration_url"],
-            action="OAuth 客户端注册",
-            expected_statuses={200, 201},
-            json={
-                "redirect_uris": [redirect_uri],
-                "token_endpoint_auth_method": "none",
-                "grant_types": ["authorization_code", "refresh_token"],
-                "response_types": ["code"],
-                "scope": _SCOPES,
-                "client_name": "POCO QQ Mail Connector",
-            },
-        )
-
-    client_id = _require_string(
-        registration.get("client_id"),
-        "QQ 邮箱 OAuth Client ID",
-        maximum=2048,
-        error_code="external_error",
-    )
-    registered_auth_method = registration.get("token_endpoint_auth_method")
-    if registered_auth_method not in {None, "none"}:
-        raise ProgramError(
-            "external_error",
-            "QQ 邮箱注册了不受支持的客户端类型",
-        )
-
-    query = urlencode(
-        {
-            "response_type": "code",
-            "client_id": client_id,
-            "redirect_uri": redirect_uri,
-            "state": state,
-            "code_challenge": code_challenge,
-            "code_challenge_method": "S256",
-            "resource": endpoints["resource"],
-            "scope": _SCOPES,
-        }
-    )
-    authorize_url = f"{endpoints['authorization_url']}?{query}"
-    return {
-        "type": "redirect",
-        "authorize_url": authorize_url,
-        "private_context": {
-            **endpoints,
-            "client_id": client_id,
-            "redirect_uri": redirect_uri,
-            "scope": _SCOPES,
-        },
-    }
-
-
-def _authorization_context(context: dict[str, Any]) -> dict[str, str]:
-    private_context = context.get("private_context")
-    required = {
-        "issuer",
-        "resource",
-        "authorization_url",
-        "token_url",
-        "registration_url",
-        "client_id",
-        "redirect_uri",
-        "scope",
-    }
-    if (
-        not isinstance(private_context, dict)
-        or set(private_context) != required
-        or not all(
-            isinstance(value, str) and value for value in private_context.values()
-        )
-    ):
-        raise ProgramError("bad_request", "QQ 邮箱 OAuth 授权上下文无效")
-    if (
-        private_context["issuer"] != _ISSUER
-        or private_context["resource"] != _RESOURCE
-        or private_context["authorization_url"] != f"{_ISSUER}/oauth/authorize"
-        or private_context["token_url"] != f"{_ISSUER}/oauth/token"
-        or private_context["registration_url"] != f"{_ISSUER}/oauth/register"
-        or private_context["scope"] != _SCOPES
-    ):
-        raise ProgramError("bad_request", "QQ 邮箱 OAuth 授权上下文已变化")
-    return private_context
-
-
-def _expires_at(expires_in: object) -> str | None:
-    if expires_in is None:
-        return None
-    if isinstance(expires_in, str) and expires_in.isdigit():
-        expires_in = int(expires_in)
-    if type(expires_in) is not int or expires_in <= 0:
-        raise ProgramError("external_error", "QQ 邮箱令牌有效期无效")
-    return (datetime.now(timezone.utc) + timedelta(seconds=expires_in)).isoformat()
-
-
-def _credential_from_token(
-    payload: dict[str, Any],
-    *,
-    client_id: str,
-    current_refresh_token: str | None = None,
-) -> tuple[dict[str, Any], list[str]]:
-    access_token = _require_string(
-        payload.get("access_token"),
-        "QQ 邮箱 access token",
-        maximum=16_384,
-        error_code="external_error",
-    )
-    if str(payload.get("token_type", "")).lower() != "bearer":
-        raise ProgramError(
-            "external_error",
-            "QQ 邮箱返回了不受支持的令牌类型",
-        )
-    refresh_value = payload.get("refresh_token") or current_refresh_token
-    refresh_token = _require_string(
-        refresh_value,
-        "QQ 邮箱 refresh token",
-        maximum=16_384,
-        error_code="external_error",
-    )
-    scope_value = payload.get("scope", _SCOPES)
-    if not isinstance(scope_value, str):
-        raise ProgramError("external_error", "QQ 邮箱返回了无效的授权范围")
-    scopes = sorted(set(scope_value.split()))
-    if not set(_SCOPES.split()).issubset(scopes):
-        raise ProgramError("insufficient_scope", "QQ 邮箱授权范围不足")
-
-    credential: dict[str, Any] = {
-        "values": {
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-            "client_id": client_id,
-            "issuer": _ISSUER,
-            "resource": _RESOURCE,
-            "token_url": f"{_ISSUER}/oauth/token",
-            "scope": _SCOPES,
-        }
-    }
-    expires_at = _expires_at(payload.get("expires_in"))
-    if expires_at is not None:
-        credential["expires_at"] = expires_at
-    return credential, scopes
+def authorization_begin(_context: dict[str, Any]) -> dict[str, Any]:
+    return {"type": "form"}
 
 
 def authorization_complete(context: dict[str, Any]) -> dict[str, Any]:
-    _require_official_endpoint(context)
-    oauth_context = _authorization_context(context)
     submission = context.get("submission")
-    if not isinstance(submission, dict) or submission.get("type") != "oauth_code":
-        raise ProgramError("bad_request", "QQ 邮箱连接器需要 OAuth 授权码")
-    redirect_uri = _validated_url(
-        submission.get("redirect_uri"),
-        "OAuth 回调地址",
-        https_only=False,
-        error_code="bad_request",
-    )
-    if redirect_uri != oauth_context["redirect_uri"]:
-        raise ProgramError("bad_request", "OAuth 回调地址与授权请求不一致")
-    code = _require_string(submission.get("code"), "OAuth 授权码")
-    code_verifier = _require_string(
-        submission.get("code_verifier"),
-        "PKCE code verifier",
-    )
-
-    with httpx.Client(timeout=12.0, follow_redirects=False) as client:
-        tokens = _request_json(
-            client,
-            "POST",
-            oauth_context["token_url"],
-            action="OAuth 令牌",
-            data={
-                "grant_type": "authorization_code",
-                "client_id": oauth_context["client_id"],
-                "code": code,
-                "redirect_uri": redirect_uri,
-                "code_verifier": code_verifier,
-                "resource": oauth_context["resource"],
-            },
-        )
-    credential, scopes = _credential_from_token(
-        tokens,
-        client_id=oauth_context["client_id"],
-    )
+    if not isinstance(submission, dict) or submission.get("type") != "credentials":
+        raise ProgramError("bad_request", "请通过授权表单提交邮箱地址和授权码")
+    email, password, preset = _credentials(submission.get("values"))
+    _check_connection(email, password, preset)
     return {
-        "external_account_name": "QQ 邮箱",
-        "granted_scopes": scopes,
-        "credential": credential,
-        "public_metadata": {
-            "issuer": _ISSUER,
-            "resource": _RESOURCE,
-        },
+        "external_account_id": email,
+        "external_account_name": email,
+        "credential": {"values": {"email": email, "authorization_code": password}},
+        "public_metadata": {"email": email},
     }
-
-
-def credential_refresh(context: dict[str, Any]) -> dict[str, Any]:
-    _require_official_endpoint(context)
-    credential = context.get("credential")
-    values = credential.get("values") if isinstance(credential, dict) else None
-    if not isinstance(values, dict):
-        raise ProgramError("authorization_required", "QQ 邮箱凭据无效")
-    client_id = _require_string(
-        values.get("client_id"),
-        "QQ 邮箱 Client ID",
-        error_code="authorization_required",
-    )
-    refresh_token = _require_string(
-        values.get("refresh_token"),
-        "QQ 邮箱 refresh token",
-        maximum=16_384,
-        error_code="authorization_required",
-    )
-    if (
-        values.get("issuer") != _ISSUER
-        or values.get("resource") != _RESOURCE
-        or values.get("token_url") != f"{_ISSUER}/oauth/token"
-        or values.get("scope") != _SCOPES
-    ):
-        raise ProgramError("authorization_required", "QQ 邮箱授权身份已变化")
-
-    with httpx.Client(timeout=12.0, follow_redirects=False) as client:
-        tokens = _request_json(
-            client,
-            "POST",
-            f"{_ISSUER}/oauth/token",
-            action="OAuth 令牌刷新",
-            data={
-                "grant_type": "refresh_token",
-                "client_id": client_id,
-                "refresh_token": refresh_token,
-                "resource": _RESOURCE,
-            },
-        )
-    refreshed, scopes = _credential_from_token(
-        tokens,
-        client_id=client_id,
-        current_refresh_token=refresh_token,
-    )
-    return {"credential": refreshed, "granted_scopes": scopes}
-
-
-def _mcp_payload(response: httpx.Response) -> dict[str, Any]:
-    body = response.text
-    try:
-        payload = response.json()
-    except ValueError:
-        payload = None
-    if isinstance(payload, dict):
-        return payload
-
-    events: list[dict[str, Any]] = []
-    for event in body.replace("\r\n", "\n").split("\n\n"):
-        data_lines = [
-            line[5:].lstrip() for line in event.splitlines() if line.startswith("data:")
-        ]
-        if not data_lines:
-            continue
-        data = "\n".join(data_lines)
-        if data == "[DONE]":
-            continue
-        try:
-            candidate = json.loads(data)
-        except ValueError:
-            continue
-        if isinstance(candidate, dict):
-            events.append(candidate)
-    if not events:
-        raise ProgramError("external_error", "QQ 邮箱 MCP 响应格式错误")
-    return events[-1]
-
-
-def _find_confirmation_token(value: object, depth: int = 0) -> str | None:
-    if depth > 6:
-        return None
-    if isinstance(value, dict):
-        token = value.get("confirmation_token")
-        if isinstance(token, str) and token.strip() and len(token.strip()) <= 4096:
-            return token.strip()
-        for nested in value.values():
-            found = _find_confirmation_token(nested, depth + 1)
-            if found is not None:
-                return found
-    elif isinstance(value, list):
-        for nested in value:
-            found = _find_confirmation_token(nested, depth + 1)
-            if found is not None:
-                return found
-    elif isinstance(value, str) and len(value) <= 20_000:
-        try:
-            parsed = json.loads(value)
-        except ValueError:
-            return None
-        return _find_confirmation_token(parsed, depth + 1)
-    return None
-
-
-def _requires_confirmation(value: object, depth: int = 0) -> bool:
-    if depth > 6:
-        return False
-    if isinstance(value, dict):
-        code = value.get("code")
-        message = value.get("message")
-        if code in {428, 42801, "428", "42801"}:
-            return True
-        if isinstance(message, str) and "confirmation required" in message.lower():
-            return True
-        return any(
-            _requires_confirmation(nested, depth + 1) for nested in value.values()
-        )
-    if isinstance(value, list):
-        return any(_requires_confirmation(nested, depth + 1) for nested in value)
-    if isinstance(value, str) and len(value) <= 20_000:
-        try:
-            parsed = json.loads(value)
-        except ValueError:
-            return False
-        return _requires_confirmation(parsed, depth + 1)
-    return False
-
-
-def _raise_confirmation(value: object) -> None:
-    if not _requires_confirmation(value):
-        return
-    token = _find_confirmation_token(value)
-    if token is None:
-        raise ProgramError("external_error", "QQ 邮箱未返回有效的操作确认令牌")
-    raise UpstreamConfirmationRequired(token)
-
-
-class _McpClient:
-    def __init__(self, endpoint: str, access_token: str) -> None:
-        self._endpoint = endpoint
-        self._client = httpx.Client(
-            follow_redirects=False,
-            headers={
-                "Authorization": f"Bearer {access_token}",
-                "Accept": "application/json, text/event-stream",
-                "Content-Type": "application/json",
-                "MCP-Protocol-Version": _MCP_PROTOCOL_VERSION,
-            },
-        )
-        self._session_id: str | None = None
-        self._request_id = 0
-
-    def __enter__(self) -> "_McpClient":
-        self._initialize()
-        return self
-
-    def __exit__(self, *args: object) -> None:
-        self._client.close()
-
-    def _headers(self) -> dict[str, str]:
-        return (
-            {"Mcp-Session-Id": self._session_id} if self._session_id is not None else {}
-        )
-
-    def _post(
-        self,
-        payload: dict[str, Any],
-        *,
-        timeout: float,
-        expect_response: bool = True,
-        ambiguous_write: bool = False,
-    ) -> dict[str, Any] | None:
-        try:
-            response = self._client.post(
-                self._endpoint,
-                headers=self._headers(),
-                json=payload,
-                timeout=httpx.Timeout(timeout, connect=3.0),
-            )
-        except httpx.RequestError as exc:
-            if ambiguous_write:
-                raise ProgramError(
-                    "unavailable",
-                    "QQ 邮箱操作结果未知，请先检查邮箱，勿自动重试",
-                ) from exc
-            raise ProgramError(
-                "unavailable",
-                "QQ 邮箱 MCP 服务连接失败",
-                retryable=True,
-            ) from exc
-        if response.status_code == 428:
-            _raise_confirmation(_json_object(response, "MCP 操作确认"))
-        if response.status_code not in {200, 202, 204}:
-            if ambiguous_write and response.status_code >= 500:
-                raise ProgramError(
-                    "unavailable",
-                    "QQ 邮箱操作结果未知，请先检查邮箱，勿自动重试",
-                )
-            raise _response_error(response, "MCP")
-        session_id = response.headers.get("Mcp-Session-Id")
-        if session_id:
-            self._session_id = session_id
-        if not expect_response:
-            return None
-        if response.status_code in {202, 204} or not response.content:
-            raise ProgramError("external_error", "QQ 邮箱 MCP 未返回调用结果")
-        message = _mcp_payload(response)
-        if message.get("jsonrpc") != "2.0" or message.get("id") != payload.get("id"):
-            raise ProgramError("external_error", "QQ 邮箱 MCP 响应标识无效")
-        error = message.get("error")
-        if isinstance(error, dict):
-            _raise_confirmation(error)
-            raise ProgramError("external_error", "QQ 邮箱 MCP 返回调用错误")
-        result = message.get("result")
-        if not isinstance(result, dict):
-            raise ProgramError(
-                "external_error",
-                "QQ 邮箱 MCP 调用结果格式错误",
-            )
-        return result
-
-    def _request(
-        self,
-        method: str,
-        params: dict[str, Any] | None = None,
-        *,
-        timeout: float,
-        ambiguous_write: bool = False,
-    ) -> dict[str, Any]:
-        self._request_id += 1
-        payload: dict[str, Any] = {
-            "jsonrpc": "2.0",
-            "id": self._request_id,
-            "method": method,
-        }
-        if params is not None:
-            payload["params"] = params
-        result = self._post(
-            payload,
-            timeout=timeout,
-            ambiguous_write=ambiguous_write,
-        )
-        assert result is not None
-        return result
-
-    def _initialize(self) -> None:
-        result = self._request(
-            "initialize",
-            {
-                "protocolVersion": _MCP_PROTOCOL_VERSION,
-                "capabilities": {},
-                "clientInfo": {"name": "POCO", "version": "1"},
-            },
-            timeout=4.0,
-        )
-        protocol_version = result.get("protocolVersion")
-        if not isinstance(protocol_version, str) or not protocol_version:
-            raise ProgramError("external_error", "QQ 邮箱 MCP 初始化响应无效")
-        self._client.headers["MCP-Protocol-Version"] = protocol_version
-        self._post(
-            {"jsonrpc": "2.0", "method": "notifications/initialized"},
-            timeout=2.0,
-            expect_response=False,
-        )
-
-    def list_tools(self) -> list[dict[str, Any]]:
-        tools: list[dict[str, Any]] = []
-        cursor: str | None = None
-        seen_cursors: set[str] = set()
-        for _ in range(_MAX_TOOL_PAGES):
-            params = {"cursor": cursor} if cursor is not None else None
-            result = self._request("tools/list", params, timeout=4.0)
-            page = result.get("tools")
-            if not isinstance(page, list) or not all(
-                isinstance(tool, dict) for tool in page
-            ):
-                raise ProgramError(
-                    "external_error",
-                    "QQ 邮箱工具目录格式错误",
-                )
-            tools.extend(page)
-            next_cursor = result.get("nextCursor")
-            if next_cursor is None:
-                return tools
-            if (
-                not isinstance(next_cursor, str)
-                or not next_cursor
-                or next_cursor in seen_cursors
-            ):
-                raise ProgramError(
-                    "external_error",
-                    "QQ 邮箱工具目录游标无效",
-                )
-            seen_cursors.add(next_cursor)
-            cursor = next_cursor
-        raise ProgramError("external_error", "QQ 邮箱工具目录分页过多")
-
-    def call_tool(
-        self,
-        name: str,
-        arguments: dict[str, Any],
-        *,
-        ambiguous_write: bool = False,
-    ) -> dict[str, Any]:
-        result = self._request(
-            "tools/call",
-            {"name": name, "arguments": arguments},
-            timeout=18.0,
-            ambiguous_write=ambiguous_write,
-        )
-        if result.get("isError") is True:
-            _raise_confirmation(result)
-        return result
-
-
-def _access_token(context: dict[str, Any]) -> str:
-    credentials = context.get("credentials")
-    if not isinstance(credentials, dict):
-        raise ProgramError("authorization_required", "QQ 邮箱凭据不存在")
-    try:
-        return _require_string(
-            credentials.get("access_token"),
-            "QQ 邮箱 access token",
-            maximum=16_384,
-        )
-    except ProgramError as exc:
-        raise ProgramError(
-            "authorization_required",
-            "QQ 邮箱凭据不存在或已失效",
-        ) from exc
-
-
-def _remote_tool_map(tools: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    mapped: dict[str, dict[str, Any]] = {}
-    for tool in tools:
-        name = tool.get("name")
-        if not isinstance(name, str) or name not in _TOOL_POLICIES:
-            continue
-        if name in mapped:
-            raise ProgramError("external_error", f"QQ 邮箱工具重复：{name}")
-        mapped[name] = tool
-    missing = sorted(set(_TOOL_POLICIES) - set(mapped))
-    if missing:
-        raise ProgramError(
-            "unavailable",
-            f"QQ 邮箱缺少必要工具：{', '.join(missing)}",
-            retryable=True,
-        )
-    return mapped
-
-
-def _tool_spec(name: str, tool: dict[str, Any]) -> dict[str, Any]:
-    description = tool.get("description") or tool.get("title") or name
-    input_schema = tool.get("inputSchema")
-    output_schema = tool.get("outputSchema")
-    if not isinstance(description, str) or not description or len(description) > 10_000:
-        raise ProgramError("external_error", f"QQ 邮箱工具描述无效：{name}")
-    if not isinstance(input_schema, dict):
-        raise ProgramError(
-            "external_error",
-            f"QQ 邮箱工具参数定义无效：{name}",
-        )
-    input_schema = json.loads(json.dumps(input_schema))
-    if name in _CONFIRMED_TOOLS:
-        properties = input_schema.get("properties")
-        if isinstance(properties, dict):
-            properties.pop("confirmation_token", None)
-        required = input_schema.get("required")
-        if isinstance(required, list):
-            input_schema["required"] = [
-                item for item in required if item != "confirmation_token"
-            ]
-    if output_schema is not None and not isinstance(output_schema, dict):
-        raise ProgramError(
-            "external_error",
-            f"QQ 邮箱工具输出定义无效：{name}",
-        )
-    source = json.dumps(
-        tool,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        sort_keys=True,
-        allow_nan=False,
-    ).encode()
-    effect, retry_policy, confirmation = _TOOL_POLICIES[name]
-    spec = {
-        "key": name,
-        "upstream_name": name,
-        "description": description,
-        "input_schema": input_schema,
-        "effect": effect,
-        "retry_policy": retry_policy,
-        "confirmation": confirmation,
-        "source_revision": hashlib.sha256(source).hexdigest(),
-    }
-    if output_schema is not None:
-        spec["output_schema"] = output_schema
-    return spec
 
 
 def tools_discover(context: dict[str, Any]) -> dict[str, Any]:
-    endpoint = _require_official_endpoint(context)
-    access_token = _access_token(context)
-    with _McpClient(endpoint, access_token) as client:
-        remote_tools = _remote_tool_map(client.list_tools())
-    return {"tools": [_tool_spec(name, remote_tools[name]) for name in _TOOL_POLICIES]}
-
-
-def _content_blocks(result: dict[str, Any]) -> list[dict[str, Any]]:
-    content = result.get("content", [])
-    if not isinstance(content, list):
-        raise ProgramError("external_error", "QQ 邮箱工具内容格式错误")
-    converted: list[dict[str, Any]] = []
-    for item in content:
-        if not isinstance(item, dict):
-            raise ProgramError("external_error", "QQ 邮箱工具内容项格式错误")
-        item_type = item.get("type")
-        if item_type == "text" and isinstance(item.get("text"), str):
-            converted.append({"type": "text", "text": item["text"]})
-        elif item_type in {"image", "audio"}:
-            data = item.get("data")
-            mime_type = item.get("mimeType")
-            if not isinstance(data, str) or not isinstance(mime_type, str):
-                raise ProgramError(
-                    "external_error",
-                    "QQ 邮箱媒体内容格式错误",
-                )
-            converted.append({"type": item_type, "data": data, "mime_type": mime_type})
-        elif item_type == "resource_link":
-            uri, name = item.get("uri"), item.get("name")
-            if not isinstance(uri, str) or not isinstance(name, str):
-                raise ProgramError(
-                    "external_error",
-                    "QQ 邮箱资源链接格式错误",
-                )
-            block = {"type": "resource_link", "uri": uri, "name": name}
-            if isinstance(item.get("description"), str):
-                block["description"] = item["description"]
-            if isinstance(item.get("mimeType"), str):
-                block["mime_type"] = item["mimeType"]
-            converted.append(block)
-        elif item_type == "resource" and isinstance(item.get("resource"), dict):
-            resource = item["resource"]
-            uri = resource.get("uri")
-            if not isinstance(uri, str):
-                raise ProgramError(
-                    "external_error",
-                    "QQ 邮箱资源内容格式错误",
-                )
-            block = {"type": "resource", "uri": uri}
-            if isinstance(resource.get("mimeType"), str):
-                block["mime_type"] = resource["mimeType"]
-            if isinstance(resource.get("text"), str):
-                block["text"] = resource["text"]
-            elif isinstance(resource.get("blob"), str):
-                block["data"] = resource["blob"]
-            else:
-                raise ProgramError(
-                    "external_error",
-                    "QQ 邮箱资源缺少有效内容",
-                )
-            converted.append(block)
-        else:
-            raise ProgramError(
-                "external_error",
-                "QQ 邮箱返回了不支持的内容类型",
-            )
-    return converted
+    _credentials(context.get("credentials"))
+    return {"tools": [_tool_spec(name) for name in _TOOL_POLICIES]}
 
 
 def tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
-    endpoint = _require_official_endpoint(context)
-    access_token = _access_token(context)
-    tool_name = context.get("tool_name")
+    name = context.get("tool_name")
+    if not isinstance(name, str):
+        raise ProgramError("bad_request", "工具名称必须是字符串")
+    spec = _tool_spec(name)
     arguments = context.get("arguments")
-    if not isinstance(tool_name, str) or tool_name not in _TOOL_POLICIES:
-        raise ProgramError("action_forbidden", "QQ 邮箱工具未获清单授权")
-    if not isinstance(arguments, dict):
-        raise ProgramError("bad_request", "QQ 邮箱工具参数必须是对象")
-    if "confirmation_token" in arguments:
-        raise ProgramError("bad_request", "确认令牌由 QQ 邮箱连接器内部管理")
-
-    with _McpClient(endpoint, access_token) as client:
-        remote_tools = _remote_tool_map(client.list_tools())
-        _tool_spec(tool_name, remote_tools[tool_name])
-        if tool_name in _CONFIRMED_TOOLS:
-            try:
-                result = client.call_tool(tool_name, arguments)
-            except UpstreamConfirmationRequired as exc:
-                confirmed_arguments = {**arguments, "confirmation_token": exc.token}
-                try:
-                    result = client.call_tool(
-                        tool_name,
-                        confirmed_arguments,
-                        ambiguous_write=True,
-                    )
-                except UpstreamConfirmationRequired as repeated:
-                    raise ProgramError(
-                        "external_error",
-                        "QQ 邮箱重复要求操作确认，请重新发起请求",
-                    ) from repeated
-        else:
-            result = client.call_tool(tool_name, arguments)
-
-    blocks = _content_blocks(result)
-    is_error = result.get("isError", False)
-    if not isinstance(is_error, bool):
-        raise ProgramError("external_error", "QQ 邮箱工具错误状态无效")
-    structured = result.get("structuredContent")
-    if structured is not None and not isinstance(structured, dict):
-        raise ProgramError("external_error", "QQ 邮箱结构化结果格式错误")
-    output: dict[str, Any] = {
-        "content": blocks,
-        "structured_content": structured,
-        "is_error": is_error,
-        "error": None,
-    }
-    if is_error:
-        message = next(
-            (
-                block["text"]
-                for block in blocks
-                if block["type"] == "text" and block.get("text")
-            ),
-            "QQ 邮箱工具调用失败",
+    _validate(arguments, spec["input_schema"])
+    if arguments.get("unseen") and arguments.get("seen"):
+        raise ProgramError("bad_request", "不能同时筛选已读和未读邮件")
+    # 风险只取包内策略，不接受参数覆盖。发送确认由 POCO 在调用前绑定并消费。
+    email, password, preset = _credentials(context.get("credentials"))
+    if name == "send":
+        return _send(email, password, preset, arguments)
+    if name == "test_connection":
+        return _tool_result(_check_connection(email, password, preset))
+    with _imap_session(email, password, preset) as client:
+        if name == "list_mailboxes":
+            return _tool_result(_list_mailboxes(client))
+        _select(
+            client, arguments.get("mailbox", "INBOX"), readonly=spec["effect"] == "read"
         )
-        output["error"] = {
-            "code": "provider_tool_error",
-            "message": message[:2000],
-            "retryable": False,
-        }
-    return output
+        if name in {"check", "search"}:
+            return _tool_result(
+                _read_messages(client, arguments, 10 if name == "check" else 20)
+            )
+        if name in {"mark_read", "mark_unread"}:
+            return _tool_result(_mark(client, name, arguments))
+        message, metadata = _fetch_messages(client, [arguments["uid"]])[
+            arguments["uid"]
+        ]
+        if name == "download":
+            return _download(message, arguments)
+        return _tool_result(_message_result(message, metadata))
 
 
 _OPERATIONS = {
@@ -1052,71 +634,145 @@ _OPERATIONS = {
     "authorization_identity": authorization_identity,
     "authorization_begin": authorization_begin,
     "authorization_complete": authorization_complete,
-    "credential_refresh": credential_refresh,
     "tools_discover": tools_discover,
     "tool_invoke": tool_invoke,
 }
 
 
-def _encode_response(response: dict[str, Any]) -> str:
-    return json.dumps(
-        response,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        allow_nan=False,
-    )
+def _dispatch(request: Any) -> dict[str, Any]:
+    if (
+        not isinstance(request, dict)
+        or type(request.get("protocol_version")) is not int
+        or request["protocol_version"] != 1
+    ):
+        raise ProgramError("bad_request", "连接器协议版本错误")
+    operation, context = request.get("operation"), request.get("context")
+    handler = _OPERATIONS.get(operation) if isinstance(operation, str) else None
+    if handler is None or not isinstance(context, dict):
+        raise ProgramError("bad_request", "连接器操作或上下文无效")
+    return handler(context)
+
+
+def _failure(code: str, message: str) -> dict[str, Any]:
+    return {
+        "protocol_version": 1,
+        "ok": False,
+        "error": {"code": code, "message": message, "retryable": False},
+    }
+
+
+def _redact(value: Any, secrets: set[str]) -> Any:
+    if isinstance(value, str):
+        for secret in secrets:
+            value = value.replace(secret, "[REDACTED]")
+        return value
+    if isinstance(value, list):
+        return [_redact(item, secrets) for item in value]
+    if isinstance(value, dict):
+        return {
+            key: item
+            if value.get("type") == "resource" and key == "data"
+            else _redact(item, secrets)
+            for key, item in value.items()
+        }
+    return value
+
+
+def _timeout(_signum, _frame) -> None:
+    raise TimeoutError("连接器调用超时")
+
+
+def _reject_constant(_value: str) -> None:
+    raise ValueError("JSON 不允许非有限数值")
 
 
 def main() -> None:
+    request = None
+    signal.signal(signal.SIGALRM, _timeout)
+    signal.alarm(25)
     try:
-        request = json.load(sys.stdin)
-        if not isinstance(request, dict) or request.get("protocol_version") != 1:
-            raise ProgramError("bad_request", "连接器协议版本错误")
-        operation = request.get("operation")
-        context = request.get("context")
-        handler = _OPERATIONS.get(operation)
-        if handler is None or not isinstance(context, dict):
-            raise ProgramError("bad_request", "不支持的连接器操作")
-        result = handler(context)
-        response = {"protocol_version": 1, "ok": True, "result": result}
+        raw = sys.stdin.buffer.read(_MAX_REQUEST_BYTES + 1)
+        if len(raw) > _MAX_REQUEST_BYTES:
+            raise ProgramError(
+                "bad_request", "请求超过 POCO 的 2 MiB 上限，请减少正文或附件大小"
+            )
+        try:
+            request = json.loads(raw, parse_constant=_reject_constant)
+        except (ValueError, UnicodeError) as exc:
+            raise ProgramError("bad_request", "请求必须是有效 JSON") from exc
+        response = {"protocol_version": 1, "ok": True, "result": _dispatch(request)}
     except ProgramError as exc:
-        response = {
-            "protocol_version": 1,
-            "ok": False,
-            "error": {
-                "code": exc.code,
-                "message": exc.message,
-                "retryable": exc.retryable,
-            },
-        }
-    except Exception:
-        response = {
-            "protocol_version": 1,
-            "ok": False,
-            "error": {
-                "code": "external_error",
-                "message": "QQ 邮箱连接器运行失败",
-                "retryable": False,
-            },
-        }
-
-    encoded = _encode_response(response)
-    if len(encoded.encode()) > _MAX_RESPONSE_BYTES:
-        encoded = _encode_response(
-            {
-                "protocol_version": 1,
-                "ok": False,
-                "error": {
-                    "code": "response_too_large",
-                    "message": (
-                        "QQ 邮箱返回内容超过 POCO 单次响应限制；请缩小查询范围。"
-                        "如果这是写操作，请先检查邮箱，勿自动重试。"
-                    ),
-                    "retryable": False,
-                },
-            }
+        response = _failure(exc.code, exc.message)
+    except smtplib.SMTPAuthenticationError:
+        response = _failure(
+            "authorization_required",
+            "SMTP 认证失败，请检查授权码及 SMTP 服务是否已开启",
         )
-    sys.stdout.write(encoded)
+    except (TimeoutError, imaplib.IMAP4.abort, smtplib.SMTPServerDisconnected):
+        response = _failure(
+            "unavailable",
+            "邮箱连接超时或断开；写操作结果可能未知，请先查询状态，勿自动重试",
+        )
+    except ssl.SSLCertVerificationError:
+        response = _failure("unavailable", "邮箱服务器 TLS 证书校验失败")
+    except (imaplib.IMAP4.error, smtplib.SMTPException) as exc:
+        response = _failure(
+            "external_error", f"邮箱服务拒绝操作：{exc}；发送失败时请先确认投递情况"
+        )
+    except OSError as exc:
+        response = _failure(
+            "unavailable",
+            f"邮箱网络连接失败（{type(exc).__name__}）；写操作请先确认结果",
+        )
+    except Exception as exc:
+        response = _failure("external_error", f"连接器处理失败（{type(exc).__name__}）")
+    finally:
+        signal.alarm(0)
+    is_authorization = (
+        isinstance(request, dict)
+        and request.get("operation") == "authorization_complete"
+        and response["ok"]
+    )
+    if not is_authorization and isinstance(request, dict):
+        context = request.get("context")
+        if isinstance(context, dict):
+            values = context.get("credentials")
+            submission = context.get("submission")
+            if request.get("operation") == "authorization_complete" and isinstance(
+                submission, dict
+            ):
+                values = submission.get("values")
+            password = (
+                values.get("authorization_code") if isinstance(values, dict) else None
+            )
+            if isinstance(password, str) and password.strip():
+                secret = password.strip()
+                secrets = {
+                    secret,
+                    quote(secret, safe=""),
+                    base64.b64encode(secret.encode()).decode(),
+                }
+                if response["ok"]:
+                    if request.get("operation") == "tool_invoke":
+                        response["result"] = _redact(response["result"], secrets)
+                else:
+                    response["error"]["message"] = _redact(
+                        response["error"]["message"], secrets
+                    )
+    if not response["ok"]:
+        response["error"]["message"] = response["error"]["message"][:2000]
+    output = json.dumps(
+        response, ensure_ascii=False, separators=(",", ":"), allow_nan=False
+    )
+    if len(output.encode()) > _MAX_RESPONSE_BYTES:
+        output = json.dumps(
+            _failure(
+                "external_error",
+                "结果超过 POCO 的 1 MiB 上限，请缩小查询范围或选择更小的附件；写操作请先确认结果，勿重复提交",
+            ),
+            ensure_ascii=False,
+        )
+    sys.stdout.write(output)
 
 
 if __name__ == "__main__":

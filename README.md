@@ -7,18 +7,18 @@
 | 目录 | 连接器 | Key | 版本 | 主要能力 |
 | --- | --- | --- | --- | --- |
 | [`agentkey/`](./agentkey/) | AgentKey | `agentkey` | `1.0.0` | 网页、社交媒体、金融、电商和企业等实时数据查询 |
-| [`baidu-netdisk/`](./baidu-netdisk/) | 百度网盘 | `baidu-netdisk` | `1.0.0` | 文件浏览与检索、文件整理、分享链接、容量查询及 URL 转存 |
+| [`baidu-netdisk/`](./baidu-netdisk/) | 百度网盘 | `baidu-netdisk` | `1.0.1` | 文件浏览与检索、文件整理、分享链接、容量查询及 URL 转存 |
 | [`canva/`](./canva/) | Canva可画 | `canva` | `1.0.0` | 设计生成与编辑、素材和品牌资源、模板填充、导入导出及评论协作 |
 | [`dingtalk/`](./dingtalk/) | 钉钉 | `dingtalk` | `1.0.2` | 日程、待办、文档、云盘、聊天、通讯录及业务数据操作 |
 | [`feishu/`](./feishu/) | 飞书 | `feishu` | `1.0.0` | 日历、任务、文档、云盘、表格、审批、聊天、邮件及业务数据操作 |
-| [`github/`](./github/) | GitHub | `github` | `1.0.0` | 仓库与代码搜索、文件提交、Issue 管理、PR 评审与合并、用户及团队查询 |
+| [`github/`](./github/) | GitHub | `github` | `1.0.1` | 仓库与代码搜索、文件提交、Issue 管理、PR 评审与合并、用户及团队查询 |
 | [`ima/`](./ima/) | IMA | `ima-mcp` | `1.1.0` | 笔记与知识库的搜索、读取、创建、导入及文件上传 |
 | [`kdocs/`](./kdocs/) | 金山文档 | `kdocs` | `1.4.12` | 文档、表格、PDF、演示文稿、云盘与知识库操作 |
-| [`netease-mail/`](./netease-mail/) | 网易邮箱 | `netease-mail` | `1.0.0` | 邮件收发、搜索、附件获取、文件夹查询及已读状态管理 |
-| [`notion/`](./notion/) | Notion | `notion` | `1.0.0` | 工作区检索、知识沉淀、会议准备、研究文档及需求任务拆解 |
+| [`netease-mail/`](./netease-mail/) | 网易邮箱 | `netease-mail` | `1.0.1` | 邮件收发、搜索、附件获取、文件夹查询及已读状态管理 |
+| [`notion/`](./notion/) | Notion | `notion` | `1.0.1` | 工作区检索、知识沉淀、会议准备、研究文档及需求任务拆解 |
 | [`qingflow/`](./qingflow/) | 轻流 | `qingflow` | `1.0.0` | 应用搭建、表单记录、审批流程、数据导入导出及图表查询 |
-| [`qq-mail/`](./qq-mail/) | QQ 邮箱 | `qq-mail` | `1.0.0` | 邮件读取、搜索、发送、回复、转发、删除与附件获取 |
-| [`tapd/`](./tapd/) | TAPD | `tapd` | `1.0.0` | 需求、缺陷、任务、迭代、评论、工时、Wiki 与测试用例管理 |
+| [`qq-mail/`](./qq-mail/) | QQ 邮箱 | `qq-mail` | `1.1.0` | 通过 IMAP/SMTP 读取、搜索、发送邮件，获取附件并管理已读状态 |
+| [`tapd/`](./tapd/) | TAPD | `tapd` | `1.0.1` | 需求、缺陷、任务、迭代、评论、工时、Wiki 与测试用例管理 |
 | [`tencent-docs/`](./tencent-docs/) | 腾讯文档 | `tencent-docs` | `1.0.0` | 在线文档、表格、文件与知识库操作 |
 | [`tmeet/`](./tmeet/) | 腾讯会议 | `tmeet` | `1.0.0` | 会议、录制、转写、报告、通讯录及会中控制 |
 | [`wecom/`](./wecom/) | 企业微信 | `wecom` | `1.0.0` | 通讯录、消息、文档、表格、智能文档、日程、会议和待办 |

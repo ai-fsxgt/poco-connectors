@@ -2,10 +2,13 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "qq-mail",
-  "package_version": "1.0.0",
-  "authorization_contract_version": "1",
+  "package_version": "1.1.0",
+  "authorization_contract_version": "2",
   "default_locale": "zh-CN",
-  "locales": ["zh-CN", "en"],
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
   "presentation": {
     "name_key": "name",
     "description_key": "description",
@@ -38,10 +41,15 @@
             "description_key": "capabilities.attachments.description"
           },
           {
-            "title_key": "capabilities.safety.title",
-            "description_key": "capabilities.safety.description"
+            "title_key": "capabilities.mailboxes.title",
+            "description_key": "capabilities.mailboxes.description"
           }
         ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
       },
       {
         "type": "example_list",
@@ -56,8 +64,8 @@
             "description_key": "examples.search.description"
           },
           {
-            "title_key": "examples.reply.title",
-            "description_key": "examples.reply.description"
+            "title_key": "examples.send.title",
+            "description_key": "examples.send.description"
           }
         ]
       }
@@ -77,69 +85,100 @@
   "connection_policy": "single_per_user",
   "permission_key": "feature.connector.qq-mail",
   "configuration": {
-    "fields": [
-      {
-        "key": "endpoint",
-        "type": "url",
-        "label_key": "configuration.endpoint.label",
-        "description_key": "configuration.endpoint.description",
-        "placeholder_key": "configuration.endpoint.placeholder",
-        "group_key": "configuration.group",
-        "required": true,
-        "default": "https://api.mail.qq.com/mcp",
-        "max_length": 2048
-      }
-    ]
+    "fields": []
   },
   "auth": {
     "strategy": "program",
-    "interaction": "redirect",
-    "fields": [],
-    "options": {"type": "program"}
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "email",
+        "type": "text",
+        "label_key": "authorization.email.label",
+        "description_key": "authorization.email.description",
+        "placeholder_key": "authorization.email.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 320
+      },
+      {
+        "key": "authorization_code",
+        "type": "secret",
+        "label_key": "authorization.authorization_code.label",
+        "description_key": "authorization.authorization_code.description",
+        "placeholder_key": "authorization.authorization_code.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      }
+    ],
+    "options": {
+      "type": "program"
+    }
   },
   "runtime": {
     "adapter": "program",
     "transport": "program",
-    "options": {"type": "program"}
+    "options": {
+      "type": "program"
+    }
   },
   "program": {
     "protocol_version": 1,
     "runtime": "python",
     "entrypoint": "provider/main.py",
-    "capabilities": ["credential_refresh"]
+    "capabilities": []
   },
   "tool_policy": {
     "default": "deny",
     "rules": [
-      {"tool": "GetMe", "effect": "read", "retry": "safe"},
-      {"tool": "ListMessages", "effect": "read", "retry": "safe"},
-      {"tool": "GetMessage", "effect": "read", "retry": "safe"},
-      {"tool": "SearchMessages", "effect": "read", "retry": "safe"},
-      {"tool": "ListAttachments", "effect": "read", "retry": "safe"},
-      {"tool": "DownloadAttachment", "effect": "read", "retry": "safe"},
       {
-        "tool": "SendMessage",
+        "tool": "check",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "search",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "fetch",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "download",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "mark_read",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "tool": "mark_unread",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "tool": "list_mailboxes",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "send",
         "effect": "write",
         "retry": "never",
         "confirmation": "user_required"
       },
       {
-        "tool": "ReplyMessage",
-        "effect": "write",
-        "retry": "never",
-        "confirmation": "user_required"
-      },
-      {
-        "tool": "ForwardMessage",
-        "effect": "write",
-        "retry": "never",
-        "confirmation": "user_required"
-      },
-      {
-        "tool": "DeleteMessage",
-        "effect": "destructive",
-        "retry": "never",
-        "confirmation": "user_required"
+        "tool": "test_connection",
+        "effect": "read",
+        "retry": "safe"
       }
     ]
   },

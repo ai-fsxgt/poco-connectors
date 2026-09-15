@@ -1,0 +1,303 @@
+{
+  "check": {
+    "description": "查看邮件，按服务器收信时间倒序返回；不标记已读。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "mailbox": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\r\\n\\u0000]+$",
+          "default": "INBOX",
+          "description": "邮箱文件夹名称，使用 list_mailboxes 返回的 name。"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 10
+        },
+        "recent": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,5}[mhd]$",
+          "description": "按服务器收信时间筛选，例如 30m、2h、7d。"
+        },
+        "unseen": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "search": {
+    "description": "按主题、发件人、时间及已读状态搜索邮件；中文关键词可用，不标记已读。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "mailbox": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\r\\n\\u0000]+$",
+          "default": "INBOX",
+          "description": "邮箱文件夹名称，使用 list_mailboxes 返回的 name。"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 20
+        },
+        "recent": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,5}[mhd]$",
+          "description": "按服务器收信时间筛选，例如 30m、2h、7d。"
+        },
+        "unseen": {
+          "type": "boolean",
+          "default": false
+        },
+        "seen": {
+          "type": "boolean",
+          "default": false
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "from": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "fetch": {
+    "description": "按 UID 读取一封邮件正文和附件信息，不标记已读。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967295,
+          "description": "当前邮箱文件夹内的邮件 UID，取自 check/search 结果。"
+        },
+        "mailbox": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\r\\n\\u0000]+$",
+          "default": "INBOX",
+          "description": "邮箱文件夹名称，使用 list_mailboxes 返回的 name。"
+        }
+      },
+      "required": [
+        "uid"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "download": {
+    "description": "获取邮件附件，作为 POCO 文件资源交付到任务工作区。单次资源及 JSON 合计不得超过 1 MiB。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967295,
+          "description": "当前邮箱文件夹内的邮件 UID，取自 check/search 结果。"
+        },
+        "mailbox": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\r\\n\\u0000]+$",
+          "default": "INBOX",
+          "description": "邮箱文件夹名称，使用 list_mailboxes 返回的 name。"
+        },
+        "file": {
+          "type": "string",
+          "minLength": 1,
+          "description": "附件文件名；省略则下载全部附件。"
+        }
+      },
+      "required": [
+        "uid"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "mark_read": {
+    "description": "将指定 UID 的邮件标记为已读，不自动重试。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "uids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4294967295,
+            "description": "当前邮箱文件夹内的邮件 UID，取自 check/search 结果。"
+          },
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true
+        },
+        "mailbox": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\r\\n\\u0000]+$",
+          "default": "INBOX",
+          "description": "邮箱文件夹名称，使用 list_mailboxes 返回的 name。"
+        }
+      },
+      "required": [
+        "uids"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "mark_unread": {
+    "description": "将指定 UID 的邮件标记为未读，不自动重试。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "uids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4294967295,
+            "description": "当前邮箱文件夹内的邮件 UID，取自 check/search 结果。"
+          },
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true
+        },
+        "mailbox": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\r\\n\\u0000]+$",
+          "default": "INBOX",
+          "description": "邮箱文件夹名称，使用 list_mailboxes 返回的 name。"
+        }
+      },
+      "required": [
+        "uids"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "list_mailboxes": {
+    "description": "列出邮箱文件夹，返回可用于其他工具的文件夹名称。",
+    "input_schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "send": {
+    "description": "发送邮件，支持 HTML、抄送、密送及 Base64 附件。需用户确认，不自动重试；超时或部分收件人被拒绝时不要重复整封发送。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\r\\n\\u0000]+$",
+          "description": "收件人地址，多个地址用英文逗号分隔。"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\r\\n\\u0000]+$"
+        },
+        "body": {
+          "type": "string",
+          "default": ""
+        },
+        "html": {
+          "type": "boolean",
+          "default": false
+        },
+        "cc": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\r\\n\\u0000]+$"
+        },
+        "bcc": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\r\\n\\u0000]+$"
+        },
+        "from": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\r\\n\\u0000]+$",
+          "description": "发件人地址，默认授权邮箱；别名是否可用由邮箱服务决定。"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "filename": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255,
+                "pattern": "^[^/\\\\\\r\\n\\u0000]+$"
+              },
+              "mime_type": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9!#$&^_.+\\-]+/[A-Za-z0-9!#$&^_.+\\-]+$"
+              },
+              "data": {
+                "type": "string",
+                "description": "附件内容的标准 Base64 编码。"
+              }
+            },
+            "required": [
+              "filename",
+              "mime_type",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          "description": "由 Agent 读取任务文件后传入内容，不能传入 Backend 或工作区路径。"
+        }
+      },
+      "required": [
+        "to",
+        "subject"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "test_connection": {
+    "description": "检查 IMAP/SMTP 登录和收件箱访问，不发送邮件。",
+    "input_schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}
