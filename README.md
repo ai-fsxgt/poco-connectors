@@ -64,8 +64,8 @@ zip -X -r ../weknora-1.0.2.zip . \
 
 更完整的结构校验、Provider 协议、OAuth、工具策略和发布步骤见：
 
-- [连接器安装包开发手册](./docs/connector-package-development.mdx)
-- [可安装连接器框架设计](./docs/connector-framework-design.mdx)
+- [连接器安装包开发手册](https://ai-agent.fsxgt.cn/docs/development/connector-package-development)
+- [可安装连接器框架设计](https://ai-agent.fsxgt.cn/docs/development/connector-framework-design)
 
 ## 安装与验收
 
