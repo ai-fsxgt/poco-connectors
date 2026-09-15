@@ -2,8 +2,8 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "tmeet",
-  "package_version": "1.0.0",
-  "authorization_contract_version": "1",
+  "package_version": "1.1.0",
+  "authorization_contract_version": "2",
   "default_locale": "zh-CN",
   "locales": ["zh-CN", "en"],
   "presentation": {
@@ -35,7 +35,42 @@
   },
   "connection_policy": "single_per_user",
   "permission_key": "feature.connector.tmeet",
-  "configuration": {"fields": []},
+  "configuration": {
+    "fields": [
+      {
+        "key": "corp_id",
+        "type": "text",
+        "label_key": "configuration.corpId.label",
+        "description_key": "configuration.corpId.description",
+        "placeholder_key": "configuration.corpId.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 255
+      },
+      {
+        "key": "sdk_id",
+        "type": "text",
+        "label_key": "configuration.sdkId.label",
+        "description_key": "configuration.sdkId.description",
+        "placeholder_key": "configuration.sdkId.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 255
+      },
+      {
+        "key": "secret",
+        "type": "secret",
+        "label_key": "configuration.secret.label",
+        "description_key": "configuration.secret.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "min_length": 1,
+        "max_length": 255
+      }
+    ]
+  },
   "auth": {
     "strategy": "program",
     "interaction": "redirect",

@@ -2,7 +2,7 @@
   "name": "Tencent Meeting",
   "description": "Connect Tencent Meeting to manage meetings, recordings, transcripts, and reports.",
   "authorization.title": "Tencent Meeting authorization required",
-  "authorization.description": "A Tencent Meeting authorization page will open during connection.",
+  "authorization.description": "An administrator must first configure a Tencent Meeting third-party app. The official authorization page will return to Poco after authorization succeeds.",
   "capabilities.title": "Capabilities",
   "capabilities.meetings.title": "Meeting management",
   "capabilities.meetings.description": "Create, query, update meetings, and manage invitees.",
@@ -13,5 +13,14 @@
   "capabilities.control.title": "In-meeting controls",
   "capabilities.control.description": "Call, remove, or operate waiting-room members after confirmation.",
   "actions.reauthorize": "Reauthorize",
-  "actions.openService": "Open Tencent Meeting"
+  "actions.openService": "Open Tencent Meeting",
+  "configuration.group": "Tencent Meeting OAuth app",
+  "configuration.corpId.label": "Enterprise ID",
+  "configuration.corpId.description": "Enterprise ID of the Tencent Meeting third-party app owner.",
+  "configuration.corpId.placeholder": "For example: 200000999",
+  "configuration.sdkId.label": "App ID",
+  "configuration.sdkId.description": "App ID (SDK ID) of the Tencent Meeting third-party app.",
+  "configuration.sdkId.placeholder": "For example: 10066660661",
+  "configuration.secret.label": "Client secret",
+  "configuration.secret.description": "Client secret of the Tencent Meeting third-party app, stored encrypted by Poco."
 }

@@ -20,7 +20,7 @@
 | [`qq-mail/`](./qq-mail/) | QQ 邮箱 | `qq-mail` | `1.1.0` | 通过 IMAP/SMTP 读取、搜索、发送邮件，获取附件并管理已读状态 |
 | [`tapd/`](./tapd/) | TAPD | `tapd` | `1.0.1` | 需求、缺陷、任务、迭代、评论、工时、Wiki 与测试用例管理 |
 | [`tencent-docs/`](./tencent-docs/) | 腾讯文档 | `tencent-docs` | `1.0.0` | 在线文档、表格、文件与知识库操作 |
-| [`tmeet/`](./tmeet/) | 腾讯会议 | `tmeet` | `1.0.0` | 会议、录制、转写、报告、通讯录及会中控制 |
+| [`tmeet/`](./tmeet/) | 腾讯会议 | `tmeet` | `1.1.0` | 会议、录制、转写、报告、通讯录及会中控制 |
 | [`wecom/`](./wecom/) | 企业微信 | `wecom` | `1.0.0` | 通讯录、消息、文档、表格、智能文档、日程、会议和待办 |
 | [`weknora/`](./weknora/) | WeKnoraX 知识库 | `knowledge-base` | `1.0.2` | 检索用户已授权知识空间中的文档与知识 |
 

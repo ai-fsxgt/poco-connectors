@@ -4,17 +4,21 @@ import json
 import secrets
 import sys
 import time
-import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from string import Formatter
 from typing import Any
+from urllib.parse import quote, urlencode
 
 import httpx
 
-_AUTH_BASE = "https://work.medialab.qq.com"
-_AUTH_PAGE = "https://meeting.tencent.com"
+_AUTHORIZE_URL = "https://meeting.tencent.com/marketplace/authorize.html"
+_ACCESS_TOKEN_URL = (
+    "https://meeting.tencent.com/wemeet-webapi/v2/oauth2/oauth/access_token"
+)
+_REFRESH_TOKEN_URL = (
+    "https://meeting.tencent.com/wemeet-webapi/v2/oauth2/oauth/refresh_token"
+)
 _API_BASE = "https://api.meeting.qq.com"
-_CLI_VERSION = "1.0.18"
 
 
 class ProgramError(Exception):
@@ -98,9 +102,6 @@ def _credential_values(values: object) -> dict[str, str]:
         if not isinstance(value, str) or not value.strip() or len(value.strip()) > 16384:
             raise ProgramError("bad_request", f"腾讯会议授权信息缺少 {key}")
         result[key] = value.strip()
-    device_id = values.get("device_id")
-    if isinstance(device_id, str) and device_id.strip():
-        result["device_id"] = device_id.strip()
     return result
 
 
@@ -134,122 +135,162 @@ def _json_response(response: httpx.Response, action: str) -> dict[str, Any]:
     return payload
 
 
-def _request_auth(method: str, path: str, payload: dict[str, Any]) -> dict[str, Any]:
+def _request_auth(url: str, payload: dict[str, Any]) -> dict[str, Any]:
     try:
         with httpx.Client(timeout=httpx.Timeout(20, connect=8), follow_redirects=False) as client:
-            response = client.request(method, f"{_AUTH_BASE}{path}", json=payload)
+            response = client.post(url, json=payload)
     except httpx.RequestError as exc:
         raise ProgramError("unavailable", "腾讯会议授权服务连接失败，请稍后重试", retryable=True) from exc
-    return _json_response(response, "授权")
+    result = _json_response(response, "授权")
+    response_code = result.get("code")
+    if response_code not in {None, 0, "0"}:
+        message = result.get("message")
+        raise ProgramError("authorization_required", str(message or "腾讯会议授权失败"))
+    return result
 
 
-def authorization_identity(_context: dict[str, Any]) -> dict[str, Any]:
-    return {"identity": {"provider": "tencent-meeting", "api": _API_BASE}}
+def _configuration(context: dict[str, Any]) -> tuple[str, str, str]:
+    configuration = _validate_object(context.get("configuration"), "configuration")
+    public = _validate_object(configuration.get("public"), "configuration.public")
+    secrets_config = _validate_object(
+        configuration.get("secret"), "configuration.secret"
+    )
+    corp_id = public.get("corp_id")
+    sdk_id = public.get("sdk_id")
+    app_secret = secrets_config.get("secret")
+    return (
+        corp_id.strip() if isinstance(corp_id, str) else "",
+        sdk_id.strip() if isinstance(sdk_id, str) else "",
+        app_secret.strip() if isinstance(app_secret, str) else "",
+    )
 
 
-def authorization_begin(_context: dict[str, Any]) -> dict[str, Any]:
-    device_id = str(uuid.uuid4())
-    payload = _request_auth("POST", "/v2/oauth2/oauth/cli-oauth-init", {"device_id": device_id})
-    data = payload.get("data") if isinstance(payload.get("data"), dict) else payload
-    auth_code = data.get("auth_code") if isinstance(data, dict) else None
-    if not isinstance(auth_code, str) or not auth_code:
-        raise ProgramError("external_error", "腾讯会议未返回授权码")
+def configuration_validate(context: dict[str, Any]) -> dict[str, Any]:
+    corp_id, sdk_id, app_secret = _configuration(context)
+    if context.get("require_complete") and not all((corp_id, sdk_id, app_secret)):
+        raise ProgramError(
+            "bad_request", "请配置腾讯会议第三方应用的企业 ID、应用 ID 和客户密钥"
+        )
+    return {}
+
+
+def authorization_identity(context: dict[str, Any]) -> dict[str, Any]:
+    corp_id, sdk_id, _ = _configuration(context)
     return {
-        "type": "redirect",
-        "authorize_url": f"{_AUTH_PAGE}/marketplace/tencentmeeting-cli-auth.html?code={auth_code}",
-        "private_context": {"device_id": device_id, "auth_code": auth_code},
+        "identity": {
+            "provider": "tencent-meeting",
+            "corp_id": corp_id,
+            "sdk_id": sdk_id,
+            "api": _API_BASE,
+        }
     }
 
 
-def _authorization_context(context: dict[str, Any]) -> tuple[str, str]:
-    private = context.get("private_context")
-    if not isinstance(private, dict):
-        raise ProgramError("bad_request", "腾讯会议 OAuth 授权上下文无效")
-    device_id, auth_code = private.get("device_id"), private.get("auth_code")
-    if not isinstance(device_id, str) or not device_id or not isinstance(auth_code, str) or not auth_code:
-        raise ProgramError("bad_request", "腾讯会议 OAuth 授权上下文缺少设备或授权码")
-    return device_id, auth_code
+def authorization_begin(context: dict[str, Any]) -> dict[str, Any]:
+    corp_id, sdk_id, _ = _configuration(context)
+    query = urlencode(
+        {
+            "corp_id": corp_id,
+            "sdk_id": sdk_id,
+            "redirect_uri": context["redirect_uri"],
+            "state": context["state"],
+        },
+        quote_via=quote,
+    )
+    return {
+        "type": "redirect",
+        "authorize_url": f"{_AUTHORIZE_URL}?{query}",
+        "private_context": {},
+    }
 
 
-def _token_credential(data: dict[str, Any], device_id: str | None = None) -> dict[str, Any]:
+def _token_credential(data: dict[str, Any], sdk_id: str) -> dict[str, Any]:
     values = {
         key: data.get(key)
-        for key in ("access_token", "refresh_token", "open_id", "sdk_id")
+        for key in ("access_token", "refresh_token", "open_id")
     }
     if not all(isinstance(value, str) and value for value in values.values()):
         raise ProgramError("external_error", "腾讯会议令牌响应缺少必要字段")
-    if device_id:
-        values["device_id"] = device_id
-    expires = data.get("expires") or data.get("access_token_expire_time")
-    refresh_expires = data.get("refresh_token_expires") or data.get("refresh_token_expire_time")
-    credential: dict[str, Any] = {"values": values}
+    values["sdk_id"] = sdk_id
+    expires = data.get("expires")
+    credential: dict[str, Any] = {
+        "values": values,
+        "refresh_expires_at": (
+            datetime.now(timezone.utc) + timedelta(days=30)
+        ).isoformat(),
+    }
     if isinstance(expires, (int, float, str)) and str(expires).isdigit():
         timestamp = int(str(expires))
         if timestamp < int(time.time()):
             timestamp = int(time.time()) + int(expires)
         credential["expires_at"] = datetime.fromtimestamp(timestamp, timezone.utc).isoformat()
-    if isinstance(refresh_expires, (int, float, str)) and str(refresh_expires).isdigit():
-        timestamp = int(str(refresh_expires))
-        if timestamp < int(time.time()):
-            timestamp = int(time.time()) + int(refresh_expires)
-        credential["refresh_expires_at"] = datetime.fromtimestamp(timestamp, timezone.utc).isoformat()
     return credential
 
 
 def authorization_complete(context: dict[str, Any]) -> dict[str, Any]:
+    corp_id, sdk_id, app_secret = _configuration(context)
     submission = context.get("submission")
     if not isinstance(submission, dict) or submission.get("type") != "oauth_code":
-        raise ProgramError("bad_request", "腾讯会议连接器需要完成浏览器授权")
-    device_id, auth_code = _authorization_context(context)
+        raise ProgramError("bad_request", "腾讯会议连接器需要 OAuth 授权码")
+    auth_code = submission.get("code")
+    if not isinstance(auth_code, str) or not auth_code:
+        raise ProgramError("bad_request", "腾讯会议 OAuth 授权码无效")
     payload = _request_auth(
-        "POST",
-        "/v2/oauth2/oauth/cli-oauth-poll",
-        {"device_id": device_id, "auth_code": auth_code},
+        _ACCESS_TOKEN_URL,
+        {"sdk_id": sdk_id, "secret": app_secret, "auth_code": auth_code},
     )
     data = payload.get("data")
-    if not isinstance(data, dict) or not data.get("access_token"):
-        raise ProgramError("authorization_pending", "腾讯会议授权尚未完成，请完成浏览器授权后重试", retryable=True)
-    credential = _token_credential(data, device_id)
+    if not isinstance(data, dict):
+        raise ProgramError("external_error", "腾讯会议令牌响应格式错误")
+    credential = _token_credential(data, sdk_id)
+    scopes = data.get("scopes")
+    granted_scopes = (
+        [scope for scope in scopes if isinstance(scope, str)]
+        if isinstance(scopes, list)
+        else []
+    )
     return {
         "external_account_id": credential["values"]["open_id"],
         "external_account_name": "腾讯会议用户",
         "credential": credential,
-        "public_metadata": {"api_endpoint": _API_BASE},
+        "granted_scopes": granted_scopes,
+        "public_metadata": {
+            "api_endpoint": _API_BASE,
+            "corp_id": corp_id,
+            "open_corp_id": data.get("open_corp_id"),
+        },
     }
 
 
 def credential_refresh(context: dict[str, Any]) -> dict[str, Any]:
+    _, sdk_id, _ = _configuration(context)
     credential = context.get("credential")
     if isinstance(credential, dict):
         credentials = _credential_values(credential.get("values", credential))
     else:
         credentials = _credentials(context)
-    device_id = credentials.get("device_id") or str(uuid.uuid4())
     payload = _request_auth(
-        "POST",
-        "/v2/oauth2/oauth/cli-refresh-token",
-        {"device_id": device_id, "refresh_token": credentials["refresh_token"], "open_id": credentials["open_id"], "sdk_id": credentials["sdk_id"]},
+        _REFRESH_TOKEN_URL,
+        {
+            "refresh_token": credentials["refresh_token"],
+            "sdk_id": sdk_id,
+            "open_id": credentials["open_id"],
+        },
     )
     data = payload.get("data")
     if not isinstance(data, dict):
         raise ProgramError("external_error", "腾讯会议刷新令牌响应格式错误")
-    return {"credential": _token_credential(data, device_id)}
+    return {"credential": _token_credential(data, sdk_id)}
 
 
-def _api_headers(credentials: dict[str, str], command: str) -> dict[str, str]:
-    device_id = credentials.get("device_id") or secrets.token_hex(16)
+def _api_headers(credentials: dict[str, str]) -> dict[str, str]:
     return {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Access-Token": credentials["access_token"],
-        "Open-Id": credentials["open_id"],
-        "X-TC-Nonce": str(int(time.time() * 1_000_000) + secrets.randbelow(1_000_000)),
+        "AccessToken": credentials["access_token"],
+        "OpenId": credentials["open_id"],
+        "X-TC-Nonce": str(secrets.randbelow(2_147_483_646) + 1),
         "X-TC-Timestamp": str(int(time.time())),
-        "Tmeet-Unique-ID": f"{credentials['open_id']}*{device_id}",
-        "Tmeet-Device-Info": "POCO;Python;Linux",
-        "Tmeet-Open-Source": "CLI",
-        "Tmeet-Cli-Ver": _CLI_VERSION,
-        "Tmeet-Cli-Name": command,
     }
 
 
@@ -314,7 +355,7 @@ def _invoke(command: str, arguments: dict[str, Any], credentials: dict[str, str]
     if command in {"meeting_get", "meeting_update"}:
         params.pop("meeting_code", None)
     method = spec["method"]
-    headers = _api_headers(credentials, command)
+    headers = _api_headers(credentials)
     try:
         with httpx.Client(timeout=httpx.Timeout(30, connect=8), follow_redirects=False) as client:
             response = client.request(
@@ -327,10 +368,6 @@ def _invoke(command: str, arguments: dict[str, Any], credentials: dict[str, str]
     except httpx.RequestError as exc:
         raise ProgramError("unavailable", "腾讯会议 API 连接失败，请稍后重试", retryable=True) from exc
     return _json_response(response, command)
-
-
-def configuration_validate(_context: dict[str, Any]) -> dict[str, Any]:
-    return {}
 
 
 def tools_discover(_context: dict[str, Any]) -> dict[str, Any]:
