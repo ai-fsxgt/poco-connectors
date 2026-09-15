@@ -1,11 +1,11 @@
 {
   "name": "Tencent Docs",
-  "description": "Connect Tencent Docs to create, read, edit, and manage online documents.",
+  "description": "Use four official Tencent Docs MCP services to create, read, edit, and manage online documents.",
   "authorization.title": "Tencent Docs authorization required",
-  "authorization.description": "Paste the complete Authorization token from Tencent Docs.",
+  "authorization.description": "Get a token from the official Tencent Docs authorization page and paste it here; the same token is used for all four MCP services.",
   "authorization.token.label": "Tencent Docs token",
-  "authorization.token.description": "Enter the complete Authorization value, usually starting with Bearer.",
-  "authorization.token.placeholder": "Bearer ...",
+  "authorization.token.description": "Enter the raw token shown on the authorization page. Poco sends it directly in the Authorization header, so do not add a Bearer prefix.",
+  "authorization.token.placeholder": "Paste Tencent Docs token",
   "capabilities.title": "Capabilities",
   "capabilities.documents.title": "Online documents",
   "capabilities.documents.description": "Create, read, and edit Tencent Docs and smart documents.",
@@ -15,6 +15,8 @@
   "capabilities.files.description": "Search, import, move, copy, and manage cloud files.",
   "capabilities.safety.title": "Risk controls",
   "capabilities.safety.description": "Writes, deletions, and unknown-risk operations follow explicit policies.",
+  "help.title": "Help",
+  "help.token.title": "Official Tencent Docs token and connection guide",
   "actions.reauthorize": "Reauthorize",
   "actions.openService": "Open Tencent Docs"
 }

@@ -2,10 +2,13 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "tencent-docs",
-  "package_version": "1.0.0",
-  "authorization_contract_version": "1",
+  "package_version": "1.1.0",
+  "authorization_contract_version": "2",
   "default_locale": "zh-CN",
-  "locales": ["zh-CN", "en"],
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
   "presentation": {
     "name_key": "name",
     "description_key": "description",
@@ -38,6 +41,16 @@
             "description_key": "capabilities.safety.description"
           }
         ]
+      },
+      {
+        "type": "help_links",
+        "title_key": "help.title",
+        "items": [
+          {
+            "title_key": "help.token.title",
+            "url": "https://docs.qq.com/scenario/open-claw.html?nlc=1"
+          }
+        ]
       }
     ],
     "connection_actions": [
@@ -58,7 +71,7 @@
     "fields": []
   },
   "auth": {
-    "strategy": "program",
+    "strategy": "static_credentials",
     "interaction": "form",
     "fields": [
       {
@@ -73,60 +86,1620 @@
       }
     ],
     "options": {
-      "type": "program"
+      "type": "static_credentials",
+      "verification": "mcp_initialize_and_list_tools",
+      "account_identity": "connection_id"
     }
   },
   "runtime": {
-    "adapter": "program",
-    "transport": "program",
+    "adapter": "remote_mcp",
+    "transport": "streamable_http",
     "options": {
-      "type": "program"
+      "type": "remote_mcp",
+      "servers": [
+        {
+          "key": "tencent-docs",
+          "endpoint": {
+            "url": "https://docs.qq.com/openapi/mcp"
+          }
+        },
+        {
+          "key": "slide-mcp",
+          "endpoint": {
+            "url": "https://docs.qq.com/api/v6/slide/mcp"
+          }
+        },
+        {
+          "key": "doc-mcp",
+          "endpoint": {
+            "url": "https://docs.qq.com/api/v6/doc/mcp"
+          }
+        },
+        {
+          "key": "sheet-mcp",
+          "endpoint": {
+            "url": "https://docs.qq.com/api/v6/sheet/mcp"
+          }
+        }
+      ],
+      "credential_binding": {
+        "type": "http_header",
+        "name": "Authorization",
+        "credential_field": "token"
+      }
     }
-  },
-  "program": {
-    "protocol_version": 1,
-    "runtime": "python",
-    "entrypoint": "provider/main.py",
-    "capabilities": []
   },
   "tool_policy": {
     "default": "deny",
     "rules": [
       {
-        "tool": "search_tools",
+        "server": "tencent-docs",
+        "tool": "get_content",
         "effect": "read",
         "retry": "safe"
       },
       {
-        "tool": "execute_read_tool",
+        "server": "tencent-docs",
+        "tool": "manage.folder_list",
         "effect": "read",
         "retry": "safe"
       },
       {
-        "tool": "execute_write_tool",
+        "server": "tencent-docs",
+        "tool": "manage.query_folder_meta",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.search_file",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.query_file_info",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.recent_online_file",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.get_privilege",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.import_progress",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.export_progress",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "query_space_list",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "query_space_node",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.list_tables",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.list_views",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.list_fields",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.list_records",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "ocr.extract",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartcanvas.get_top_level_pages",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartcanvas.read",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartcanvas.find",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "upload_image",
         "effect": "write",
         "retry": "never",
         "confirmation": "not_required"
       },
       {
-        "tool": "execute_confirmed_write_tool",
+        "server": "tencent-docs",
+        "tool": "scrape_url",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "scrape_progress",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.create_file",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.rename_file_title",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.move_file",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.move_file_to_space",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.copy_file",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.pre_import",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.async_import",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.export_file",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "create_space",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "create_space_node",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.add_table",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.add_view",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.add_fields",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.update_fields",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.add_records",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.update_records",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "create_mind_by_markdown",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "create_flowchart_by_mermaid",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "ocr.toword",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "ocr.toexcel",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "create_smartcanvas_by_mdx",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "manage.set_privilege",
         "effect": "write",
         "retry": "never",
         "confirmation": "user_required"
       },
       {
-        "tool": "execute_destructive_tool",
+        "server": "tencent-docs",
+        "tool": "manage.delete_file",
         "effect": "destructive",
         "retry": "never",
         "confirmation": "user_required"
       },
       {
-        "tool": "execute_unknown_tool",
-        "effect": "unknown",
+        "server": "tencent-docs",
+        "tool": "delete_space_node",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.delete_table",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.delete_view",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.delete_fields",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartsheet.delete_records",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "tencent-docs",
+        "tool": "smartcanvas.edit",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.find",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.get_images",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.get_last_operable_pos",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.get_outline",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.resolve_document_structure",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.get_text_property",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.get_paragraph_property",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.get_comments",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.compare_documents",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.get_table_info",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.list_recent_ai_edits",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_paragraph",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_paragraph_with_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.replace_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.find_and_replace",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.update_text_property",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.modify_paragraph",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_task",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_image",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_page_break",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_table",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_rows",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_cols",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_comment",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.replace_image",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_markdown",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_normal_link",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_header",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_footer",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_code_block",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_footnote",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_border",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_numbering",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_html_content",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_attachment",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.pre_insert_attachment",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.set_table_properties",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.set_page_number",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.set_table_layout",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.copy_format",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.create_with_markdown",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.replace_bookmarks",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.insert_math",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.delete_table",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.accept_all_revisions",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "doc-mcp",
+        "tool": "doc.revert_revision",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_info",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_page_info",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_master_info",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_shape_info",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_find_text",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_text",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_chart_info",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_group_info",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_list_anim_types",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_themes",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_list_builtin_themes",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_comments",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_sections",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_design",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_get_style_design_guide",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_slide",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_slides",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_duplicate_slide",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_move_slide",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_page_properties",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_page_number",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_datetime",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_notes",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_shape",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_shapes",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_line_shape",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_line_shapes",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_image",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_texts",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_reorder_shape",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_shape_properties",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_append_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_insert_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_find_replace_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_text_property",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_table",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_insert_table_rows",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_insert_table_cols",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_merge_table_cells",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_unmerge_table_cells",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_cell_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_chart",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_change_chart_type",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_update_chart_data",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_update_chart_title",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_update_chart_legend",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_update_chart_axis",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_update_chart_gridlines",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_update_chart_series_style",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_update_chart_data_labels",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_group_shapes",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_ungroup_shapes",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_reorder_shapes_in_group",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_update_group_shape_properties",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_anim",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_move_anim",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_anim_properties",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_anim_trigger",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_theme",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_comment",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_modify_comment",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_section",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_move_section",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_rename_section",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_export_pages_to_image_urls",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_notes_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_move_slides_to_section",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_reply_comment",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_design",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_page_with_jsx",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_slide_size",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_set_default_font",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_remove_slide",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_remove_shapes",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_delete_text",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_delete_table_rows",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_delete_table_cols",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_remove_anim",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_remove_comment",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_remove_sections",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_remove_section_with_slides",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "slide-mcp",
+        "tool": "slide_add_footer",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.get_sheet_info",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.get_cell_data",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.get_merged_cells",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.get_sheet_object_list",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.find",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.get_cell_style",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.get_charts",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.validate_file_data",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.get_pivot_table_detail",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.get_protect_ranges",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.set_cell_value",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.set_range_value",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.set_cell_style",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.merge_cell",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.insert_dimension",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.set_freeze",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.set_filter",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.remove_filter",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.set_link",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.clear_link",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.unmerge_cell",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.unset_freeze",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.set_dimension_size",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.add_sheet",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.rename_sheet",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.insert_image",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.set_range_value_by_csv",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.move_sheet",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.set_border",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.clear_border",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.add_chart",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.update_chart",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.insert_range",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.add_pivot_table",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.update_pivot_table",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.add_protect_range",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.update_protect_range",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.update_filter",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.move_dimension",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.sort_range",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.delete_dimension",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.clear_range_cells",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.clear_range_style",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.clear_range_all",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.delete_sheet",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.delete_chart",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.delete_range",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.remove_pivot_table",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "server": "sheet-mcp",
+        "tool": "sheet.delete_protect_range",
+        "effect": "destructive",
         "retry": "never",
         "confirmation": "user_required"
       }
     ]
   },
-  "skills": []
+  "skills": [
+    {
+      "key": "tencent-docs",
+      "path": "skills/tencent-docs"
+    }
+  ]
 }
