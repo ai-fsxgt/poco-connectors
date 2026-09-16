@@ -15,8 +15,9 @@ from typing import Any
 CLI_VERSION = "1.0.95"
 ARCHIVE_NAME = f"lark-cli-{CLI_VERSION}-linux-amd64.tar.gz"
 ARCHIVE_SHA256 = "7da92d426b7d000908c76a36b87a7d0357c270debf4c7149bbc6010b20d2541e"
-EXPECTED_API_COMMANDS = 244
-EXPECTED_SHORTCUT_COMMANDS = 517
+OFFICIAL_SCOPES_SHA256 = "0756ce2586c91eee16cb8f284050b098ca4943c06760b687426d3f5043af3e16"
+EXPECTED_API_COMMANDS = 234
+EXPECTED_SHORTCUT_COMMANDS = 516
 MAX_OAUTH_SCOPES = 200
 SUPPORTED_ROOTS = (
     "application",
@@ -65,9 +66,20 @@ UNSUPPORTED_COMMANDS = {
     "apps +plugin-install",
     "apps +plugin-list",
     "apps +plugin-uninstall",
+    "calendar calendars create",
+    "calendar calendars delete",
+    "calendar calendars patch",
     "im +messages-reply",
     "im +messages-send",
+    "im chat.join_requests handle",
+    "im chat.join_requests list",
+    "im chat.moderation get",
+    "im chat.moderation update",
+    "im chat.user_setting batch_update",
     "mail +share-to-chat",
+    "sheets spreadsheets get",
+    "sheets spreadsheets patch",
+    "vc +meeting-screenshot",
 }
 
 
@@ -271,9 +283,42 @@ def _load_shortcut_scopes(path: Path) -> dict[str, dict[str, Any]]:
     return result
 
 
-def _select_oauth_scopes(commands: list[dict[str, Any]]) -> list[str]:
+def _load_official_user_scopes(path: Path) -> set[str]:
+    data = path.read_bytes()
+    if hashlib.sha256(data).hexdigest() != OFFICIAL_SCOPES_SHA256:
+        raise ValueError("official scope metadata checksum does not match")
+    payload = json.loads(data)
+    if payload.get("version") != CLI_VERSION:
+        raise ValueError("official scope metadata does not match the pinned CLI")
+    services = payload.get("scopes")
+    if not isinstance(services, dict) or not services:
+        raise ValueError("official scope metadata is empty")
+    result = {"offline_access"}
+    for service, metadata in services.items():
+        if not isinstance(service, str) or not isinstance(metadata, dict):
+            raise ValueError("official scope metadata contains an invalid service")
+        user_scopes = metadata.get("user_scopes")
+        if not isinstance(user_scopes, list) or not all(
+            isinstance(scope, str) and scope for scope in user_scopes
+        ):
+            raise ValueError(
+                f"official scope metadata contains invalid user scopes: {service}"
+            )
+        result.update(user_scopes)
+    return result
+
+
+def _select_oauth_scopes(
+    commands: list[dict[str, Any]],
+    official_user_scopes: set[str],
+) -> list[str]:
     selected = {"offline_access"}
     for command in commands:
+        unavailable = set(command["scopes"]) - official_user_scopes
+        if unavailable:
+            raise ValueError(
+                f"command uses unpublished user scopes: {command['canonical_path']}"
+            )
         if command["source"] == "shortcut":
             selected.update(command["scopes"])
 
@@ -304,8 +349,13 @@ def _select_oauth_scopes(commands: list[dict[str, Any]]) -> list[str]:
     return result
 
 
-def _generate_catalog(binary: Path, shortcut_scope_path: Path) -> dict[str, Any]:
+def _generate_catalog(
+    binary: Path,
+    shortcut_scope_path: Path,
+    official_scope_path: Path,
+) -> dict[str, Any]:
     shortcut_scopes = _load_shortcut_scopes(shortcut_scope_path)
+    official_user_scopes = _load_official_user_scopes(official_scope_path)
     with tempfile.TemporaryDirectory(prefix="poco-feishu-catalog-") as directory:
         home = Path(directory)
         version = _run(binary, home, "--version").strip()
@@ -332,7 +382,18 @@ def _generate_catalog(binary: Path, shortcut_scope_path: Path) -> dict[str, Any]
                 if isinstance(access_tokens, list) and "user" not in access_tokens:
                     continue
                 schema = schema_payload.get("inputSchema")
-                scopes = metadata.get("scopes", [])
+                raw_scopes = metadata.get("scopes", [])
+                if not isinstance(raw_scopes, list) or not all(
+                    isinstance(scope, str) and scope for scope in raw_scopes
+                ):
+                    raise ValueError(f"API scopes are invalid: {canonical_path}")
+                scopes = [
+                    scope for scope in raw_scopes if scope in official_user_scopes
+                ]
+                if not scopes:
+                    raise ValueError(
+                        f"API has no published user scope: {canonical_path}"
+                    )
                 description = schema_payload.get("description") or description
             else:
                 shortcut = shortcut_scopes.get(canonical_path)
@@ -343,6 +404,10 @@ def _generate_catalog(binary: Path, shortcut_scope_path: Path) -> dict[str, Any]
                 if "user" not in shortcut["auth_types"]:
                     continue
                 scopes = shortcut["user_scopes"]
+                if set(scopes) - official_user_scopes:
+                    raise ValueError(
+                        f"shortcut uses unpublished user scopes: {canonical_path}"
+                    )
             commands.append(
                 {
                     "canonical_path": canonical_path,
@@ -361,7 +426,7 @@ def _generate_catalog(binary: Path, shortcut_scope_path: Path) -> dict[str, Any]
     commands.sort(key=lambda item: item["canonical_path"])
     return {
         "cli_version": CLI_VERSION,
-        "oauth_scopes": _select_oauth_scopes(commands),
+        "oauth_scopes": _select_oauth_scopes(commands, official_user_scopes),
         "commands": commands,
     }
 
@@ -376,8 +441,9 @@ def _validate_archive(archive: Path, sha256: str) -> None:
             raise SystemExit("official archive does not contain a regular lark-cli binary")
 
 
-def _validate_catalog(catalog_path: Path) -> int:
+def _validate_catalog(catalog_path: Path, official_scope_path: Path) -> int:
     catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+    official_user_scopes = _load_official_user_scopes(official_scope_path)
     if catalog.get("cli_version") != CLI_VERSION:
         raise SystemExit("catalog CLI version does not match the pinned runtime")
     commands = catalog.get("commands")
@@ -403,6 +469,10 @@ def _validate_catalog(catalog_path: Path) -> int:
             raise SystemExit(f"command scopes are invalid: {command['canonical_path']}")
         if source == "api" and not scopes:
             raise SystemExit(f"API scopes are unavailable: {command['canonical_path']}")
+        if set(scopes) - official_user_scopes:
+            raise SystemExit(
+                f"catalog contains unpublished user scopes: {command['canonical_path']}"
+            )
         source_counts[source] += 1
         paths.append(command["canonical_path"])
     if len(paths) != len(set(paths)):
@@ -414,7 +484,7 @@ def _validate_catalog(catalog_path: Path) -> int:
         raise SystemExit(f"catalog command counts are incomplete: {source_counts}")
     if UNSUPPORTED_COMMANDS.intersection(paths):
         raise SystemExit("catalog contains commands incompatible with isolated execution")
-    expected_oauth_scopes = _select_oauth_scopes(commands)
+    expected_oauth_scopes = _select_oauth_scopes(commands, official_user_scopes)
     if catalog.get("oauth_scopes") != expected_oauth_scopes:
         raise SystemExit("catalog OAuth scopes do not match the supported commands")
     return len(commands)
@@ -446,6 +516,11 @@ def main() -> None:
         type=Path,
         default=root / "provider/shortcut_scopes.json",
     )
+    parser.add_argument(
+        "--official-scopes",
+        type=Path,
+        default=root / "catalog/scopes.json",
+    )
     parser.add_argument("--upstream-catalog", type=Path, default=root / "catalog")
     parser.add_argument("--sha256", default=ARCHIVE_SHA256)
     parser.add_argument(
@@ -459,6 +534,7 @@ def main() -> None:
         generated = _generate_catalog(
             args.generate_from.resolve(),
             args.shortcut_scopes,
+            args.official_scopes,
         )
         args.catalog.write_text(
             json.dumps(generated, ensure_ascii=False, indent=2) + "\n",
@@ -466,7 +542,7 @@ def main() -> None:
         )
     _validate_archive(args.archive, args.sha256)
     _validate_upstream_catalog(args.upstream_catalog)
-    count = _validate_catalog(args.catalog)
+    count = _validate_catalog(args.catalog, args.official_scopes)
     print(f"Validated official lark-cli {CLI_VERSION} archive and {count} catalog commands")
 
 

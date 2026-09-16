@@ -70,7 +70,7 @@ lark-cli auth login --scope "<missing_scope>" --no-wait --json  # 按具体 scop
 
 ```bash
 # 发起授权（立即返回 device_code 和 verification_url）
-lark-cli auth login --scope "calendar:calendar:readonly" --no-wait --json
+lark-cli auth login --scope "calendar:calendar:read" --no-wait --json
 ```
 
 拿到 `verification_url` 后，将它原样作为本轮最终消息发给用户，并结束本轮/交还控制权。不要在同一轮中展示 URL 后立刻执行 `--device-code` 阻塞轮询；在不透传中间输出的 agent harness 里，这会导致用户永远看不到 URL。

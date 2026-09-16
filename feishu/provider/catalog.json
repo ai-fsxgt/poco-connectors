@@ -62,8 +62,6 @@
     "base:workspace:update",
     "board:whiteboard:node:create",
     "board:whiteboard:node:read",
-    "calendar:calendar",
-    "calendar:calendar.calendar:readonly",
     "calendar:calendar.event:create",
     "calendar:calendar.event:delete",
     "calendar:calendar.event:join",
@@ -72,7 +70,7 @@
     "calendar:calendar.event:transfer",
     "calendar:calendar.event:update",
     "calendar:calendar.free_busy:read",
-    "contact:user.base:readonly",
+    "calendar:calendar:read",
     "contact:user.basic_profile:readonly",
     "contact:user:search",
     "docs:document.comment:create",
@@ -89,21 +87,23 @@
     "docs:permission.member:create",
     "docs:permission.member:delete",
     "docs:permission.member:retrieve",
+    "docs:permission.member:transfer",
     "docs:permission.setting:read",
+    "docs:permission.setting:write_only",
     "docs:secure_label:readonly",
     "docs:secure_label:write_only",
     "docx:document:create",
     "docx:document:readonly",
     "docx:document:write_only",
-    "drive:drive",
     "drive:drive.metadata:readonly",
     "drive:file:download",
     "drive:file:upload",
+    "drive:file:view_record:readonly",
     "drive:quota_detail:read_one",
-    "im:chat",
+    "im:chat.managers:write_only",
     "im:chat.members:read",
-    "im:chat.membership_application:read",
-    "im:chat.membership_application:write",
+    "im:chat.members:write_only",
+    "im:chat.nickname:write",
     "im:chat:create_by_user",
     "im:chat:read",
     "im:chat:update",
@@ -169,6 +169,7 @@
     "slides:presentation:write_only",
     "space:document:delete",
     "space:document:move",
+    "space:document:retrieve",
     "space:document:shortcut",
     "space:folder:create",
     "spark:app:read",
@@ -186,7 +187,6 @@
     "vc:meeting.interaction:write",
     "vc:meeting.meetingevent:read",
     "vc:meeting.message:write",
-    "vc:meeting.realtime:read",
     "vc:meeting.search:read",
     "vc:note:read",
     "vc:record:readonly",
@@ -10314,111 +10314,6 @@
       "usage": "lark-cli calendar +update [flags]"
     },
     {
-      "canonical_path": "calendar calendars create",
-      "cli_path": "calendar calendars create",
-      "description": "Create a shared calendar",
-      "details": "Create a shared calendar\n\nRisk: write\n\nFull parameter schema:\n  lark-cli schema calendar.calendars.create\n\nUsage:\n  lark-cli calendar calendars create [flags]\n\nRequest Body:\n      --data string   JSON request body. Supports - and @file.\n\nRaw Parameter Input:\n      --params string   Raw URL/query params JSON. Supports - and @file.\n\nExecution:\n      --as string   identity type: user | bot\n      --dry-run     print request without executing\n\nOutput:\n      --format string   output format: json|ndjson|table|csv (default json)\n  -q, --jq string       jq expression to filter JSON output\n  -o, --output string   output file path for binary responses\n\nOther:\n  -h, --help   help for create\n      --json   shorthand for --format json",
-      "help_exit_code": 0,
-      "input_schema": {
-        "type": "object",
-        "required": [],
-        "properties": {
-          "data": {
-            "type": "object",
-            "carrier": "--data",
-            "properties": {
-              "color": {
-                "type": "integer",
-                "description": "日历颜色，颜色RGB值的int32表示。客户端展示时会映射到色板上最接近的一种颜色。仅对当前身份生效",
-                "example": -1
-              },
-              "description": {
-                "type": "string",
-                "description": "日历描述",
-                "example": "使用开放接口创建日历"
-              },
-              "permissions": {
-                "type": "string",
-                "description": "日历公开范围。; 默认值：show_only_free_busy",
-                "enum": [
-                  "private",
-                  "show_only_free_busy",
-                  "public"
-                ],
-                "enumDescriptions": [
-                  "私密",
-                  "仅展示忙闲信息",
-                  "公开，他人可查看日程详情"
-                ],
-                "example": "private"
-              },
-              "summary": {
-                "type": "string",
-                "description": "日历标题",
-                "example": "测试日历"
-              },
-              "summary_alias": {
-                "type": "string",
-                "description": "日历备注名，修改或添加后仅对当前身份生效",
-                "example": "日历备注名"
-              }
-            }
-          }
-        }
-      },
-      "parameters": {},
-      "risk": "write",
-      "scopes": [
-        "calendar:calendar",
-        "calendar:calendar:create"
-      ],
-      "source": "api",
-      "usage": "lark-cli calendar calendars create [flags]"
-    },
-    {
-      "canonical_path": "calendar calendars delete",
-      "cli_path": "calendar calendars delete",
-      "description": "Delete shared calendar",
-      "details": "Delete shared calendar\n\nRisk: high-risk-write (requires explicit user confirmation to execute; the agent must NOT add --yes on its own — only pass --yes after the user has confirmed)\n\nFull parameter schema:\n  lark-cli schema calendar.calendars.delete\n\nUsage:\n  lark-cli calendar calendars delete [flags]\n\nAPI Parameters:\n  Required:\n      --calendar-id string   Calendar ID\n\nRaw Parameter Input:\n      --data string     Raw JSON request body (no documented fields; see schema). Supports - and @file.\n      --params string   Raw URL/query params JSON. Supports - and @file. If both set, typed flags override matching keys in --params.\n\nExecution:\n      --as string   identity type: user | bot\n      --dry-run     print request without executing\n      --yes         confirm high-risk operation\n\nOutput:\n      --format string   output format: json|ndjson|table|csv (default json)\n  -q, --jq string       jq expression to filter JSON output\n  -o, --output string   output file path for binary responses\n\nOther:\n  -h, --help   help for delete\n      --json   shorthand for --format json",
-      "help_exit_code": 0,
-      "input_schema": {
-        "type": "object",
-        "required": [
-          "params"
-        ],
-        "properties": {
-          "params": {
-            "type": "object",
-            "required": [
-              "calendar_id"
-            ],
-            "properties": {
-              "calendar_id": {
-                "type": "string",
-                "description": "Calendar ID.; When creating a shared calendar, the calendar ID will be returned. You can also call the following interfaces to get the ID of a calendar.;- Query Primary Calendar Information;- Query Calendar List;- Search Calendars",
-                "flag": "--calendar-id",
-                "example": "feishu.cn_xxxxxxxxxx@group.calendar.feishu.cn"
-              }
-            }
-          },
-          "yes": {
-            "type": "boolean",
-            "description": "CLI confirmation gate. Must be true to execute; lark-cli rejects with confirmation_required if absent or false. Pass --yes only after the user has explicitly confirmed; not sent to the backend.",
-            "flag": "--yes",
-            "default": false
-          }
-        }
-      },
-      "parameters": {},
-      "risk": "high-risk-write",
-      "scopes": [
-        "calendar:calendar",
-        "calendar:calendar:delete"
-      ],
-      "source": "api",
-      "usage": "lark-cli calendar calendars delete [flags]"
-    },
-    {
       "canonical_path": "calendar calendars get",
       "cli_path": "calendar calendars get",
       "description": "Query calendar information",
@@ -10449,8 +10344,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "calendar:calendar:readonly",
-        "calendar:calendar",
         "calendar:calendar:read"
       ],
       "source": "api",
@@ -10496,91 +10389,10 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "calendar:calendar:readonly",
-        "calendar:calendar",
-        "calendar:calendar.calendar:readonly",
         "calendar:calendar:read"
       ],
       "source": "api",
       "usage": "lark-cli calendar calendars list [flags]"
-    },
-    {
-      "canonical_path": "calendar calendars patch",
-      "cli_path": "calendar calendars patch",
-      "description": "Update calendar information",
-      "details": "Update calendar information\n\nRisk: write\n\nFull parameter schema:\n  lark-cli schema calendar.calendars.patch\n\nUsage:\n  lark-cli calendar calendars patch [flags]\n\nAPI Parameters:\n  Required:\n      --calendar-id string   Calendar ID\n\nRequest Body:\n      --data string   JSON request body. Supports - and @file.\n\nRaw Parameter Input:\n      --params string   Raw URL/query params JSON. Supports - and @file. If both set, typed flags override matching keys in --params.\n\nExecution:\n      --as string   identity type: user | bot\n      --dry-run     print request without executing\n\nOutput:\n      --format string   output format: json|ndjson|table|csv (default json)\n  -q, --jq string       jq expression to filter JSON output\n  -o, --output string   output file path for binary responses\n\nOther:\n  -h, --help   help for patch\n      --json   shorthand for --format json",
-      "help_exit_code": 0,
-      "input_schema": {
-        "type": "object",
-        "required": [
-          "params"
-        ],
-        "properties": {
-          "params": {
-            "type": "object",
-            "required": [
-              "calendar_id"
-            ],
-            "properties": {
-              "calendar_id": {
-                "type": "string",
-                "description": "Calendar ID.; When creating a shared calendar, the calendar ID will be returned. You can also call the following interfaces to get the ID of a calendar.;- Query Primary Calendar Information;- Query Calendar List;- Search Calendars",
-                "flag": "--calendar-id",
-                "example": "feishu.cn_xxxxxxxxxx@group.calendar.feishu.cn"
-              }
-            }
-          },
-          "data": {
-            "type": "object",
-            "carrier": "--data",
-            "properties": {
-              "color": {
-                "type": "integer",
-                "description": "日历颜色，颜色RGB值的int32表示。客户端展示时会映射到色板上最接近的一种颜色。仅对当前身份生效",
-                "example": -1
-              },
-              "description": {
-                "type": "string",
-                "description": "日历描述",
-                "example": "使用开放接口创建日历"
-              },
-              "permissions": {
-                "type": "string",
-                "description": "权限",
-                "enum": [
-                  "private",
-                  "show_only_free_busy",
-                  "public"
-                ],
-                "enumDescriptions": [
-                  "私密",
-                  "仅展示忙闲信息",
-                  "公开，他人可查看日程详情"
-                ],
-                "example": "private"
-              },
-              "summary": {
-                "type": "string",
-                "description": "Calendar title.;- Not providing this field means it will not be updated",
-                "example": "测试日历"
-              },
-              "summary_alias": {
-                "type": "string",
-                "description": "日历备注名，修改或添加后仅对当前身份生效",
-                "example": "日历备注名"
-              }
-            }
-          }
-        }
-      },
-      "parameters": {},
-      "risk": "write",
-      "scopes": [
-        "calendar:calendar",
-        "calendar:calendar:update"
-      ],
-      "source": "api",
-      "usage": "lark-cli calendar calendars patch [flags]"
     },
     {
       "canonical_path": "calendar calendars primary",
@@ -10623,8 +10435,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "calendar:calendar:readonly",
-        "calendar:calendar.calendar:readonly",
         "calendar:calendar:read"
       ],
       "source": "api",
@@ -10680,8 +10490,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "calendar:calendar:readonly",
-        "calendar:calendar",
         "calendar:calendar:read"
       ],
       "source": "api",
@@ -10811,8 +10619,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "calendar:calendar",
-        "calendar:calendar.event:writeonly",
         "calendar:calendar.event:update"
       ],
       "source": "api",
@@ -10985,7 +10791,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "calendar:calendar",
         "calendar:calendar.event:update"
       ],
       "source": "api",
@@ -11070,8 +10875,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "calendar:calendar:readonly",
-        "calendar:calendar",
         "calendar:calendar.event:read"
       ],
       "source": "api",
@@ -11588,7 +11391,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "calendar:calendar",
         "calendar:calendar.event:create"
       ],
       "source": "api",
@@ -11646,8 +11448,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "calendar:calendar",
-        "calendar:calendar.event:writeonly",
         "calendar:calendar.event:delete"
       ],
       "source": "api",
@@ -11731,8 +11531,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "calendar:calendar:readonly",
-        "calendar:calendar",
         "calendar:calendar.event:read"
       ],
       "source": "api",
@@ -11798,8 +11596,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "calendar:calendar:readonly",
-        "calendar:calendar",
         "calendar:calendar.event:read"
       ],
       "source": "api",
@@ -12317,7 +12113,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "calendar:calendar",
         "calendar:calendar.event:update"
       ],
       "source": "api",
@@ -12438,8 +12233,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "calendar:calendar:readonly",
-        "calendar:calendar",
         "calendar:calendar.event:read"
       ],
       "source": "api",
@@ -12483,8 +12276,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "calendar:calendar:readonly",
-        "calendar:calendar",
         "calendar:calendar.event:read"
       ],
       "source": "api",
@@ -12572,8 +12363,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "calendar:calendar:readonly",
-        "calendar:calendar",
         "calendar:calendar.free_busy:read"
       ],
       "source": "api",
@@ -15768,12 +15557,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "drive:drive",
-        "docs:doc",
-        "sheets:spreadsheet",
-        "drive:drive:readonly",
-        "docs:doc:readonly",
-        "sheets:spreadsheet:readonly",
         "docs:document.comment:create"
       ],
       "source": "api",
@@ -15855,12 +15638,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "drive:drive",
-        "docs:doc",
-        "sheets:spreadsheet",
-        "drive:drive:readonly",
-        "docs:doc:readonly",
-        "sheets:spreadsheet:readonly",
         "docs:document.comment:write_only",
         "docs:document.comment:delete"
       ],
@@ -15963,8 +15740,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "drive:drive",
-        "drive:drive:readonly",
         "docs:document.comment:read"
       ],
       "source": "api",
@@ -16113,12 +15888,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "drive:drive",
-        "docs:doc",
-        "sheets:spreadsheet",
-        "drive:drive:readonly",
-        "docs:doc:readonly",
-        "sheets:spreadsheet:readonly",
         "docs:document.comment:write_only",
         "docs:document.comment:update"
       ],
@@ -16220,8 +15989,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "drive:drive",
-        "drive:drive:readonly",
         "docs:document.comment:read"
       ],
       "source": "api",
@@ -16483,12 +16250,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "drive:drive",
-        "docs:doc",
-        "sheets:spreadsheet",
-        "drive:drive:readonly",
-        "docs:doc:readonly",
-        "sheets:spreadsheet:readonly",
         "docs:document.comment:read"
       ],
       "source": "api",
@@ -16572,12 +16333,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "drive:drive",
-        "docs:doc",
-        "sheets:spreadsheet",
-        "drive:drive:readonly",
-        "docs:doc:readonly",
-        "sheets:spreadsheet:readonly",
         "docs:document.comment:write_only",
         "docs:document.comment:update"
       ],
@@ -16640,8 +16395,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "drive:drive",
-        "drive:drive:readonly",
         "drive:drive.metadata:readonly"
       ],
       "source": "api",
@@ -16735,7 +16488,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "contact:user.base:readonly",
         "drive:file:view_record:readonly"
       ],
       "source": "api",
@@ -16854,7 +16606,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "drive:drive",
         "docs:document:copy"
       ],
       "source": "api",
@@ -16897,7 +16648,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "drive:drive",
         "space:folder:create"
       ],
       "source": "api",
@@ -16993,8 +16743,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "drive:drive",
-        "drive:drive:readonly",
         "space:document:retrieve"
       ],
       "source": "api",
@@ -17177,7 +16925,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "drive:drive",
         "drive:drive.metadata:readonly"
       ],
       "source": "api",
@@ -17272,12 +17019,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "drive:drive",
-        "docs:doc",
-        "sheets:spreadsheet",
-        "bitable:bitable",
-        "wiki:wiki",
-        "bitable:app",
         "docs:permission.member:auth"
       ],
       "source": "api",
@@ -17449,13 +17190,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "drive:drive",
-        "drive:file",
-        "docs:doc",
-        "sheets:spreadsheet",
-        "wiki:wiki",
-        "bitable:bitable",
-        "bitable:app",
         "docs:permission.member:create"
       ],
       "source": "api",
@@ -17587,12 +17321,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "drive:drive",
-        "docs:doc",
-        "sheets:spreadsheet",
-        "bitable:bitable",
-        "wiki:wiki",
-        "bitable:app",
         "docs:permission.member:transfer"
       ],
       "source": "api",
@@ -17658,13 +17386,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "drive:drive",
-        "drive:drive:readonly",
-        "drive:file",
-        "docs:doc",
-        "sheets:spreadsheet",
-        "wiki:wiki",
-        "bitable:bitable",
         "docs:permission.setting:read"
       ],
       "source": "api",
@@ -17814,12 +17535,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "drive:drive",
-        "drive:file",
-        "docs:doc",
-        "sheets:spreadsheet",
-        "wiki:wiki",
-        "bitable:bitable",
         "docs:permission.setting:write_only"
       ],
       "source": "api",
@@ -19063,157 +18778,6 @@
       "usage": "lark-cli im +threads-messages-list [flags]"
     },
     {
-      "canonical_path": "im chat.join_requests handle",
-      "cli_path": "im chat.join_requests handle",
-      "description": "批量审批入群申请（approve/reject，仅群主/管理员，user_access_token）。Approve or reject pending join requests in bulk (1-50 items, processed in order). Identity: `user` only (`user_access_token`); the caller must be the chat owner or an admin. `results[]` mirrors `items[]` in count and order — check each `result` (`success` / `failed` / `already_handled`); exit 0 does not mean every item succeeded",
-      "details": "批量审批入群申请（approve/reject，仅群主/管理员，user_access_token）。Approve or reject pending join requests in bulk (1-50 items, processed in order). Identity: `user` only (`user_access_token`); the caller must be the chat owner or an admin. `results[]` mirrors `items[]` in count and order — check each `result` (`success` / `failed` / `already_handled`); exit 0 does not mean every item succeeded\n\nRisk: write\n\nFull parameter schema:\n  lark-cli schema im.chat.join_requests.handle\n\nUsage:\n  lark-cli im chat.join_requests handle [flags]\n\nAPI Parameters:\n  Required:\n      --chat-id string   群 ID\n  Optional:\n      --member-id-type string   成员 id 类型 open_id/union_id/user_id. enum: open_id=以 open_id 来识别成员|union_id=以 union_id 来识别成员|user_id=以 user_id 来识别成员\n\nRequest Body:\n      --data string   JSON request body. Supports - and @file.\n\nRaw Parameter Input:\n      --params string   Raw URL/query params JSON. Supports - and @file. If both set, typed flags override matching keys in --params.\n\nExecution:\n      --as string   identity type: user | bot\n      --dry-run     print request without executing\n\nOutput:\n      --format string   output format: json|ndjson|table|csv (default json)\n  -q, --jq string       jq expression to filter JSON output\n  -o, --output string   output file path for binary responses\n\nOther:\n  -h, --help   help for handle\n      --json   shorthand for --format json",
-      "help_exit_code": 0,
-      "input_schema": {
-        "type": "object",
-        "required": [
-          "data",
-          "params"
-        ],
-        "properties": {
-          "params": {
-            "type": "object",
-            "required": [
-              "chat_id"
-            ],
-            "properties": {
-              "chat_id": {
-                "type": "string",
-                "description": "群 ID",
-                "flag": "--chat-id",
-                "example": "oc_a0553eda9014c201e6969b478895c230"
-              },
-              "member_id_type": {
-                "type": "string",
-                "description": "成员 id 类型 open_id/union_id/user_id",
-                "flag": "--member-id-type",
-                "enum": [
-                  "open_id",
-                  "union_id",
-                  "user_id"
-                ],
-                "enumDescriptions": [
-                  "以 open_id 来识别成员",
-                  "以 union_id 来识别成员",
-                  "以 user_id 来识别成员"
-                ],
-                "example": "open_id"
-              }
-            }
-          },
-          "data": {
-            "type": "object",
-            "carrier": "--data",
-            "required": [
-              "items"
-            ],
-            "properties": {
-              "items": {
-                "type": "array",
-                "description": "待处理的申请项，1-50 条；按下标保序处理",
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "action",
-                    "member_id"
-                  ],
-                  "properties": {
-                    "action": {
-                      "type": "string",
-                      "description": "处理动作 approve/reject",
-                      "example": "approve"
-                    },
-                    "member_id": {
-                      "type": "string",
-                      "description": "申请人 member_id（不能传 inviter 的 app_id）",
-                      "example": "ou_7dab8a3d3cdcc9da365777c7f8a1e3a3"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "parameters": {},
-      "risk": "write",
-      "scopes": [
-        "im:chat.membership_application:write"
-      ],
-      "source": "api",
-      "usage": "lark-cli im chat.join_requests handle [flags]"
-    },
-    {
-      "canonical_path": "im chat.join_requests list",
-      "cli_path": "im chat.join_requests list",
-      "description": "列出群的待审批入群申请（仅群主/管理员，user_access_token）。List pending join requests for a chat. Identity: `user` only (`user_access_token`); the caller must be the chat owner or an admin. Paginated (`page_size` 1-100); stop on `has_more == false` — `page_token` is returned even on the last page, so paging while it is present never terminates",
-      "details": "列出群的待审批入群申请（仅群主/管理员，user_access_token）。List pending join requests for a chat. Identity: `user` only (`user_access_token`); the caller must be the chat owner or an admin. Paginated (`page_size` 1-100); stop on `has_more == false` — `page_token` is returned even on the last page, so paging while it is present never terminates\n\nRisk: read\n\nFull parameter schema:\n  lark-cli schema im.chat.join_requests.list\n\nUsage:\n  lark-cli im chat.join_requests list [flags]\n\nAPI Parameters:\n  Required:\n      --chat-id string   群 ID\n  Optional:\n      --member-id-type string   成员 id 类型 open_id/union_id/user_id. enum: open_id=以 open_id 来识别成员|union_id=以 union_id 来识别成员|user_id=以 user_id 来识别成员\n      --page-size int           分页大小. min: 1, max: 100\n      --page-token string       分页标记，第一次请求不填\n\nRaw Parameter Input:\n      --params string   Raw URL/query params JSON. Supports - and @file. If both set, typed flags override matching keys in --params.\n\nExecution:\n      --as string        identity type: user | bot\n      --dry-run          print request without executing\n      --page-all         automatically paginate through all pages\n      --page-delay int   delay in ms between pages (default 200)\n      --page-limit int   max pages to fetch with --page-all (0 = unlimited) (default 10)\n\nOutput:\n      --format string   output format: json|ndjson|table|csv (default json)\n  -q, --jq string       jq expression to filter JSON output\n  -o, --output string   output file path for binary responses\n\nOther:\n  -h, --help   help for list\n      --json   shorthand for --format json",
-      "help_exit_code": 0,
-      "input_schema": {
-        "type": "object",
-        "required": [
-          "params"
-        ],
-        "properties": {
-          "params": {
-            "type": "object",
-            "required": [
-              "chat_id"
-            ],
-            "properties": {
-              "chat_id": {
-                "type": "string",
-                "description": "群 ID",
-                "flag": "--chat-id",
-                "example": "oc_a0553eda9014c201e6969b478895c230"
-              },
-              "member_id_type": {
-                "type": "string",
-                "description": "成员 id 类型 open_id/union_id/user_id",
-                "flag": "--member-id-type",
-                "enum": [
-                  "open_id",
-                  "union_id",
-                  "user_id"
-                ],
-                "enumDescriptions": [
-                  "以 open_id 来识别成员",
-                  "以 union_id 来识别成员",
-                  "以 user_id 来识别成员"
-                ],
-                "example": "open_id"
-              },
-              "page_size": {
-                "type": "integer",
-                "description": "分页大小",
-                "flag": "--page-size",
-                "example": 20,
-                "minimum": 1,
-                "maximum": 100
-              },
-              "page_token": {
-                "type": "string",
-                "description": "分页标记，第一次请求不填；还有更多项时返回新的 page_token",
-                "flag": "--page-token",
-                "example": "WWxHTStrOEs5WHZpNktGbU94bUcvMWlxdDUzTWt1OXNrRmlLaGRNVG0yaz0="
-              }
-            }
-          }
-        }
-      },
-      "parameters": {},
-      "risk": "read",
-      "scopes": [
-        "im:chat.membership_application:read"
-      ],
-      "source": "api",
-      "usage": "lark-cli im chat.join_requests list [flags]"
-    },
-    {
       "canonical_path": "im chat.managers add_managers",
       "cli_path": "im chat.managers add_managers",
       "description": "Specify group administrators. Identity: supports `user` and `bot`; only the group owner can add managers; max 10 managers per chat (20 for super-large chats), and at most 5 bots per request",
@@ -19273,7 +18837,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:chat",
         "im:chat.managers:write_only"
       ],
       "source": "api",
@@ -19339,7 +18902,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:chat",
         "im:chat.managers:write_only"
       ],
       "source": "api",
@@ -19376,9 +18938,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "im:chat:readonly",
-        "im:chat",
-        "im:chat.group_info:readonly",
         "im:chat.members:read"
       ],
       "source": "api",
@@ -19461,7 +19020,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:chat",
         "im:chat.members:write_only"
       ],
       "source": "api",
@@ -19534,7 +19092,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "im:chat",
         "im:chat.members:write_only"
       ],
       "source": "api",
@@ -19603,151 +19160,10 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "im:chat:readonly",
-        "im:chat",
-        "im:chat.group_info:readonly",
         "im:chat.members:read"
       ],
       "source": "api",
       "usage": "lark-cli im chat.members get [flags]"
-    },
-    {
-      "canonical_path": "im chat.moderation get",
-      "cli_path": "im chat.moderation get",
-      "description": "Obtains the group member speech scopes. Identity: supports `user` and `bot`; the caller must be in the target chat and belong to the same tenant",
-      "details": "Obtains the group member speech scopes. Identity: supports `user` and `bot`; the caller must be in the target chat and belong to the same tenant\n\nRisk: read\n\nFull parameter schema:\n  lark-cli schema im.chat.moderation.get\n\nUsage:\n  lark-cli im chat.moderation get [flags]\n\nAPI Parameters:\n  Required:\n      --chat-id string   Group ID. How to obtain it\n  Optional:\n      --page-size int         分页大小，用来限制一次请求返回的数据条目数\n      --page-token string     分页标记，第一次请求不填，表示从头开始遍历. max: 100\n      --user-id-type string   此次调用中使用的用户ID的类型. enum: user_id=以user_id来识别用户|union_id=以union_id来识别用户|open_id=以open_id来识别用户\n\nRaw Parameter Input:\n      --params string   Raw URL/query params JSON. Supports - and @file. If both set, typed flags override matching keys in --params.\n\nExecution:\n      --as string        identity type: user | bot\n      --dry-run          print request without executing\n      --page-all         automatically paginate through all pages\n      --page-delay int   delay in ms between pages (default 200)\n      --page-limit int   max pages to fetch with --page-all (0 = unlimited) (default 10)\n\nOutput:\n      --format string   output format: json|ndjson|table|csv (default json)\n  -q, --jq string       jq expression to filter JSON output\n  -o, --output string   output file path for binary responses\n\nOther:\n  -h, --help   help for get\n      --json   shorthand for --format json",
-      "help_exit_code": 0,
-      "input_schema": {
-        "type": "object",
-        "required": [
-          "params"
-        ],
-        "properties": {
-          "params": {
-            "type": "object",
-            "required": [
-              "chat_id"
-            ],
-            "properties": {
-              "chat_id": {
-                "type": "string",
-                "description": "Group ID. How to obtain it:; - Create a group, and get the chat_id of the group from the returned result.;- Call the Get the list of groups where the user or robot is interface to query the chat_id of the group where the user or bot is.;- Call the Search the list of groups visible to the user or robot to search for the chat_id of the group where the user or bot is and the group that is open to the user or bot",
-                "flag": "--chat-id",
-                "example": "oc_a0553eda9014c201e6969b478895c230"
-              },
-              "page_size": {
-                "type": "integer",
-                "description": "分页大小，用来限制一次请求返回的数据条目数",
-                "flag": "--page-size"
-              },
-              "page_token": {
-                "type": "string",
-                "description": "分页标记，第一次请求不填，表示从头开始遍历；分页查询结果还有更多项时会同时返回新的 page_token，下次遍历可采用该 page_token 获取查询结果",
-                "flag": "--page-token",
-                "example": "10",
-                "maximum": 100
-              },
-              "user_id_type": {
-                "type": "string",
-                "description": "此次调用中使用的用户ID的类型",
-                "flag": "--user-id-type",
-                "enum": [
-                  "user_id",
-                  "union_id",
-                  "open_id"
-                ],
-                "enumDescriptions": [
-                  "以user_id来识别用户",
-                  "以union_id来识别用户",
-                  "以open_id来识别用户"
-                ]
-              }
-            }
-          }
-        }
-      },
-      "parameters": {},
-      "risk": "read",
-      "scopes": [
-        "im:chat:readonly",
-        "im:chat",
-        "im:chat.moderation:read"
-      ],
-      "source": "api",
-      "usage": "lark-cli im chat.moderation get [flags]"
-    },
-    {
-      "canonical_path": "im chat.moderation update",
-      "cli_path": "im chat.moderation update",
-      "description": "Updates group speech scopes. Identity: supports `user` and `bot`; only the group owner (or creator bot with `im:chat:operate_as_owner`) can update; the caller must be in the chat",
-      "details": "Updates group speech scopes. Identity: supports `user` and `bot`; only the group owner (or creator bot with `im:chat:operate_as_owner`) can update; the caller must be in the chat\n\nRisk: write\n\nFull parameter schema:\n  lark-cli schema im.chat.moderation.update\n\nUsage:\n  lark-cli im chat.moderation update [flags]\n\nAPI Parameters:\n  Required:\n      --chat-id string   Group ID. How to obtain\n  Optional:\n      --user-id-type string   此次调用中使用的用户ID的类型. enum: user_id=以user_id来识别用户|union_id=以union_id来识别用户|open_id=以open_id来识别用户\n\nRequest Body:\n      --data string   JSON request body. Supports - and @file.\n\nRaw Parameter Input:\n      --params string   Raw URL/query params JSON. Supports - and @file. If both set, typed flags override matching keys in --params.\n\nExecution:\n      --as string   identity type: user | bot\n      --dry-run     print request without executing\n\nOutput:\n      --format string   output format: json|ndjson|table|csv (default json)\n  -q, --jq string       jq expression to filter JSON output\n  -o, --output string   output file path for binary responses\n\nOther:\n  -h, --help   help for update\n      --json   shorthand for --format json",
-      "help_exit_code": 0,
-      "input_schema": {
-        "type": "object",
-        "required": [
-          "params"
-        ],
-        "properties": {
-          "params": {
-            "type": "object",
-            "required": [
-              "chat_id"
-            ],
-            "properties": {
-              "chat_id": {
-                "type": "string",
-                "description": "Group ID. How to obtain:; - Create a group, and obtain the chat_id of the group from the returned result.;- Call the Get the list of groups where the user or robot is interface to query the chat_id of the group where the user or bot is.;- Call Search the list of groups visible to the user or bot to search for the chat_id of the group where the user or bot is and the group that is open to the user or bot",
-                "flag": "--chat-id",
-                "example": "oc_a0553eda9014c201e6969b478895c230"
-              },
-              "user_id_type": {
-                "type": "string",
-                "description": "此次调用中使用的用户ID的类型",
-                "flag": "--user-id-type",
-                "enum": [
-                  "user_id",
-                  "union_id",
-                  "open_id"
-                ],
-                "enumDescriptions": [
-                  "以user_id来识别用户",
-                  "以union_id来识别用户",
-                  "以open_id来识别用户"
-                ]
-              }
-            }
-          },
-          "data": {
-            "type": "object",
-            "carrier": "--data",
-            "properties": {
-              "moderation_setting": {
-                "type": "string",
-                "description": "Group speech mode; Optional values:; - all_members: All group members can speak;- only_owner: Only group owners or administrators can speak;- moderator_list: Specify group members who can speak. When using this value, you need to select `moderator_added_list` and `moderator_removed_list`",
-                "example": "moderator_list"
-              },
-              "moderator_added_list": {
-                "type": "array",
-                "description": "When `moderation_setting` is set to `moderator_list`, users who can speak are added as an ID list.; Notice:; - The ID type is consistent with the query parameter user_id_type. It is recommended to use OpenID.;- If the user in the list is not in the group, it will be automatically filtered out.;- When requesting, please ensure that the IDs in the two parameters `moderator_added_list` and `moderator_removed_list` are not repeated",
-                "items": {}
-              },
-              "moderator_removed_list": {
-                "type": "array",
-                "description": "When `moderation_setting` is set to `moderator_list`, users who can speak are removed in the form of an ID list.; Notice:; - The ID type is consistent with the query parameter user_id_type. It is recommended to use OpenID.;- If the user in the list is not in the group, it will be automatically filtered out.;- When requesting, please ensure that the IDs in the two parameters `moderator_added_list` and `moderator_removed_list` are not repeated",
-                "items": {}
-              }
-            }
-          }
-        }
-      },
-      "parameters": {},
-      "risk": "write",
-      "scopes": [
-        "im:chat",
-        "im:chat:moderation:write_only"
-      ],
-      "source": "api",
-      "usage": "lark-cli im chat.moderation update [flags]"
     },
     {
       "canonical_path": "im chat.nickname delete",
@@ -19780,7 +19196,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:chat",
         "im:chat.nickname:write"
       ],
       "source": "api",
@@ -19817,9 +19232,7 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "im:chat",
         "im:chat:read",
-        "im:chat:readonly",
         "im:chat.nickname:read"
       ],
       "source": "api",
@@ -19871,7 +19284,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:chat",
         "im:chat.nickname:write"
       ],
       "source": "api",
@@ -19909,68 +19321,10 @@
       "risk": "read",
       "scopes": [
         "im:chat:read",
-        "im:chat:readonly",
-        "im:chat",
         "im:chat.user_setting:read"
       ],
       "source": "api",
       "usage": "lark-cli im chat.user_setting batch_query [flags]"
-    },
-    {
-      "canonical_path": "im chat.user_setting batch_update",
-      "cli_path": "im chat.user_setting batch_update",
-      "description": "批量更新当前用户在群内的个人偏好设置 (e.g. `is_muted` mutes normal messages, `is_mute_at_all` mutes @all messages); up to 10 chats per request. Identity: `user` only (`user_access_token`); the caller must be in each target chat",
-      "details": "批量更新当前用户在群内的个人偏好设置 (e.g. `is_muted` mutes normal messages, `is_mute_at_all` mutes @all messages); up to 10 chats per request. Identity: `user` only (`user_access_token`); the caller must be in each target chat\n\nRisk: write\n\nFull parameter schema:\n  lark-cli schema im.chat.user_setting.batch_update\n\nUsage:\n  lark-cli im chat.user_setting batch_update [flags]\n\nRequest Body:\n      --data string   JSON request body. Supports - and @file.\n\nRaw Parameter Input:\n      --params string   Raw URL/query params JSON. Supports - and @file.\n\nExecution:\n      --as string   identity type: user | bot\n      --dry-run     print request without executing\n\nOutput:\n      --format string   output format: json|ndjson|table|csv (default json)\n  -q, --jq string       jq expression to filter JSON output\n  -o, --output string   output file path for binary responses\n\nOther:\n  -h, --help   help for batch_update\n      --json   shorthand for --format json",
-      "help_exit_code": 0,
-      "input_schema": {
-        "type": "object",
-        "required": [
-          "data"
-        ],
-        "properties": {
-          "data": {
-            "type": "object",
-            "carrier": "--data",
-            "required": [
-              "chat_settings"
-            ],
-            "properties": {
-              "chat_settings": {
-                "type": "array",
-                "description": "待更新的群人设置列表。最多 10 条；自动按 chat_id 去重（重复保留首条）。单条至少需要传入 is_muted 或 is_mute_at_all 之一，否则该条返 invalid_request；字段缺省即保持原值不变（隐式非空 / 不接受 null）",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "chat_id": {
-                      "type": "string",
-                      "description": "群组 ID",
-                      "example": "oc_a0553eda9014c201e6969b478895c230"
-                    },
-                    "is_mute_at_all": {
-                      "type": "boolean",
-                      "description": "是否对群内 @所有人 消息免打扰。true=@所有人 不提醒；false=恢复提醒",
-                      "example": false
-                    },
-                    "is_muted": {
-                      "type": "boolean",
-                      "description": "是否对群内普通消息（不含 @所有人）免打扰。true=普通消息不提醒；false=恢复提醒",
-                      "example": false
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "parameters": {},
-      "risk": "write",
-      "scopes": [
-        "im:chat",
-        "im:chat.user_setting:write"
-      ],
-      "source": "api",
-      "usage": "lark-cli im chat.user_setting batch_update [flags]"
     },
     {
       "canonical_path": "im chats create",
@@ -20252,7 +19606,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:chat",
         "im:chat:create",
         "im:chat:create_by_user"
       ],
@@ -20305,8 +19658,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "im:chat:readonly",
-        "im:chat",
         "im:chat:read"
       ],
       "source": "api",
@@ -20364,8 +19715,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:chat:readonly",
-        "im:chat",
         "im:chat:read"
       ],
       "source": "api",
@@ -20635,7 +19984,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "im:chat",
         "im:chat:update"
       ],
       "source": "api",
@@ -21112,7 +20460,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:resource:upload",
         "im:resource"
       ],
       "source": "api",
@@ -21169,7 +20516,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "im:message.history:readonly",
         "im:message:readonly",
         "im:message"
       ],
@@ -21232,7 +20578,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:resource:upload",
         "im:resource"
       ],
       "source": "api",
@@ -21276,8 +20621,7 @@
       "risk": "high-risk-write",
       "scopes": [
         "im:message:recall",
-        "im:message",
-        "im:message:send_as_bot"
+        "im:message"
       ],
       "source": "api",
       "usage": "lark-cli im messages delete [flags]"
@@ -21357,7 +20701,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:message:send_as_bot",
         "im:message"
       ],
       "source": "api",
@@ -21410,8 +20753,7 @@
       "risk": "write",
       "scopes": [
         "im:message:update",
-        "im:message",
-        "im:message:send_as_bot"
+        "im:message"
       ],
       "source": "api",
       "usage": "lark-cli im messages patch [flags]"
@@ -21447,7 +20789,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "im:message:get_as_user",
         "im:message",
         "im:message:readonly"
       ],
@@ -21515,10 +20856,8 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "im:message:basic",
         "im:message:readonly",
-        "im:message",
-        "im:message:get_as_user"
+        "im:message"
       ],
       "source": "api",
       "usage": "lark-cli im messages read_users [flags]"
@@ -21554,7 +20893,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:message:send_as_bot",
         "im:message",
         "im:message.pins:write_only"
       ],
@@ -21598,7 +20936,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "im:message:send_as_bot",
         "im:message",
         "im:message.pins:write_only"
       ],
@@ -22005,7 +21342,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "im:message:send_as_bot",
         "im:message"
       ],
       "source": "api",
@@ -26630,8 +25966,7 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "mail:user_mailbox:readonly",
-        "mail:user_mailbox"
+        "mail:user_mailbox:readonly"
       ],
       "source": "api",
       "usage": "lark-cli mail user_mailbox.settings send_as [flags]"
@@ -27568,7 +26903,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "mail:user_mailbox",
         "mail:user_mailbox:readonly"
       ],
       "source": "api",
@@ -28692,7 +28026,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "minutes:minutes",
         "minutes:minutes:readonly",
         "minutes:minutes.basic:read"
       ],
@@ -37146,8 +36479,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "sheets:spreadsheet",
-        "drive:drive",
         "sheets:spreadsheet:write_only"
       ],
       "source": "api",
@@ -37197,8 +36528,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "sheets:spreadsheet",
-        "drive:drive",
         "sheets:spreadsheet:write_only"
       ],
       "source": "api",
@@ -37242,10 +36571,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "drive:drive",
-        "drive:drive:readonly",
-        "sheets:spreadsheet",
-        "sheets:spreadsheet:readonly",
         "sheets:spreadsheet:read"
       ],
       "source": "api",
@@ -37329,8 +36654,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "sheets:spreadsheet",
-        "drive:drive",
         "sheets:spreadsheet:write_only"
       ],
       "source": "api",
@@ -37424,10 +36747,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "sheets:spreadsheet",
-        "sheets:spreadsheet:readonly",
-        "drive:drive",
-        "drive:drive:readonly",
         "sheets:spreadsheet:read"
       ],
       "source": "api",
@@ -37469,116 +36788,10 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "drive:drive",
-        "sheets:spreadsheet",
         "sheets:spreadsheet:create"
       ],
       "source": "api",
       "usage": "lark-cli sheets spreadsheets create [flags]"
-    },
-    {
-      "canonical_path": "sheets spreadsheets get",
-      "cli_path": "sheets spreadsheets get",
-      "description": "Get spreadsheet information",
-      "details": "Get spreadsheet information\n\nRisk: read\n\nFull parameter schema:\n  lark-cli schema sheets.spreadsheets.get\n\nUsage:\n  lark-cli sheets spreadsheets get [flags]\n\nAPI Parameters:\n  Required:\n      --spreadsheet-token string   Table token\n  Optional:\n      --user-id-type string   此次调用中使用的用户ID的类型. enum: user_id=以user_id来识别用户|union_id=以union_id来识别用户|open_id=以open_id来识别用户\n\nRaw Parameter Input:\n      --params string   Raw URL/query params JSON. Supports - and @file. If both set, typed flags override matching keys in --params.\n\nExecution:\n      --as string   identity type: user | bot\n      --dry-run     print request without executing\n\nOutput:\n      --format string   output format: json|ndjson|table|csv (default json)\n  -q, --jq string       jq expression to filter JSON output\n  -o, --output string   output file path for binary responses\n\nOther:\n  -h, --help   help for get\n      --json   shorthand for --format json",
-      "help_exit_code": 0,
-      "input_schema": {
-        "type": "object",
-        "required": [
-          "params"
-        ],
-        "properties": {
-          "params": {
-            "type": "object",
-            "required": [
-              "spreadsheet_token"
-            ],
-            "properties": {
-              "spreadsheet_token": {
-                "type": "string",
-                "description": "Table token",
-                "flag": "--spreadsheet-token",
-                "example": "Iow7sNNEphp3WbtnbCscPqabcef"
-              },
-              "user_id_type": {
-                "type": "string",
-                "description": "此次调用中使用的用户ID的类型",
-                "flag": "--user-id-type",
-                "enum": [
-                  "user_id",
-                  "union_id",
-                  "open_id"
-                ],
-                "enumDescriptions": [
-                  "以user_id来识别用户",
-                  "以union_id来识别用户",
-                  "以open_id来识别用户"
-                ]
-              }
-            }
-          }
-        }
-      },
-      "parameters": {},
-      "risk": "read",
-      "scopes": [
-        "sheets:spreadsheet",
-        "sheets:spreadsheet:readonly",
-        "drive:drive",
-        "drive:drive:readonly",
-        "sheets:spreadsheet.meta:read"
-      ],
-      "source": "api",
-      "usage": "lark-cli sheets spreadsheets get [flags]"
-    },
-    {
-      "canonical_path": "sheets spreadsheets patch",
-      "cli_path": "sheets spreadsheets patch",
-      "description": "Modify spreadsheet properties",
-      "details": "Modify spreadsheet properties\n\nRisk: write\n\nFull parameter schema:\n  lark-cli schema sheets.spreadsheets.patch\n\nUsage:\n  lark-cli sheets spreadsheets patch [flags]\n\nAPI Parameters:\n  Required:\n      --spreadsheet-token string   Table token\n\nRequest Body:\n      --data string   JSON request body. Supports - and @file.\n\nRaw Parameter Input:\n      --params string   Raw URL/query params JSON. Supports - and @file. If both set, typed flags override matching keys in --params.\n\nExecution:\n      --as string   identity type: user | bot\n      --dry-run     print request without executing\n\nOutput:\n      --format string   output format: json|ndjson|table|csv (default json)\n  -q, --jq string       jq expression to filter JSON output\n  -o, --output string   output file path for binary responses\n\nOther:\n  -h, --help   help for patch\n      --json   shorthand for --format json",
-      "help_exit_code": 0,
-      "input_schema": {
-        "type": "object",
-        "required": [
-          "params"
-        ],
-        "properties": {
-          "params": {
-            "type": "object",
-            "required": [
-              "spreadsheet_token"
-            ],
-            "properties": {
-              "spreadsheet_token": {
-                "type": "string",
-                "description": "Table token",
-                "flag": "--spreadsheet-token",
-                "example": "Iow7sNNEphp3WbtnbCscPqabcef"
-              }
-            }
-          },
-          "data": {
-            "type": "object",
-            "carrier": "--data",
-            "properties": {
-              "title": {
-                "type": "string",
-                "description": "Table title. When the parameter is empty, the title will be \"Untitled spreadsheet\" or content corresponding to the local language environment",
-                "example": "Sales sheet"
-              }
-            }
-          }
-        }
-      },
-      "parameters": {},
-      "risk": "write",
-      "scopes": [
-        "sheets:spreadsheet",
-        "drive:drive",
-        "sheets:spreadsheet.meta:write_only"
-      ],
-      "source": "api",
-      "usage": "lark-cli sheets spreadsheets patch [flags]"
     },
     {
       "canonical_path": "slides +add-slide",
@@ -39595,7 +38808,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:custom_field:writeonly",
         "task:tasklist:write",
         "task:tasklist:read"
       ],
@@ -39684,7 +38896,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:custom_field:writeonly",
         "task:tasklist:write"
       ],
       "source": "api",
@@ -39742,7 +38953,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:custom_field:writeonly",
         "task:custom_field:write"
       ],
       "source": "api",
@@ -39994,7 +39204,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:custom_field:writeonly",
         "task:custom_field:write"
       ],
       "source": "api",
@@ -40311,7 +39520,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:custom_field:writeonly",
         "task:custom_field:write"
       ],
       "source": "api",
@@ -40375,7 +39583,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "task:custom_field:writeonly",
         "task:custom_field:write"
       ],
       "source": "api",
@@ -40467,7 +39674,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:personnel:writeonly",
         "task:task:write"
       ],
       "source": "api",
@@ -40554,7 +39760,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:personnel:writeonly",
         "task:task:write"
       ],
       "source": "api",
@@ -40624,7 +39829,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:section:writeonly",
         "task:section:write"
       ],
       "source": "api",
@@ -40667,7 +39871,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "task:section:delete",
         "task:section:write"
       ],
       "source": "api",
@@ -40863,7 +40066,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:section:writeonly",
         "task:section:write"
       ],
       "source": "api",
@@ -41413,7 +40615,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:task:writeonly",
         "task:task:write"
       ],
       "source": "api",
@@ -41555,7 +40756,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:tasklist:writeonly",
         "task:tasklist:write"
       ],
       "source": "api",
@@ -41637,7 +40837,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:tasklist:writeonly",
         "task:tasklist:write"
       ],
       "source": "api",
@@ -41680,7 +40879,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "task:tasklist:delete",
         "task:tasklist:write"
       ],
       "source": "api",
@@ -41888,7 +41086,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:tasklist:writeonly",
         "task:tasklist:write"
       ],
       "source": "api",
@@ -41971,7 +41168,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:tasklist:writeonly",
         "task:tasklist:write"
       ],
       "source": "api",
@@ -42523,8 +41719,7 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:task:write",
-        "task:task:writeonly"
+        "task:task:write"
       ],
       "source": "api",
       "usage": "lark-cli task tasks create [flags]"
@@ -42566,7 +41761,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "task:task:delete",
         "task:task:write"
       ],
       "source": "api",
@@ -42913,7 +42107,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "task:task:writeonly",
         "task:task:write"
       ],
       "source": "api",
@@ -43183,43 +42376,6 @@
       "usage": "lark-cli vc +meeting-message-send [flags]"
     },
     {
-      "canonical_path": "vc +meeting-screenshot",
-      "cli_path": "vc +meeting-screenshot",
-      "description": "Capture a video meeting screenshot",
-      "details": "Capture a video meeting screenshot\n\nRisk: read\n\nRelated skills (read for end-to-end usage):\n  lark-cli skills read lark-meeting\n  lark-cli skills read lark-meeting/references/lark-vc-meeting-screenshot.md\n\nUsage:\n  lark-cli vc +meeting-screenshot [flags]\n\nFlags:\n      --as string           identity type: user | bot\n      --dry-run             print request without executing\n      --format string       output format: json (default) | pretty | table | ndjson | csv (default \"json\")\n  -h, --help                help for +meeting-screenshot\n  -q, --jq string           jq expression to filter JSON output\n      --json                shorthand for --format json\n      --meeting-id string   long numeric meeting ID (not the 9-digit meeting number)\n      --output string       JPEG output path relative to the current working directory; parent directories are created\n      --overwrite           replace the output file if it already exists",
-      "help_exit_code": 0,
-      "input_schema": null,
-      "parameters": {
-        "dry-run": {
-          "type": "boolean",
-          "cli_type": "bool",
-          "description": "print request without executing"
-        },
-        "meeting-id": {
-          "type": "string",
-          "cli_type": "string",
-          "description": "long numeric meeting ID (not the 9-digit meeting number)"
-        },
-        "output": {
-          "type": "string",
-          "cli_type": "string",
-          "description": "JPEG output path relative to the current working directory; parent directories are created",
-          "output_path": true
-        },
-        "overwrite": {
-          "type": "boolean",
-          "cli_type": "bool",
-          "description": "replace the output file if it already exists"
-        }
-      },
-      "risk": "read",
-      "scopes": [
-        "vc:meeting.realtime:read"
-      ],
-      "source": "shortcut",
-      "usage": "lark-cli vc +meeting-screenshot [flags]"
-    },
-    {
       "canonical_path": "vc +recording",
       "cli_path": "vc +recording",
       "description": "Query minute_token from meeting-ids or calendar-event-ids",
@@ -43382,7 +42538,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "vc:meeting:readonly",
         "vc:meeting.meetingevent:read"
       ],
       "source": "api",
@@ -44108,7 +43263,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "wiki:wiki",
         "wiki:member:create"
       ],
       "source": "api",
@@ -44199,7 +43353,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "wiki:wiki",
         "wiki:member:update"
       ],
       "source": "api",
@@ -44248,8 +43401,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "wiki:wiki",
-        "wiki:wiki:readonly",
         "wiki:member:retrieve"
       ],
       "source": "api",
@@ -44314,7 +43465,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "wiki:wiki",
         "wiki:node:copy"
       ],
       "source": "api",
@@ -44413,7 +43563,6 @@
       "parameters": {},
       "risk": "write",
       "scopes": [
-        "wiki:wiki",
         "wiki:node:create"
       ],
       "source": "api",
@@ -44469,8 +43618,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "wiki:wiki",
-        "wiki:wiki:readonly",
         "wiki:node:retrieve"
       ],
       "source": "api",
@@ -44526,7 +43673,6 @@
       "parameters": {},
       "risk": "high-risk-write",
       "scopes": [
-        "wiki:wiki",
         "wiki:space:write_only"
       ],
       "source": "api",
@@ -44606,8 +43752,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "wiki:wiki",
-        "wiki:wiki:readonly",
         "wiki:space:read"
       ],
       "source": "api",
@@ -44671,8 +43815,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "wiki:wiki",
-        "wiki:wiki:readonly",
         "wiki:node:read"
       ],
       "source": "api",
@@ -44718,8 +43860,6 @@
       "parameters": {},
       "risk": "read",
       "scopes": [
-        "wiki:wiki",
-        "wiki:wiki:readonly",
         "wiki:space:retrieve"
       ],
       "source": "api",
