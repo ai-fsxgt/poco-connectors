@@ -2,7 +2,7 @@
   "name": "Feishu",
   "description": "Connect Feishu workspaces and handle collaboration or business data within explicit permission and confirmation boundaries.",
   "authorization.title": "Authorize a Feishu account",
-  "authorization.description": "Sign in with the Feishu application configured by your organization. OAuth access and Feishu app permissions are separate; an administrator must grant missing business permissions in the Feishu Open Platform.",
+  "authorization.description": "Sign in with the Feishu application configured by your organization. First register the exact callback URL shown by Poco, enable all 200 user scopes requested by the connector (including offline_access), and publish the app.",
   "capabilities.title": "Capabilities",
   "capabilities.office.title": "Workplace collaboration",
   "capabilities.office.description": "Work with calendars, tasks, documents, drive, mail, meetings, chat, and contacts.",
@@ -14,8 +14,8 @@
   "actions.openService": "Open Feishu",
   "configuration.group": "Feishu application",
   "configuration.appId.label": "App ID",
-  "configuration.appId.description": "The App ID of your Feishu Open Platform application.",
+  "configuration.appId.description": "The App ID of your Feishu Open Platform application. Its OAuth callback URL must exactly match the URL shown by Poco.",
   "configuration.appId.placeholder": "cli_xxxxxxxxxxxxxxxx",
   "configuration.appSecret.label": "App Secret",
-  "configuration.appSecret.description": "The App Secret of your Feishu Open Platform application."
+  "configuration.appSecret.description": "The App Secret of your Feishu Open Platform application. Republish the app after changing permissions."
 }

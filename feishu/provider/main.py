@@ -1,8 +1,9 @@
 import json
 import sys
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 
 import httpx
 
@@ -10,10 +11,13 @@ from errors import ProgramError
 from lark_runtime import discover_tools, invoke_tool
 
 OPEN_API = "https://open.feishu.cn"
-OAUTH_AUTHORIZE = OPEN_API + "/open-apis/authen/v1/authorize"
-OAUTH_TOKEN = OPEN_API + "/open-apis/authen/v2/oauth/token"
+OAUTH_ACCOUNT = "https://accounts.feishu.cn"
+OAUTH_AUTHORIZE = OAUTH_ACCOUNT + "/open-apis/authen/v1/authorize"
+OAUTH_TOKEN = OAUTH_ACCOUNT + "/oauth/v3/token"
 OAUTH_REVOKE = "https://accounts.feishu.cn/oauth/v1/revoke"
 USER_INFO = OPEN_API + "/open-apis/authen/v1/user_info"
+CATALOG_PATH = Path(__file__).with_name("catalog.json")
+MAX_OAUTH_SCOPES = 200
 
 
 def _config(context: dict[str, Any]) -> tuple[str, str]:
@@ -23,18 +27,86 @@ def _config(context: dict[str, Any]) -> tuple[str, str]:
     return str(public.get("app_id", "")).strip(), str(secret.get("app_secret", "")).strip()
 
 
-def _request(method: str, url: str, **kwargs: Any) -> dict[str, Any]:
+def _oauth_scope() -> str:
+    try:
+        payload = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise ProgramError("external_error", "飞书授权范围配置不可用") from exc
+    scopes = payload.get("oauth_scopes") if isinstance(payload, dict) else None
+    if (
+        not isinstance(scopes, list)
+        or not scopes
+        or len(scopes) > MAX_OAUTH_SCOPES
+        or "offline_access" not in scopes
+        or not all(
+            isinstance(scope, str)
+            and scope
+            and scope.strip() == scope
+            and not any(character.isspace() for character in scope)
+            for scope in scopes
+        )
+    ):
+        raise ProgramError("external_error", "飞书授权范围配置无效")
+    return " ".join(scopes)
+
+
+def _request(
+    method: str,
+    url: str,
+    *,
+    allow_empty: bool = False,
+    **kwargs: Any,
+) -> dict[str, Any]:
     try:
         with httpx.Client(timeout=10, follow_redirects=False) as client:
             response = client.request(method, url, **kwargs)
     except httpx.RequestError as exc:
-        raise ProgramError("unavailable", "飞书授权服务请求失败，请稍后重试") from exc
+        raise ProgramError(
+            "unavailable",
+            "飞书授权服务请求失败，请稍后重试",
+            retryable=True,
+        ) from exc
+    if response.is_success and allow_empty and not response.content.strip():
+        return {}
     try:
         payload = response.json()
     except ValueError as exc:
+        if response.status_code == 429 or response.status_code >= 500:
+            raise ProgramError(
+                "unavailable",
+                f"飞书授权服务返回 HTTP {response.status_code}",
+                retryable=True,
+            ) from exc
+        if response.status_code in {400, 401, 403}:
+            raise ProgramError(
+                "authorization_required",
+                f"飞书授权服务返回 HTTP {response.status_code}",
+            ) from exc
         raise ProgramError("external_error", "飞书授权服务未返回有效 JSON") from exc
+    message = None
+    if isinstance(payload, dict):
+        message = (
+            payload.get("error_description")
+            or payload.get("msg")
+            or payload.get("error")
+        )
     if response.status_code >= 400 or not isinstance(payload, dict):
-        raise ProgramError("authorization_required" if response.status_code in {400, 401} else "external_error", f"飞书授权服务返回 HTTP {response.status_code}")
+        if response.status_code == 429 or response.status_code >= 500:
+            code = "unavailable"
+            retryable = True
+        elif response.status_code in {400, 401, 403}:
+            code = "authorization_required"
+            retryable = False
+        else:
+            code = "external_error"
+            retryable = False
+        raise ProgramError(
+            code,
+            str(message or f"飞书授权服务返回 HTTP {response.status_code}"),
+            retryable=retryable,
+        )
+    if payload.get("error"):
+        raise ProgramError("authorization_required", str(message or "飞书授权失败"))
     if payload.get("code", 0) not in (0, "0"):
         raise ProgramError("authorization_required", str(payload.get("msg") or "飞书授权失败"))
     return payload
@@ -67,17 +139,23 @@ def authorization_identity(context: dict[str, Any]) -> dict[str, Any]:
 
 def authorization_begin(context: dict[str, Any]) -> dict[str, Any]:
     app_id, _ = _config(context)
-    params = {"app_id": app_id, "redirect_uri": context["redirect_uri"], "response_type": "code", "state": context["state"]}
+    params = {
+        "client_id": app_id,
+        "redirect_uri": context["redirect_uri"],
+        "response_type": "code",
+        "scope": _oauth_scope(),
+        "state": context["state"],
+    }
     if context.get("code_challenge"):
         params.update({"code_challenge": context["code_challenge"], "code_challenge_method": "S256"})
-    query = urlencode(params)
+    query = urlencode(params, quote_via=quote)
     return {"type": "redirect", "authorize_url": f"{OAUTH_AUTHORIZE}?{query}", "private_context": {}}
 
 
 def authorization_complete(context: dict[str, Any]) -> dict[str, Any]:
     app_id, secret = _config(context)
     submission = context.get("submission", {})
-    if submission.get("type") != "oauth_code":
+    if not isinstance(submission, dict) or submission.get("type") != "oauth_code":
         raise ProgramError("bad_request", "飞书连接器需要 OAuth 授权码")
     token_request = {"grant_type": "authorization_code", "client_id": app_id, "client_secret": secret, "code": submission.get("code", "")}
     redirect_uri = submission.get("redirect_uri", context.get("redirect_uri", ""))
@@ -103,17 +181,39 @@ def credential_refresh(context: dict[str, Any]) -> dict[str, Any]:
     refresh = values.get("refresh_token") if isinstance(values, dict) else None
     if not isinstance(refresh, str) or not refresh:
         raise ProgramError("authorization_required", "飞书刷新令牌不可用，请重新授权")
-    payload = _request("POST", OAUTH_TOKEN, json={"grant_type": "refresh_token", "client_id": app_id, "client_secret": secret, "refresh_token": refresh})
+    payload = _request(
+        "POST",
+        OAUTH_TOKEN,
+        json={
+            "grant_type": "refresh_token",
+            "client_id": app_id,
+            "client_secret": secret,
+            "refresh_token": refresh,
+        },
+    )
     return {"credential": _credential(payload.get("data", payload))}
 
 
 def credential_revoke(context: dict[str, Any]) -> dict[str, Any]:
+    app_id, secret = _config(context)
     credential = context.get("credential", {})
     values = credential.get("values", {}) if isinstance(credential, dict) else {}
-    token = values.get("access_token") if isinstance(values, dict) else None
+    refresh = values.get("refresh_token") if isinstance(values, dict) else None
+    access = values.get("access_token") if isinstance(values, dict) else None
+    token = refresh or access
     if not isinstance(token, str) or not token:
         return {}
-    _request("POST", OAUTH_REVOKE, data={"token": token, "token_type_hint": "access_token"})
+    _request(
+        "POST",
+        OAUTH_REVOKE,
+        allow_empty=True,
+        data={
+            "client_id": app_id,
+            "client_secret": secret,
+            "token": token,
+            "token_type_hint": "refresh_token" if refresh else "access_token",
+        },
+    )
     return {}
 
 
@@ -134,7 +234,7 @@ def main() -> None:
             raise ProgramError("bad_request", "不支持的连接器操作")
         response = {"protocol_version": 1, "ok": True, "result": handler(request["context"])}
     except ProgramError as exc:
-        response = {"protocol_version": 1, "ok": False, "error": {"code": exc.code, "message": exc.message, "retryable": False}}
+        response = {"protocol_version": 1, "ok": False, "error": {"code": exc.code, "message": exc.message, "retryable": exc.retryable}}
     except Exception:
         response = {"protocol_version": 1, "ok": False, "error": {"code": "external_error", "message": "飞书连接器运行失败", "retryable": False}}
     encoded = json.dumps(response, ensure_ascii=False, separators=(",", ":"), allow_nan=False)

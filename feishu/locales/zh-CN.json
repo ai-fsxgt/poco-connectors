@@ -2,7 +2,7 @@
   "name": "飞书",
   "description": "连接飞书办公空间，在明确权限与确认边界内处理协作和业务数据。",
   "authorization.title": "授权飞书账号",
-  "authorization.description": "使用组织配置的飞书应用完成登录。授权范围与飞书应用权限独立，缺少业务权限时需由管理员在飞书开放平台授予。",
+  "authorization.description": "使用组织配置的飞书应用完成登录。请先在飞书开放平台登记 Poco 显示的完整回调地址，开通连接器申请的 200 个用户权限（含 offline_access），然后发布应用。",
   "capabilities.title": "支持的能力",
   "capabilities.office.title": "办公协同",
   "capabilities.office.description": "处理日历、任务、文档、云盘、邮件、会议、聊天和通讯录。",
@@ -14,8 +14,8 @@
   "actions.openService": "打开飞书",
   "configuration.group": "飞书应用配置",
   "configuration.appId.label": "App ID",
-  "configuration.appId.description": "飞书开放平台应用的 App ID。",
+  "configuration.appId.description": "飞书开放平台应用的 App ID；应用必须登记与 Poco 完全一致的 OAuth 回调地址。",
   "configuration.appId.placeholder": "cli_xxxxxxxxxxxxxxxx",
   "configuration.appSecret.label": "App Secret",
-  "configuration.appSecret.description": "飞书开放平台应用的 App Secret。"
+  "configuration.appSecret.description": "飞书开放平台应用的 App Secret。修改权限后，请重新发布应用。"
 }

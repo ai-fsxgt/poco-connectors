@@ -31,7 +31,55 @@ POLICIES = {
     "execute_confirmed_write_command": ("write", "user_required"),
     "execute_destructive_command": ("destructive", "user_required"),
 }
-CONFIRMATION_OVERRIDES = {"mail +forward", "mail +reply", "mail +reply-all", "mail +send"}
+CONFIRMATION_OVERRIDES = {
+    "apps +automation-disable",
+    "apps +cache-delete",
+    "apps +db-audit-disable",
+    "apps +db-sync-disable",
+    "apps +openapi-key-disable",
+    "apps +session-stop",
+    "base +button-rule-unbind",
+    "base +workflow-disable",
+    "calendar +update",
+    "calendar event.attendees batch_delete",
+    "calendar events delete",
+    "docs +resource-delete",
+    "drive +react-reply",
+    "drive file.comment.reply.reactions update_reaction",
+    "drive user remove_subscription",
+    "im +feed-shortcut-remove",
+    "im +flag-cancel",
+    "im chat.managers delete_managers",
+    "im chat.nickname delete",
+    "im feed.groups batch_remove_item",
+    "im feed.groups delete",
+    "im reactions delete",
+    "mail +forward",
+    "mail +reply",
+    "mail +reply-all",
+    "mail +rule-disable",
+    "mail +send",
+    "mail user_mailbox.drafts cancel_scheduled_send",
+    "mail user_mailbox.event unsubscribe",
+    "mail user_mailbox.messages batch_trash",
+    "mail user_mailbox.messages trash",
+    "mail user_mailbox.sent_messages recall",
+    "mail user_mailbox.templates delete",
+    "mail user_mailbox.threads batch_trash",
+    "mail user_mailbox.threads trash",
+    "markdown +overwrite",
+    "minutes +todo",
+    "okr alignments delete",
+    "slides +delete-slide",
+    "slides +replace-pages",
+    "slides xml_presentation.slide delete",
+    "task +assign",
+    "task +set-ancestor",
+    "task members remove",
+    "task tasklists remove_members",
+    "vc +meeting-leave",
+    "wiki +member-remove",
+}
 
 
 def _schema(properties: dict[str, Any], required: list[str] | None = None) -> dict[str, Any]:
@@ -61,11 +109,11 @@ def _execution_schema() -> dict[str, Any]:
 def discover_tools(_: dict[str, Any]) -> dict[str, Any]:
     execution = _execution_schema()
     return {"tools": [
-        {"key": "search_commands", "upstream_name": "search_commands", "description": "检索官方飞书 CLI 当前支持的命令、参数、权限和风险。执行前先调用。", "input_schema": _schema({"query": {"type": "string", "maxLength": 200, "default": ""}, "product": {"type": "string", "maxLength": 64}, "effect": {"type": "string", "enum": ["read", "write", "destructive"]}, "limit": {"type": "integer", "minimum": 1, "maximum": 20, "default": 10}}), "effect": "read", "retry_policy": "safe", "confirmation": "not_required", "source_revision": "lark-cli-1.0.72"},
-        {"key": "execute_read_command", "upstream_name": "execute_read_command", "description": "执行目录中的只读飞书命令。", "input_schema": execution, "effect": "read", "retry_policy": "safe", "confirmation": "not_required", "source_revision": "lark-cli-1.0.72"},
-        {"key": "execute_write_command", "upstream_name": "execute_write_command", "description": "执行目录中无需额外确认的飞书写命令。", "input_schema": execution, "effect": "write", "retry_policy": "never", "confirmation": "not_required", "source_revision": "lark-cli-1.0.72"},
-        {"key": "execute_confirmed_write_command", "upstream_name": "execute_confirmed_write_command", "description": "执行需要用户确认的飞书写命令。", "input_schema": execution, "effect": "write", "retry_policy": "never", "confirmation": "user_required", "source_revision": "lark-cli-1.0.72"},
-        {"key": "execute_destructive_command", "upstream_name": "execute_destructive_command", "description": "执行删除或其他高风险飞书命令。", "input_schema": execution, "effect": "destructive", "retry_policy": "never", "confirmation": "user_required", "source_revision": "lark-cli-1.0.72"},
+        {"key": "search_commands", "upstream_name": "search_commands", "description": "检索官方飞书 CLI 当前支持的命令、参数、权限和风险。执行前先调用。", "input_schema": _schema({"query": {"type": "string", "maxLength": 200, "default": ""}, "product": {"type": "string", "maxLength": 64}, "effect": {"type": "string", "enum": ["read", "write", "destructive"]}, "limit": {"type": "integer", "minimum": 1, "maximum": 20, "default": 10}}), "effect": "read", "retry_policy": "safe", "confirmation": "not_required", "source_revision": "lark-cli-1.0.95"},
+        {"key": "execute_read_command", "upstream_name": "execute_read_command", "description": "执行目录中的只读飞书命令。", "input_schema": execution, "effect": "read", "retry_policy": "safe", "confirmation": "not_required", "source_revision": "lark-cli-1.0.95"},
+        {"key": "execute_write_command", "upstream_name": "execute_write_command", "description": "执行目录中无需额外确认的飞书写命令。", "input_schema": execution, "effect": "write", "retry_policy": "never", "confirmation": "not_required", "source_revision": "lark-cli-1.0.95"},
+        {"key": "execute_confirmed_write_command", "upstream_name": "execute_confirmed_write_command", "description": "执行需要用户确认的飞书写命令。", "input_schema": execution, "effect": "write", "retry_policy": "never", "confirmation": "user_required", "source_revision": "lark-cli-1.0.95"},
+        {"key": "execute_destructive_command", "upstream_name": "execute_destructive_command", "description": "执行删除或其他高风险飞书命令。", "input_schema": execution, "effect": "destructive", "retry_policy": "never", "confirmation": "user_required", "source_revision": "lark-cli-1.0.95"},
     ]}
 
 
@@ -96,6 +144,25 @@ def _load_catalog() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
 def _catalog_parameters(command: dict[str, Any]) -> dict[str, dict[str, Any]]:
     """Flatten the CLI's nested input schema into flag names."""
     result: dict[str, dict[str, Any]] = {}
+    raw_parameters = command.get("parameters", {})
+    if isinstance(raw_parameters, dict):
+        for name, parameter in raw_parameters.items():
+            if not isinstance(name, str) or not isinstance(parameter, dict):
+                continue
+            item = dict(parameter)
+            cli_type = item.get("cli_type", "string")
+            if cli_type == "bool":
+                item.setdefault("type", "boolean")
+            elif cli_type in {"strings", "stringArray", "ints"}:
+                item.setdefault("type", "array")
+            elif cli_type in {"int", "int64", "uint", "uint64"}:
+                item.setdefault("type", "integer")
+            elif cli_type in {"float", "float32", "float64"}:
+                item.setdefault("type", "number")
+            else:
+                item.setdefault("type", "string")
+                item["cli_type"] = "string"
+            result[name] = item
     schema = command.get("input_schema", {})
 
     def walk(node: object) -> None:
@@ -243,8 +310,12 @@ def _flag_arguments(command: dict[str, Any], arguments: dict[str, Any], staged: 
             raise ProgramError("bad_request", f"--{flag} 的值类型无效")
         for item in values:
             encoded = str(item)
-            if parameter.get("file_input") and encoded.startswith("@"):
-                raise ProgramError("bad_request", f"--{flag} 的文件内容必须通过 file_inputs 提供")
+            if parameter.get("file_input"):
+                input_path = Path(encoded.removeprefix("@"))
+                if encoded.startswith("@"):
+                    raise ProgramError("bad_request", f"--{flag} 的文件内容必须通过 file_inputs 提供")
+                if input_path.is_absolute() or ".." in input_path.parts or "\x00" in encoded:
+                    raise ProgramError("bad_request", f"--{flag} 不允许访问工作区外的文件")
             _validate_path(flag, encoded, parameter)
             result.extend([f"--{flag}", encoded])
     for flag, values in staged.items():
@@ -265,7 +336,7 @@ def _positionals(arguments: dict[str, Any]) -> list[str]:
 def _binary(runtime_root: Path) -> Path:
     if platform.system() != "Linux" or platform.machine().lower() not in {"x86_64", "amd64"}:
         raise ProgramError("unavailable", "飞书连接器运行时仅支持 Linux amd64")
-    archive = VENDOR / "lark-cli-1.0.72-linux-amd64.tar.gz"
+    archive = VENDOR / "lark-cli-1.0.95-linux-amd64.tar.gz"
     try:
         checksums = json.loads((VENDOR / "checksums.json").read_text())
         if hashlib.sha256(archive.read_bytes()).hexdigest() != checksums[archive.name]:
@@ -285,7 +356,15 @@ def _binary(runtime_root: Path) -> Path:
         raise ProgramError("external_error", "官方飞书 CLI 校验失败") from exc
 
 
-def _run(command: list[str], workspace: Path, runtime_root: Path, token: str, app_id: str, app_secret: str) -> tuple[str, str]:
+def _run(
+    command: list[str],
+    workspace: Path,
+    runtime_root: Path,
+    token: str,
+    app_id: str,
+    app_secret: str,
+    retryable_allowed: bool,
+) -> tuple[str, str]:
     environment = {key: value for key, value in os.environ.items() if key in {"HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY", "SSL_CERT_DIR", "SSL_CERT_FILE", "LANG", "LC_ALL"}}
     environment.update({
         "HOME": str(runtime_root / "home"), "LARKSUITE_CLI_CONFIG_DIR": str(runtime_root / "config"),
@@ -303,7 +382,14 @@ def _run(command: list[str], workspace: Path, runtime_root: Path, token: str, ap
                 os.killpg(process.pid, signal.SIGTERM)
             except ProcessLookupError:
                 pass
-            raise ProgramError("unavailable", "飞书命令执行超时；写操作可能已完成，请先查询远端状态") from exc
+            message = "飞书命令执行超时"
+            if not retryable_allowed:
+                message += "；写操作可能已完成，请先查询远端状态"
+            raise ProgramError(
+                "unavailable",
+                message,
+                retryable=retryable_allowed,
+            ) from exc
         stdout.seek(0); stderr.seek(0)
         out, err = stdout.read(MAX_OUTPUT + 1), stderr.read(MAX_OUTPUT + 1)
     if len(out) > MAX_OUTPUT or len(err) > MAX_OUTPUT:
@@ -314,15 +400,55 @@ def _run(command: list[str], workspace: Path, runtime_root: Path, token: str, ap
         try:
             payload = json.loads(raw)
             detail = payload.get("error", payload) if isinstance(payload, dict) else payload
-            message = detail.get("message", raw) if isinstance(detail, dict) else raw
+            if not isinstance(detail, dict):
+                raise ValueError
         except ValueError:
-            message = raw
-        lowered = str(message).lower()
-        if any(word in lowered for word in ("scope", "permission", "权限")):
-            raise ProgramError("insufficient_scope", str(message) + "；请由管理员授予飞书应用所需权限")
-        if any(word in lowered for word in ("auth", "token", "登录")):
-            raise ProgramError("authorization_required", str(message))
-        raise ProgramError("external_error", str(message)[-1800:])
+            raise ProgramError("external_error", raw[-1800:])
+        category = detail.get("type")
+        subtype = detail.get("subtype")
+        message = str(detail.get("message") or "飞书命令执行失败")
+        hint = detail.get("hint")
+        if isinstance(hint, str) and hint and hint not in message:
+            message += f"；{hint}"
+        error_code = detail.get("code")
+        if isinstance(error_code, int) and error_code:
+            message += f"（飞书错误码：{error_code}）"
+        if category == "validation":
+            protocol_code = "bad_request"
+        elif category == "authentication":
+            protocol_code = "authorization_required"
+        elif category == "config" and subtype == "invalid_client":
+            protocol_code = "authorization_required"
+        elif category == "authorization":
+            if subtype in {
+                "missing_scope",
+                "app_scope_not_applied",
+                "token_scope_insufficient",
+            }:
+                protocol_code = "insufficient_scope"
+            elif subtype in {"user_unauthorized", "app_unavailable", "app_disabled"}:
+                protocol_code = "authorization_required"
+            else:
+                protocol_code = "action_forbidden"
+        elif category == "network":
+            protocol_code = "unavailable"
+        elif category == "api" and subtype == "rate_limit":
+            protocol_code = "rate_limited"
+        elif category == "api" and subtype == "not_found":
+            protocol_code = "not_found"
+        elif category == "api" and subtype == "invalid_parameters":
+            protocol_code = "bad_request"
+        elif category == "api" and subtype == "server_error":
+            protocol_code = "unavailable"
+        elif category in {"policy", "confirmation"}:
+            protocol_code = "action_forbidden"
+        else:
+            protocol_code = "external_error"
+        raise ProgramError(
+            protocol_code,
+            message[-1800:],
+            retryable=retryable_allowed and detail.get("retryable") is True,
+        )
     return text_out, text_err
 
 
@@ -405,5 +531,13 @@ def invoke_tool(context: dict[str, Any]) -> dict[str, Any]:
         argv.extend(flags)
         if positionals:
             argv.extend(["--", *positionals])
-        stdout, _ = _run(argv, workspace, runtime_root, token, str(app_id), str(app_secret))
+        stdout, _ = _run(
+            argv,
+            workspace,
+            runtime_root,
+            token,
+            str(app_id),
+            str(app_secret),
+            command["effect"] == "read",
+        )
         return _result(_parse_output(stdout), _collect_outputs(workspace))

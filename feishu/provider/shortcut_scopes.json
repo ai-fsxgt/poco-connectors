@@ -1,0 +1,5419 @@
+{
+  "cli_version": "1.0.95",
+  "shortcuts": [
+    {
+      "canonical_path": "apps +create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +update",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +access-scope-set",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +access-scope-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +role-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +role-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +role-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +role-update",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +role-delete",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +role-member-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +role-member-add",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +role-member-remove",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +role-match-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +member-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +member-add",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +member-update",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +member-remove",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +member-settings-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +member-settings-set",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +html-publish",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write",
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +init",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +release-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +release-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +release-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +env-pull",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +log-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +log-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +trace-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +trace-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +metric-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +analytics-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +env-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +env-set",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +env-delete",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-table-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-table-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-execute",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-env-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-data-import",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-data-export",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-sync-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-sync-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-sync-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-sync-enable",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-sync-disable",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-sync-update",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-sync-delete",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-changelog-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-audit-status",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-audit-enable",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-audit-disable",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-audit-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-env-diff",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-env-migrate",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-recovery-diff",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-recovery-apply",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +db-quota-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +file-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +file-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +file-sign",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +file-download",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +file-upload",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +file-delete",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +file-quota-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +cache-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +cache-delete",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +cache-clear",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +git-credential-init",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +git-credential-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": []
+    },
+    {
+      "canonical_path": "apps +git-credential-remove",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": []
+    },
+    {
+      "canonical_path": "apps +session-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +session-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +session-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +session-stop",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +session-messages-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +chat",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +user-id-convert",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "spark:directory.user.id_convert:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +plugin-install",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +plugin-uninstall",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": []
+    },
+    {
+      "canonical_path": "apps +plugin-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": []
+    },
+    {
+      "canonical_path": "apps +openapi-key-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +openapi-key-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +openapi-key-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +openapi-key-update",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +openapi-key-enable",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +openapi-key-disable",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +openapi-key-delete",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +openapi-key-reset",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +automation-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +automation-get",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:read"
+      ]
+    },
+    {
+      "canonical_path": "apps +automation-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +automation-update",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +automation-enable",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "apps +automation-disable",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "spark:app:write"
+      ]
+    },
+    {
+      "canonical_path": "application +slash-command-list",
+      "auth_types": [
+        "bot",
+        "user"
+      ],
+      "user_scopes": [
+        "application:app_slash_command:read"
+      ]
+    },
+    {
+      "canonical_path": "application +slash-command-create",
+      "auth_types": [
+        "bot",
+        "user"
+      ],
+      "user_scopes": [
+        "application:app_slash_command:write",
+        "application:app_slash_command:read"
+      ]
+    },
+    {
+      "canonical_path": "application +slash-command-update",
+      "auth_types": [
+        "bot",
+        "user"
+      ],
+      "user_scopes": [
+        "application:app_slash_command:write",
+        "application:app_slash_command:read"
+      ]
+    },
+    {
+      "canonical_path": "application +slash-command-delete",
+      "auth_types": [
+        "bot",
+        "user"
+      ],
+      "user_scopes": [
+        "application:app_slash_command:write",
+        "application:app_slash_command:read"
+      ]
+    },
+    {
+      "canonical_path": "calendar +agenda",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:read"
+      ]
+    },
+    {
+      "canonical_path": "calendar +create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:create",
+        "calendar:calendar.event:update"
+      ]
+    },
+    {
+      "canonical_path": "calendar +delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:read",
+        "calendar:calendar.event:delete"
+      ]
+    },
+    {
+      "canonical_path": "calendar +update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:update"
+      ]
+    },
+    {
+      "canonical_path": "calendar +freebusy",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.free_busy:read"
+      ]
+    },
+    {
+      "canonical_path": "calendar +room-find",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.free_busy:read"
+      ]
+    },
+    {
+      "canonical_path": "calendar +rsvp",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:reply"
+      ]
+    },
+    {
+      "canonical_path": "calendar +suggestion",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.free_busy:read"
+      ]
+    },
+    {
+      "canonical_path": "calendar +meeting",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:read"
+      ]
+    },
+    {
+      "canonical_path": "calendar +search-event",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:read"
+      ]
+    },
+    {
+      "canonical_path": "calendar +get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:read"
+      ]
+    },
+    {
+      "canonical_path": "calendar +transfer",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:transfer",
+        "calendar:calendar.event:read"
+      ]
+    },
+    {
+      "canonical_path": "calendar +join-event",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:join"
+      ]
+    },
+    {
+      "canonical_path": "calendar +list-attendees",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "calendar:calendar.event:read"
+      ]
+    },
+    {
+      "canonical_path": "docs +search",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "search:docs:read"
+      ]
+    },
+    {
+      "canonical_path": "docs +create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docx:document:create",
+        "docs:document.media:upload",
+        "docx:document:write_only",
+        "docx:document:readonly"
+      ]
+    },
+    {
+      "canonical_path": "docs +fetch",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docx:document:readonly"
+      ]
+    },
+    {
+      "canonical_path": "docs +update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docx:document:write_only",
+        "docx:document:readonly",
+        "docs:document.media:upload",
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "docs +script",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docx:document:readonly"
+      ]
+    },
+    {
+      "canonical_path": "docs +history-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docx:document:readonly"
+      ]
+    },
+    {
+      "canonical_path": "docs +history-revert",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docx:document:write_only",
+        "docx:document:readonly"
+      ]
+    },
+    {
+      "canonical_path": "docs +history-revert-status",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docx:document:readonly"
+      ]
+    },
+    {
+      "canonical_path": "docs +media-insert",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.media:upload",
+        "docx:document:write_only",
+        "docx:document:readonly"
+      ]
+    },
+    {
+      "canonical_path": "docs +media-upload",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.media:upload"
+      ]
+    },
+    {
+      "canonical_path": "docs +media-preview",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.media:download"
+      ]
+    },
+    {
+      "canonical_path": "docs +media-download",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.media:download",
+        "docs:permission.member:auth"
+      ]
+    },
+    {
+      "canonical_path": "docs +resource-download",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docx:document:readonly",
+        "docs:document.media:download"
+      ]
+    },
+    {
+      "canonical_path": "docs +resource-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docx:document:readonly",
+        "docx:document:write_only",
+        "docs:document.media:upload"
+      ]
+    },
+    {
+      "canonical_path": "docs +resource-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docx:document:readonly",
+        "docx:document:write_only"
+      ]
+    },
+    {
+      "canonical_path": "drive +upload",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:upload",
+        "drive:drive.metadata:readonly"
+      ]
+    },
+    {
+      "canonical_path": "drive +create-folder",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "space:folder:create"
+      ]
+    },
+    {
+      "canonical_path": "drive +create-shortcut",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "space:document:shortcut"
+      ]
+    },
+    {
+      "canonical_path": "drive +copy",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document:copy",
+        "drive:drive.metadata:readonly",
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "drive +download",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:download",
+        "docs:permission.member:auth",
+        "drive:drive.metadata:readonly",
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "drive +preview",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:download",
+        "drive:drive.metadata:readonly",
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "drive +cover",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:download"
+      ]
+    },
+    {
+      "canonical_path": "drive +add-comment",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:drive.metadata:readonly",
+        "docx:document:readonly",
+        "docs:document.comment:create",
+        "docs:document.comment:write_only"
+      ]
+    },
+    {
+      "canonical_path": "drive +list-comments",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.comment:read",
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "drive +batch-query-comments",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.comment:read",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "drive +resolve-comment",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.comment:write_only",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "drive +restore-comment",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.comment:write_only",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "drive +add-reply",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.comment:create",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "drive +list-replies",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.comment:read",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "drive +update-reply",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.comment:write_only",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "drive +delete-reply",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.comment:write_only",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "drive +react-reply",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.comment:write_only",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "drive +export",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.content:read",
+        "docs:document:export",
+        "docx:document:readonly",
+        "drive:drive.metadata:readonly",
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "drive +export-download",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document:export"
+      ]
+    },
+    {
+      "canonical_path": "drive +import",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.media:upload",
+        "docs:document:import",
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "drive +version-history",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:download"
+      ]
+    },
+    {
+      "canonical_path": "drive +version-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:download"
+      ]
+    },
+    {
+      "canonical_path": "drive +version-revert",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:upload"
+      ]
+    },
+    {
+      "canonical_path": "drive +version-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:upload"
+      ]
+    },
+    {
+      "canonical_path": "drive +move",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "space:document:move"
+      ]
+    },
+    {
+      "canonical_path": "drive +update-title",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:upload"
+      ]
+    },
+    {
+      "canonical_path": "drive +delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "space:document:delete",
+        "drive:drive.metadata:readonly"
+      ]
+    },
+    {
+      "canonical_path": "drive +status",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:drive.metadata:readonly",
+        "drive:file:download"
+      ]
+    },
+    {
+      "canonical_path": "drive +push",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:drive.metadata:readonly",
+        "drive:file:upload",
+        "space:folder:create"
+      ]
+    },
+    {
+      "canonical_path": "drive +pull",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:drive.metadata:readonly",
+        "drive:file:download"
+      ]
+    },
+    {
+      "canonical_path": "drive +sync",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:drive.metadata:readonly",
+        "drive:file:download",
+        "drive:file:upload",
+        "space:folder:create"
+      ]
+    },
+    {
+      "canonical_path": "drive +task_result",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": []
+    },
+    {
+      "canonical_path": "drive +apply-permission",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "docs:permission.member:apply"
+      ]
+    },
+    {
+      "canonical_path": "drive +member-add",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:permission.member:create"
+      ]
+    },
+    {
+      "canonical_path": "drive +member-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:permission.member:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "drive +member-remove",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:permission.member:delete"
+      ]
+    },
+    {
+      "canonical_path": "drive +permission-get-setting",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:permission.setting:read"
+      ]
+    },
+    {
+      "canonical_path": "drive +secure-label-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "docs:secure_label:readonly"
+      ]
+    },
+    {
+      "canonical_path": "drive +secure-label-update",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "docs:secure_label:write_only"
+      ]
+    },
+    {
+      "canonical_path": "drive +search",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "search:docs:read"
+      ]
+    },
+    {
+      "canonical_path": "drive +inspect",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:drive.metadata:readonly",
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "im +chat-create",
+      "auth_types": [
+        "bot",
+        "user"
+      ],
+      "user_scopes": [
+        "im:chat:create_by_user"
+      ]
+    },
+    {
+      "canonical_path": "im +chat-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "im:chat:read"
+      ]
+    },
+    {
+      "canonical_path": "im +chat-members-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "im:chat.members:read"
+      ]
+    },
+    {
+      "canonical_path": "im +chat-messages-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "im:message.group_msg:get_as_user",
+        "im:message.p2p_msg:get_as_user",
+        "im:message.reactions:read"
+      ]
+    },
+    {
+      "canonical_path": "im +chat-search",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "im:chat:read"
+      ]
+    },
+    {
+      "canonical_path": "im +chat-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "im:chat:update"
+      ]
+    },
+    {
+      "canonical_path": "im +message-read-users",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "im:message:readonly"
+      ]
+    },
+    {
+      "canonical_path": "im +messages-edit",
+      "auth_types": [
+        "bot"
+      ],
+      "user_scopes": [
+        "im:message:send_as_bot"
+      ]
+    },
+    {
+      "canonical_path": "im +messages-mget",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "im:message.group_msg:get_as_user",
+        "im:message.p2p_msg:get_as_user",
+        "im:message.reactions:read"
+      ]
+    },
+    {
+      "canonical_path": "im +messages-read-status",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "im:message:readonly"
+      ]
+    },
+    {
+      "canonical_path": "im +messages-reply",
+      "auth_types": [
+        "bot",
+        "user"
+      ],
+      "user_scopes": [
+        "im:message.send_as_user",
+        "im:message"
+      ]
+    },
+    {
+      "canonical_path": "im +messages-resources-download",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "im:message:readonly"
+      ]
+    },
+    {
+      "canonical_path": "im +messages-search",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "search:message",
+        "im:message.reactions:read"
+      ]
+    },
+    {
+      "canonical_path": "im +messages-send",
+      "auth_types": [
+        "bot",
+        "user"
+      ],
+      "user_scopes": [
+        "im:message.send_as_user",
+        "im:message"
+      ]
+    },
+    {
+      "canonical_path": "im +threads-messages-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "im:message.group_msg:get_as_user",
+        "im:message.p2p_msg:get_as_user",
+        "im:message.reactions:read"
+      ]
+    },
+    {
+      "canonical_path": "im +flag-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "im:feed.flag:write",
+        "im:message.group_msg:get_as_user",
+        "im:message.p2p_msg:get_as_user",
+        "im:chat:read"
+      ]
+    },
+    {
+      "canonical_path": "im +flag-cancel",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "im:feed.flag:write",
+        "im:message.group_msg:get_as_user",
+        "im:message.p2p_msg:get_as_user",
+        "im:chat:read"
+      ]
+    },
+    {
+      "canonical_path": "im +flag-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "im:feed.flag:read"
+      ]
+    },
+    {
+      "canonical_path": "im +feed-shortcut-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "im:feed.shortcut:write"
+      ]
+    },
+    {
+      "canonical_path": "im +feed-shortcut-remove",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "im:feed.shortcut:write"
+      ]
+    },
+    {
+      "canonical_path": "im +feed-shortcut-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "im:feed.shortcut:read",
+        "im:chat:read"
+      ]
+    },
+    {
+      "canonical_path": "im +feed-group-list",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "im:feed_group_v1:read"
+      ]
+    },
+    {
+      "canonical_path": "im +feed-group-list-item",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "im:feed_group_v1:read",
+        "im:chat:read"
+      ]
+    },
+    {
+      "canonical_path": "im +feed-group-query-item",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "im:feed_group_v1:read",
+        "im:chat:read"
+      ]
+    },
+    {
+      "canonical_path": "contact +search-user",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "contact:user:search"
+      ]
+    },
+    {
+      "canonical_path": "contact +search-bot",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "search:bot"
+      ]
+    },
+    {
+      "canonical_path": "contact +get-user",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "contact:user.basic_profile:readonly"
+      ]
+    },
+    {
+      "canonical_path": "sheets +workbook-info",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +revision-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-rename",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-move",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read",
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-copy",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-hide",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-unhide",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-set-tab-color",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-show-gridline",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-hide-gridline",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +workbook-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:create",
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +workbook-export",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read",
+        "docs:document:export",
+        "drive:drive.metadata:readonly"
+      ]
+    },
+    {
+      "canonical_path": "sheets +workbook-import",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.media:upload",
+        "docs:document:import"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sheet-info",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dim-insert",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dim-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dim-hide",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dim-unhide",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dim-freeze",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dim-group",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dim-ungroup",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dim-move",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only",
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +changeset-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +csv-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dropdown-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +table-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-search",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-replace",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +formula-verify",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-set",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-set-style",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-set-image",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only",
+        "drive:file:upload"
+      ]
+    },
+    {
+      "canonical_path": "sheets +csv-put",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dropdown-set",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +table-put",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read",
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-clear",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-merge",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-unmerge",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +rows-resize",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cols-resize",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +range-move",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +range-copy",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +range-fill",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +range-sort",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +chart-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +pivot-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cond-format-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cond-format-result-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +filter-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +filter-view-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sparkline-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +float-image-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +chart-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +chart-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +chart-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +chart-create-basic",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +chart-config-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read",
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +chart-data-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read",
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +pivot-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +pivot-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +pivot-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cond-format-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cond-format-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cond-format-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +filter-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +filter-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +filter-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +filter-view-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +filter-view-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +filter-view-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sparkline-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sparkline-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +sparkline-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +float-image-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +float-image-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +float-image-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +styles-put",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +batch-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only",
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +batch-chart-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +batch-chart-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read",
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-batch-set-style",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +cells-batch-clear",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dropdown-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +dropdown-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +history-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "sheets +history-revert",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:write_only"
+      ]
+    },
+    {
+      "canonical_path": "sheets +history-revert-status",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "sheets:spreadsheet:read"
+      ]
+    },
+    {
+      "canonical_path": "base +url-resolve",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:block:read",
+        "base:field:read",
+        "base:record:read",
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "base +title-resolve",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "search:docs:read"
+      ]
+    },
+    {
+      "canonical_path": "base +base-block-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:block:read"
+      ]
+    },
+    {
+      "canonical_path": "base +base-block-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:block:create"
+      ]
+    },
+    {
+      "canonical_path": "base +base-block-move",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:block:update"
+      ]
+    },
+    {
+      "canonical_path": "base +base-block-rename",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:block:update"
+      ]
+    },
+    {
+      "canonical_path": "base +base-block-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:block:delete"
+      ]
+    },
+    {
+      "canonical_path": "base +table-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:table:read"
+      ]
+    },
+    {
+      "canonical_path": "base +table-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:table:read",
+        "base:field:read",
+        "base:view:read"
+      ]
+    },
+    {
+      "canonical_path": "base +table-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:table:create",
+        "base:field:read",
+        "base:field:create",
+        "base:field:update",
+        "base:view:write_only"
+      ]
+    },
+    {
+      "canonical_path": "base +table-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:table:update"
+      ]
+    },
+    {
+      "canonical_path": "base +table-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:table:delete"
+      ]
+    },
+    {
+      "canonical_path": "base +table-copy",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:table:create"
+      ]
+    },
+    {
+      "canonical_path": "base +table-copy-status",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:table:create"
+      ]
+    },
+    {
+      "canonical_path": "base +field-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:read"
+      ]
+    },
+    {
+      "canonical_path": "base +field-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:read"
+      ]
+    },
+    {
+      "canonical_path": "base +field-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:create"
+      ]
+    },
+    {
+      "canonical_path": "base +field-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:update"
+      ]
+    },
+    {
+      "canonical_path": "base +field-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:delete"
+      ]
+    },
+    {
+      "canonical_path": "base +field-search-options",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:read"
+      ]
+    },
+    {
+      "canonical_path": "base +field-extension-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:read"
+      ]
+    },
+    {
+      "canonical_path": "base +field-extension-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:update"
+      ]
+    },
+    {
+      "canonical_path": "base +field-extension-update-cells",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:update"
+      ]
+    },
+    {
+      "canonical_path": "base +view-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:read"
+      ]
+    },
+    {
+      "canonical_path": "base +view-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:read"
+      ]
+    },
+    {
+      "canonical_path": "base +view-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:write_only"
+      ]
+    },
+    {
+      "canonical_path": "base +view-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:write_only"
+      ]
+    },
+    {
+      "canonical_path": "base +view-get-filter",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:read"
+      ]
+    },
+    {
+      "canonical_path": "base +view-set-filter",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:write_only"
+      ]
+    },
+    {
+      "canonical_path": "base +view-get-visible-fields",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:read"
+      ]
+    },
+    {
+      "canonical_path": "base +view-set-visible-fields",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:write_only"
+      ]
+    },
+    {
+      "canonical_path": "base +view-get-group",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:read"
+      ]
+    },
+    {
+      "canonical_path": "base +view-set-group",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:write_only"
+      ]
+    },
+    {
+      "canonical_path": "base +view-get-sort",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:read"
+      ]
+    },
+    {
+      "canonical_path": "base +view-set-sort",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:write_only"
+      ]
+    },
+    {
+      "canonical_path": "base +view-get-timebar",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:read"
+      ]
+    },
+    {
+      "canonical_path": "base +view-set-timebar",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:write_only"
+      ]
+    },
+    {
+      "canonical_path": "base +view-get-card",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:read"
+      ]
+    },
+    {
+      "canonical_path": "base +view-set-card",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:write_only"
+      ]
+    },
+    {
+      "canonical_path": "base +view-rename",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:view:write_only"
+      ]
+    },
+    {
+      "canonical_path": "base +record-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:read"
+      ]
+    },
+    {
+      "canonical_path": "base +record-search",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:read"
+      ]
+    },
+    {
+      "canonical_path": "base +record-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:read"
+      ]
+    },
+    {
+      "canonical_path": "base +record-upsert",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:create",
+        "base:record:update"
+      ]
+    },
+    {
+      "canonical_path": "base +record-batch-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:create"
+      ]
+    },
+    {
+      "canonical_path": "base +record-batch-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:update"
+      ]
+    },
+    {
+      "canonical_path": "base +record-share-link-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:read"
+      ]
+    },
+    {
+      "canonical_path": "base +record-upload-attachment",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:update",
+        "base:field:read",
+        "docs:document.media:upload"
+      ]
+    },
+    {
+      "canonical_path": "base +record-download-attachment",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:read",
+        "docs:document.media:download"
+      ]
+    },
+    {
+      "canonical_path": "base +record-remove-attachment",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:update",
+        "base:field:read"
+      ]
+    },
+    {
+      "canonical_path": "base +record-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:record:delete"
+      ]
+    },
+    {
+      "canonical_path": "base +record-history-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:history:read"
+      ]
+    },
+    {
+      "canonical_path": "base +base-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:app:read"
+      ]
+    },
+    {
+      "canonical_path": "base +base-copy",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:app:copy"
+      ]
+    },
+    {
+      "canonical_path": "base +base-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:app:create",
+        "base:table:read",
+        "base:table:create",
+        "base:table:update",
+        "base:table:delete"
+      ]
+    },
+    {
+      "canonical_path": "base +template-categories",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:template:read"
+      ]
+    },
+    {
+      "canonical_path": "base +template-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:template:read"
+      ]
+    },
+    {
+      "canonical_path": "base +template-search",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:template:read"
+      ]
+    },
+    {
+      "canonical_path": "base +role-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:role:create"
+      ]
+    },
+    {
+      "canonical_path": "base +role-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:role:delete"
+      ]
+    },
+    {
+      "canonical_path": "base +role-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:role:update"
+      ]
+    },
+    {
+      "canonical_path": "base +role-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:role:read"
+      ]
+    },
+    {
+      "canonical_path": "base +role-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:role:read"
+      ]
+    },
+    {
+      "canonical_path": "base +advperm-enable",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:app:update"
+      ]
+    },
+    {
+      "canonical_path": "base +advperm-disable",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:app:update"
+      ]
+    },
+    {
+      "canonical_path": "base +workflow-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:workflow:read"
+      ]
+    },
+    {
+      "canonical_path": "base +workflow-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:workflow:read"
+      ]
+    },
+    {
+      "canonical_path": "base +workflow-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:workflow:create"
+      ]
+    },
+    {
+      "canonical_path": "base +workflow-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:workflow:update"
+      ]
+    },
+    {
+      "canonical_path": "base +workflow-enable",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:workflow:update"
+      ]
+    },
+    {
+      "canonical_path": "base +workflow-disable",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:workflow:update"
+      ]
+    },
+    {
+      "canonical_path": "base +button-rule-bind",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:read",
+        "base:field:update"
+      ]
+    },
+    {
+      "canonical_path": "base +button-rule-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:read"
+      ]
+    },
+    {
+      "canonical_path": "base +button-rule-unbind",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:field:read",
+        "base:field:update"
+      ]
+    },
+    {
+      "canonical_path": "base +data-query",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:table:read"
+      ]
+    },
+    {
+      "canonical_path": "base +form-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:create"
+      ]
+    },
+    {
+      "canonical_path": "base +form-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:delete"
+      ]
+    },
+    {
+      "canonical_path": "base +form-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:read"
+      ]
+    },
+    {
+      "canonical_path": "base +form-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:update"
+      ]
+    },
+    {
+      "canonical_path": "base +form-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:read"
+      ]
+    },
+    {
+      "canonical_path": "base +form-detail",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:read"
+      ]
+    },
+    {
+      "canonical_path": "base +form-questions-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:update"
+      ]
+    },
+    {
+      "canonical_path": "base +form-questions-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:update"
+      ]
+    },
+    {
+      "canonical_path": "base +form-questions-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:update"
+      ]
+    },
+    {
+      "canonical_path": "base +form-questions-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:read"
+      ]
+    },
+    {
+      "canonical_path": "base +form-submit",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:update",
+        "docs:document.media:upload"
+      ]
+    },
+    {
+      "canonical_path": "base +form-share-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:update"
+      ]
+    },
+    {
+      "canonical_path": "base +form-share-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:form:update"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:read"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:read"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-share-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:update"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-share-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:update"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:create"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:update"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:delete"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-arrange",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:update"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-block-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:read"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-block-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:read"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-block-get-data",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:read"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-block-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:create"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-block-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:update"
+      ]
+    },
+    {
+      "canonical_path": "base +dashboard-block-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:dashboard:delete"
+      ]
+    },
+    {
+      "canonical_path": "base +workspace-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:workspace:create"
+      ]
+    },
+    {
+      "canonical_path": "base +workspace-entity-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:workspace:read"
+      ]
+    },
+    {
+      "canonical_path": "base +workspace-move-in",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:workspace:update"
+      ]
+    },
+    {
+      "canonical_path": "base +app-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode:create",
+        "base:workspace:update"
+      ]
+    },
+    {
+      "canonical_path": "base +app-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode:read"
+      ]
+    },
+    {
+      "canonical_path": "base +app-page-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode_page:read"
+      ]
+    },
+    {
+      "canonical_path": "base +app-page-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode_page:read"
+      ]
+    },
+    {
+      "canonical_path": "base +app-page-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode_page:create",
+        "base:appmode_page:read"
+      ]
+    },
+    {
+      "canonical_path": "base +app-page-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode_page:update",
+        "base:appmode_page:read"
+      ]
+    },
+    {
+      "canonical_path": "base +app-page-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode_page:delete"
+      ]
+    },
+    {
+      "canonical_path": "base +app-block-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode_block:read"
+      ]
+    },
+    {
+      "canonical_path": "base +app-block-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode_block:read"
+      ]
+    },
+    {
+      "canonical_path": "base +app-block-get-data",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode_block:read"
+      ]
+    },
+    {
+      "canonical_path": "base +app-block-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode_block:create",
+        "base:appmode_block:read"
+      ]
+    },
+    {
+      "canonical_path": "base +app-block-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "base:appmode_block:update",
+        "base:appmode_block:read"
+      ]
+    },
+    {
+      "canonical_path": "event +subscribe",
+      "auth_types": [
+        "bot"
+      ],
+      "user_scopes": []
+    },
+    {
+      "canonical_path": "mail +message",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox.message.address:read",
+        "mail:user_mailbox.message.subject:read",
+        "mail:user_mailbox.message.body:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +messages",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox.message.address:read",
+        "mail:user_mailbox.message.subject:read",
+        "mail:user_mailbox.message.body:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +message-modify",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox.folder:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +message-trash",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify"
+      ]
+    },
+    {
+      "canonical_path": "mail +thread",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox.message.address:read",
+        "mail:user_mailbox.message.subject:read",
+        "mail:user_mailbox.message.body:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +thread-modify",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify"
+      ]
+    },
+    {
+      "canonical_path": "mail +thread-trash",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify"
+      ]
+    },
+    {
+      "canonical_path": "mail +triage",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox.message.address:read",
+        "mail:user_mailbox.message.subject:read",
+        "mail:user_mailbox.message.body:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +watch",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:event",
+        "mail:user_mailbox.event.mail_address:read",
+        "mail:user_mailbox:readonly",
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox.message.address:read",
+        "mail:user_mailbox.message.subject:read",
+        "mail:user_mailbox.message.body:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +rule-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.rule:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +rule-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.rule:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +rule-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.rule:write"
+      ]
+    },
+    {
+      "canonical_path": "mail +rule-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.rule:write"
+      ]
+    },
+    {
+      "canonical_path": "mail +rule-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.rule:write"
+      ]
+    },
+    {
+      "canonical_path": "mail +rule-enable",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.rule:write"
+      ]
+    },
+    {
+      "canonical_path": "mail +rule-disable",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.rule:write"
+      ]
+    },
+    {
+      "canonical_path": "mail +rule-reorder",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.rule:write"
+      ]
+    },
+    {
+      "canonical_path": "mail +reply",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox:readonly",
+        "mail:user_mailbox.message.address:read",
+        "mail:user_mailbox.message.subject:read",
+        "mail:user_mailbox.message.body:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +reply-all",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox:readonly",
+        "mail:user_mailbox.message.address:read",
+        "mail:user_mailbox.message.subject:read",
+        "mail:user_mailbox.message.body:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +send",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:send",
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox:readonly"
+      ]
+    },
+    {
+      "canonical_path": "mail +draft-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox:readonly"
+      ]
+    },
+    {
+      "canonical_path": "mail +draft-send",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:send"
+      ]
+    },
+    {
+      "canonical_path": "mail +draft-edit",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox:readonly"
+      ]
+    },
+    {
+      "canonical_path": "mail +forward",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox:readonly",
+        "mail:user_mailbox.message.address:read",
+        "mail:user_mailbox.message.subject:read",
+        "mail:user_mailbox.message.body:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +send-receipt",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:send",
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox:readonly",
+        "mail:user_mailbox.message.address:read",
+        "mail:user_mailbox.message.subject:read",
+        "mail:user_mailbox.message.body:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +decline-receipt",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox.message:readonly",
+        "mail:user_mailbox:readonly",
+        "mail:user_mailbox.message.body:read"
+      ]
+    },
+    {
+      "canonical_path": "mail +signature",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox:readonly"
+      ]
+    },
+    {
+      "canonical_path": "mail +share-to-chat",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:readonly",
+        "im:message",
+        "im:message.send_as_user"
+      ]
+    },
+    {
+      "canonical_path": "mail +template-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox:readonly"
+      ]
+    },
+    {
+      "canonical_path": "mail +template-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "mail:user_mailbox.message:modify",
+        "mail:user_mailbox:readonly"
+      ]
+    },
+    {
+      "canonical_path": "mail +lint-html",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": []
+    },
+    {
+      "canonical_path": "markdown +create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:upload",
+        "drive:drive.metadata:readonly"
+      ]
+    },
+    {
+      "canonical_path": "markdown +diff",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:download"
+      ]
+    },
+    {
+      "canonical_path": "markdown +fetch",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:download"
+      ]
+    },
+    {
+      "canonical_path": "markdown +patch",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:download",
+        "drive:file:upload",
+        "drive:drive.metadata:readonly"
+      ]
+    },
+    {
+      "canonical_path": "markdown +overwrite",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "drive:file:upload",
+        "drive:drive.metadata:readonly"
+      ]
+    },
+    {
+      "canonical_path": "slides +create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:create",
+        "slides:presentation:write_only",
+        "docs:document.media:upload"
+      ]
+    },
+    {
+      "canonical_path": "slides +add-slide",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:update",
+        "slides:presentation:write_only",
+        "wiki:node:read",
+        "docs:document.media:upload"
+      ]
+    },
+    {
+      "canonical_path": "slides +delete-slide",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:update",
+        "slides:presentation:write_only",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "slides +media-upload",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.media:upload",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "slides +media-download",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "docs:document.media:download",
+        "drive:file:download"
+      ]
+    },
+    {
+      "canonical_path": "slides +replace-slide",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:update",
+        "slides:presentation:write_only",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "slides +replace-pages",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:update",
+        "slides:presentation:write_only",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "slides +update-slide",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:update",
+        "slides:presentation:write_only",
+        "wiki:node:read",
+        "docs:document.media:upload"
+      ]
+    },
+    {
+      "canonical_path": "slides +update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:update",
+        "slides:presentation:write_only",
+        "wiki:node:read",
+        "docs:document.media:upload"
+      ]
+    },
+    {
+      "canonical_path": "slides +screenshot",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:screenshot",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "slides +xml-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:read",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "slides +history-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:read",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "slides +history-revert",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:update",
+        "slides:presentation:write_only",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "slides +history-revert-status",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "slides:presentation:read",
+        "wiki:node:read"
+      ]
+    },
+    {
+      "canonical_path": "minutes +search",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "minutes:minutes.search:read"
+      ]
+    },
+    {
+      "canonical_path": "minutes +download",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "minutes:minutes.media:export"
+      ]
+    },
+    {
+      "canonical_path": "minutes +upload",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "minutes:minutes.upload:write"
+      ]
+    },
+    {
+      "canonical_path": "minutes +update",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "minutes:minutes:update"
+      ]
+    },
+    {
+      "canonical_path": "minutes +apply-permission",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "minutes:permission:apply"
+      ]
+    },
+    {
+      "canonical_path": "minutes +summary",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "minutes:minutes:update"
+      ]
+    },
+    {
+      "canonical_path": "minutes +todo",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "minutes:minutes:update"
+      ]
+    },
+    {
+      "canonical_path": "minutes +speaker-replace",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "minutes:minutes:readonly",
+        "minutes:minutes:update"
+      ]
+    },
+    {
+      "canonical_path": "minutes +word-replace",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "minutes:minutes:update"
+      ]
+    },
+    {
+      "canonical_path": "minutes +detail",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "minutes:minutes.basic:read",
+        "minutes:minutes.artifacts:read"
+      ]
+    },
+    {
+      "canonical_path": "task +create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:task:write"
+      ]
+    },
+    {
+      "canonical_path": "task +update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:task:write"
+      ]
+    },
+    {
+      "canonical_path": "task +set-ancestor",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:task:write"
+      ]
+    },
+    {
+      "canonical_path": "task +comment",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:comment:write"
+      ]
+    },
+    {
+      "canonical_path": "task +complete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:task:write"
+      ]
+    },
+    {
+      "canonical_path": "task +reopen",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:task:write"
+      ]
+    },
+    {
+      "canonical_path": "task +assign",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:task:write"
+      ]
+    },
+    {
+      "canonical_path": "task +followers",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:task:write"
+      ]
+    },
+    {
+      "canonical_path": "task +reminder",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:task:write"
+      ]
+    },
+    {
+      "canonical_path": "task +get-my-tasks",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "task:task:read"
+      ]
+    },
+    {
+      "canonical_path": "task +get-related-tasks",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "task:task:read"
+      ]
+    },
+    {
+      "canonical_path": "task +search",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "task:task:read"
+      ]
+    },
+    {
+      "canonical_path": "task +upload-attachment",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:attachment:write"
+      ]
+    },
+    {
+      "canonical_path": "task +tasklist-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:tasklist:write",
+        "task:task:write"
+      ]
+    },
+    {
+      "canonical_path": "task +tasklist-search",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "task:tasklist:read"
+      ]
+    },
+    {
+      "canonical_path": "task +tasklist-task-add",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:task:write"
+      ]
+    },
+    {
+      "canonical_path": "task +tasklist-members",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "task:tasklist:write"
+      ]
+    },
+    {
+      "canonical_path": "vc +search",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.search:read"
+      ]
+    },
+    {
+      "canonical_path": "vc +notes",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:note:read"
+      ]
+    },
+    {
+      "canonical_path": "vc +recording",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:record:readonly"
+      ]
+    },
+    {
+      "canonical_path": "vc +detail",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.meetingevent:read",
+        "vc:record:readonly"
+      ]
+    },
+    {
+      "canonical_path": "vc +meeting-join",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.bot.join:write"
+      ]
+    },
+    {
+      "canonical_path": "vc +meeting-invite",
+      "auth_types": [
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.bot.join:write"
+      ]
+    },
+    {
+      "canonical_path": "vc +meeting-end",
+      "auth_types": [
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.bot.manage:write"
+      ]
+    },
+    {
+      "canonical_path": "vc +meeting-leave",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.bot.join:write"
+      ]
+    },
+    {
+      "canonical_path": "vc +meeting-list-active",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.meetingevent:read"
+      ]
+    },
+    {
+      "canonical_path": "vc +meeting-events",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.meetingevent:read"
+      ]
+    },
+    {
+      "canonical_path": "vc +meeting-message-send",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.message:write"
+      ]
+    },
+    {
+      "canonical_path": "vc +meeting-screenshot",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.realtime:read"
+      ]
+    },
+    {
+      "canonical_path": "vc +meeting-countdown",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:meeting.interaction:write"
+      ]
+    },
+    {
+      "canonical_path": "note +detail",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "vc:note:read"
+      ]
+    },
+    {
+      "canonical_path": "note +transcript",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "vc:note:read"
+      ]
+    },
+    {
+      "canonical_path": "whiteboard +update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "board:whiteboard:node:create"
+      ]
+    },
+    {
+      "canonical_path": "docs +whiteboard-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "board:whiteboard:node:create"
+      ]
+    },
+    {
+      "canonical_path": "whiteboard +export",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "board:whiteboard:node:read"
+      ]
+    },
+    {
+      "canonical_path": "whiteboard +query",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "board:whiteboard:node:read"
+      ]
+    },
+    {
+      "canonical_path": "wiki +move",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:node:move",
+        "wiki:node:read",
+        "wiki:space:read"
+      ]
+    },
+    {
+      "canonical_path": "wiki +move-to-drive",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "space:document:move",
+        "wiki:space:read"
+      ]
+    },
+    {
+      "canonical_path": "wiki +node-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:node:create",
+        "wiki:node:read",
+        "wiki:space:read"
+      ]
+    },
+    {
+      "canonical_path": "wiki +delete-space",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:space:write_only",
+        "wiki:space:read"
+      ]
+    },
+    {
+      "canonical_path": "wiki +space-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:space:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "wiki +space-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "wiki:space:write_only"
+      ]
+    },
+    {
+      "canonical_path": "wiki +node-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "wiki +node-copy",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:node:copy"
+      ]
+    },
+    {
+      "canonical_path": "wiki +node-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "wiki +node-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:node:create",
+        "wiki:node:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "wiki +member-add",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:member:create"
+      ]
+    },
+    {
+      "canonical_path": "wiki +member-remove",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:member:update"
+      ]
+    },
+    {
+      "canonical_path": "wiki +member-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "wiki:member:retrieve"
+      ]
+    },
+    {
+      "canonical_path": "okr +cycle-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.period:readonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +cycle-detail",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.content:readonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +progress-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.progress:readonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +progress-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.progress:readonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +progress-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.progress:writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +progress-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.progress:writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +progress-delete",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.progress:delete"
+      ]
+    },
+    {
+      "canonical_path": "okr +upload-image",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.progress.file:upload"
+      ]
+    },
+    {
+      "canonical_path": "okr +create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.content:writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +batch-create",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.content:writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +reorder",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.content:writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +weight",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.content:writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +indicator-update",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.content:writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +patch",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.content:writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +comment-detail",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.comment.readonly",
+        "okr:okr.content:readonly",
+        "okr:okr.progress:readonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +comment-list",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.comment.readonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +comment-get",
+      "auth_types": [
+        "user",
+        "bot"
+      ],
+      "user_scopes": [
+        "okr:okr.comment.readonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +comment-create",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "okr:okr.comment.writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +comment-patch",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "okr:okr.comment.writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +comment-delete",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "okr:okr.comment.delete"
+      ]
+    },
+    {
+      "canonical_path": "okr +comment-solve",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "okr:okr.comment.writeonly"
+      ]
+    },
+    {
+      "canonical_path": "okr +comment-reopen",
+      "auth_types": [
+        "user"
+      ],
+      "user_scopes": [
+        "okr:okr.comment.writeonly"
+      ]
+    }
+  ]
+}
