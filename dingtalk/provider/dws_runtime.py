@@ -673,19 +673,36 @@ def _error_from_output(stdout: str, stderr: str) -> ProgramError:
         error = payload.get("error") if isinstance(payload, dict) else None
         if isinstance(error, dict):
             message = str(error.get("message") or message)
+            if message.startswith("[MCP_TOOL_ERROR] "):
+                tool_result = json.loads(message.removeprefix("[MCP_TOOL_ERROR] "))
+                tool_error = (
+                    tool_result.get("error") if isinstance(tool_result, dict) else None
+                )
+                if isinstance(tool_error, dict):
+                    error = tool_error
             provider_code = str(
-                error.get("code") or error.get("errcode") or ""
+                error.get("server_error_code")
+                or error.get("rpc_code")
+                or error.get("code")
+                or error.get("errcode")
+                or ""
             ).casefold()
             reason = str(error.get("reason") or "").lower()
             category = str(error.get("category") or "").lower()
             joined = f"{provider_code} {reason} {category} {message}".casefold()
+            if provider_code == "403" or reason in {"http_403", "rpc_forbidden"}:
+                return ProgramError("action_forbidden", message)
+            if reason == "http_401" or provider_code in {
+                "401",
+                "invalidauthentication",
+                "token_verified_failed",
+            }:
+                return ProgramError("authorization_required", message)
             if "scope" in joined or "permission" in joined or "权限" in joined:
                 return ProgramError(
                     "insufficient_scope",
                     message + "；请由管理员为 Poco 对应身份授予所需 PAT 权限",
                 )
-            if "auth" in joined or "token" in joined or "登录" in joined:
-                return ProgramError("authorization_required", message)
     except ValueError:
         pass
     if any(marker in joined for marker in _NOT_FOUND_MARKERS):
