@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "anysearch",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": ["zh-CN", "en"],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "category": "research",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {"title_key": "capabilities.search.title", "description_key": "capabilities.search.description"},
+          {"title_key": "capabilities.domains.title", "description_key": "capabilities.domains.description"},
+          {"title_key": "capabilities.batch.title", "description_key": "capabilities.batch.description"},
+          {"title_key": "capabilities.extract.title", "description_key": "capabilities.extract.description"}
+        ]
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {"title_key": "examples.search.title", "description_key": "examples.search.description"},
+          {"title_key": "examples.research.title", "description_key": "examples.research.description"},
+          {"title_key": "examples.extract.title", "description_key": "examples.extract.description"}
+        ]
+      },
+      {
+        "type": "help_links",
+        "title_key": "help.title",
+        "items": [
+          {"title_key": "help.apiKeys.title", "url": "https://www.anysearch.com/console/api-keys"},
+          {"title_key": "help.docs.title", "url": "https://www.anysearch.com/docs/quick-start"}
+        ]
+      }
+    ],
+    "connection_actions": [
+      {"type": "reauthorize", "label_key": "actions.reauthorize"},
+      {"type": "open_service", "label_key": "actions.openService", "url": "https://www.anysearch.com/console/api-keys"}
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.anysearch",
+  "configuration": {"fields": []},
+  "auth": {
+    "strategy": "static_credentials",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "api_key",
+        "type": "secret",
+        "label_key": "authorization.apiKey.label",
+        "description_key": "authorization.apiKey.description",
+        "placeholder_key": "authorization.apiKey.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 4096
+      }
+    ],
+    "options": {
+      "type": "static_credentials",
+      "verification": "mcp_initialize_and_list_tools",
+      "account_identity": "connection_id"
+    }
+  },
+  "runtime": {
+    "adapter": "remote_mcp",
+    "transport": "streamable_http",
+    "options": {
+      "type": "remote_mcp",
+      "endpoint": {"url": "https://api.anysearch.com/mcp"},
+      "credential_binding": {
+        "type": "http_header",
+        "name": "Authorization",
+        "scheme": "Bearer",
+        "credential_field": "api_key"
+      }
+    }
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {"tool": "search", "effect": "read", "retry": "never"},
+      {"tool": "batch_search", "effect": "read", "retry": "never"},
+      {"tool": "get_sub_domains", "effect": "read", "retry": "never"},
+      {"tool": "extract", "effect": "read", "retry": "never"}
+    ]
+  },
+  "skills": [{"key": "anysearch", "path": "skills/anysearch"}]
+}

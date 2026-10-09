@@ -1,0 +1,24 @@
+AnySearch Skill
+Copyright 2026 AnySearch
+
+Licensed under the Apache License, Version 2.0.
+
+Poco 适配说明
+来源：https://github.com/anysearch-ai/anysearch-skill
+上游 Skill 版本：3.1.1
+来源文件：用户提供的 anysearch-skill-main/SKILL.md
+来源文件 SHA-256：54702f6066dc76cb2b3c04ba556404e6113b1cdcf0f63120ef3306343f9ab25e
+核对日期：2026-10-09
+
+skills/anysearch/SKILL.md 以官方文件为基础适配 Poco：保留检索触发条件、
+领域发现规则和网页提取约束；将 CLI 示例改为远程 MCP 工具调用，密钥由
+Poco 授权表单管理，移除运行时探测、依赖安装、本地凭据和匿名访问流程。
+
+连接器固定使用官方 https://api.anysearch.com/mcp，工具白名单为 search、
+batch_search、get_sub_domains、extract。工具 schema 由上游 MCP 动态发现。
+所有工具均为读取操作；为避免失败后重复消耗额度，策略统一为 retry: never。
+连接器包版本独立管理，为 1.0.0，不使用上游 Skill 版本。
+
+授权验证限制：实测上游 initialize 和 tools/list 接受无效密钥，search 调用
+才返回 invalid_api_key。Poco 现有静态凭据验证仅执行 initialize 和 tools/list，
+因此连接成功不代表密钥有效；有效密钥及账号额度仍需在实际调用中验收。
