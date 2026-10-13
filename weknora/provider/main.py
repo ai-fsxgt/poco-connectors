@@ -731,6 +731,13 @@ _TOOL_HANDLERS = {
     "create_knowledge_from_text": _create_knowledge_from_text,
     "update_knowledge_from_text": _update_knowledge_from_text,
 }
+# Document responses may carry a full 200,000-character body; returning it only
+# once as text keeps the result within Poco's 1 MiB response limit.
+_TEXT_ONLY_TOOLS = {
+    "get_knowledge",
+    "create_knowledge_from_text",
+    "update_knowledge_from_text",
+}
 
 
 def _tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
@@ -761,7 +768,9 @@ def _tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
                 "text": text_content,
             }
         ],
-        "structured_content": structured_content,
+        "structured_content": (
+            None if tool_name in _TEXT_ONLY_TOOLS else structured_content
+        ),
         "is_error": False,
     }
 
