@@ -6,6 +6,7 @@
 
 | 目录 | 连接器 | Key | 版本 | 主要能力 |
 | --- | --- | --- | --- | --- |
+| [`agent-usage-report/`](./agent-usage-report/) | Agent 使用分析 | `agent-usage-report` | `1.0.0` | 使用管理员账号读取平台使用数据，按业务架构分类并生成使用分析 HTML 报告 |
 | [`agentkey/`](./agentkey/) | AgentKey | `agentkey` | `1.0.0` | 网页、社交媒体、金融、电商和企业等实时数据查询 |
 | [`anysearch/`](./anysearch/) | AnySearch | `anysearch` | `1.0.1` | 实时网页搜索、专业领域检索、批量搜索和网页全文提取 |
 | [`baidu-netdisk/`](./baidu-netdisk/) | 百度网盘 | `baidu-netdisk` | `1.0.1` | 文件浏览与检索、文件整理、分享链接、容量查询及 URL 转存 |

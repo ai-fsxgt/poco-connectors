@@ -1,0 +1,152 @@
+{
+  "segments": {
+    "production": "生产",
+    "supply_sales": "供销",
+    "functional": "专业管理",
+    "general": "综合"
+  },
+  "domains": {
+    "production_mgmt": {
+      "segment": "production",
+      "name": "生产管理",
+      "hint": "跨工序的生产日报、库存日报、产量速报、技经指标、调度、工序停机、物流用车、事故管理、生产异常汇总"
+    },
+    "blast_furnace": {
+      "segment": "production",
+      "name": "高炉",
+      "hint": "高炉炉况、操作方针、炉渣碱度、炼铁工序指标、焦炭与烟煤性价比"
+    },
+    "sintering": {
+      "segment": "production",
+      "name": "烧结",
+      "hint": "180 平和 90 平烧结、烧结模型与操作参数、烧结煤气消耗、焦煤卸车"
+    },
+    "shaft_furnace": {
+      "segment": "production",
+      "name": "竖炉",
+      "hint": "竖炉球团配料、竖炉操作日志、竖炉工序指标"
+    },
+    "steelmaking": {
+      "segment": "production",
+      "name": "炼钢",
+      "hint": "转炉装入、枪位底吹、后吹率、冶炼周期、钢铁料消耗、出钢量、钢坯定重、连铸、炼钢班组"
+    },
+    "rolling": {
+      "segment": "production",
+      "name": "轧钢",
+      "hint": "新棒材、全连轧、负差、轧钢能耗、轧钢生产周期与参数、轧钢班报"
+    },
+    "supply": {
+      "segment": "supply_sales",
+      "name": "供应",
+      "hint": "原燃辅料采购、到货、供应商与进货节奏、采购对标"
+    },
+    "scrap": {
+      "segment": "supply_sales",
+      "name": "废钢",
+      "hint": "废钢采购日报、废钢验质、废钢质量分析"
+    },
+    "sales": {
+      "segment": "supply_sales",
+      "name": "销售",
+      "hint": "订单跟踪、客户、销售日报、规格库存、钢价、出口与市场分析、利润测算"
+    },
+    "deep_processing": {
+      "segment": "supply_sales",
+      "name": "深加工",
+      "hint": "钢筋加工、钢筋配料表、套丝、钢筋原材日报"
+    },
+    "quality": {
+      "segment": "functional",
+      "name": "质量",
+      "hint": "质量管理、检化验、SPC、原料或成品的质量日报与质量异常、拒收、科研项目、标准查新、知识产权"
+    },
+    "equipment": {
+      "segment": "functional",
+      "name": "设备",
+      "hint": "设备运行、点检、备件、故障分析、自动化仪表、皮带"
+    },
+    "energy": {
+      "segment": "functional",
+      "name": "能源",
+      "hint": "电力、电价与需量、余热发电、外购电、煤气与放散、氧气氮气、水系统、碳排放、能源费用"
+    },
+    "safety_env": {
+      "segment": "functional",
+      "name": "安环",
+      "hint": "危险作业、安全检查与隐患、安全风控、环保指标与环保成本"
+    },
+    "finance": {
+      "segment": "functional",
+      "name": "财务",
+      "hint": "成本对标、改良改善、报支公文、日核算、成本效益、合同审核"
+    },
+    "hr": {
+      "segment": "functional",
+      "name": "人事",
+      "hint": "组织与定员、薪酬、考勤考核、人才培养、规章制度问答"
+    },
+    "knowledge": {
+      "segment": "general",
+      "name": "执行力与知识管理",
+      "hint": "会议、文档、任务督办、数据治理、信息简报、IT 与网络运维"
+    },
+    "benchmarking": {
+      "segment": "general",
+      "name": "对标与研究",
+      "hint": "同行对标、行业情报、顶层设计、竞品与技术路线、管理研究"
+    },
+    "ai_platform": {
+      "segment": "general",
+      "name": "AI 平台建设",
+      "hint": "技能创建与测试、连接器授权、Agent 培训推广材料、平台自身的使用分析"
+    },
+    "other": {
+      "segment": "general",
+      "name": "其他",
+      "hint": "信息不足无法判断，或与工作无关"
+    }
+  },
+  "deliverables": {
+    "alert": {
+      "name": "异常预警推送",
+      "hint": "按规则检测异常，并通过钉钉等渠道推送给责任人"
+    },
+    "report": {
+      "name": "分析报告",
+      "hint": "对业务数据或资料做分析并输出报告（包括 HTML 报告、日报、周报、月报）"
+    },
+    "dashboard": {
+      "name": "数据看板",
+      "hint": "持续刷新的看板或可视化展示页面"
+    },
+    "data_sync": {
+      "name": "数据处理与同步",
+      "hint": "数据导入、写入其他系统、统计汇总表、Excel 整理"
+    },
+    "document": {
+      "name": "文档与演示",
+      "hint": "PPT、方案、汇报材料、文稿写作"
+    },
+    "app": {
+      "name": "应用与工具开发",
+      "hint": "小程序、业务管理系统、计算器、交互页面等可反复使用的工具"
+    },
+    "review": {
+      "name": "审核审批",
+      "hint": "对提报、合同、单据给出审核意见"
+    },
+    "qa": {
+      "name": "查询问答",
+      "hint": "查标准、查数据、咨询、检索资料，没有成型产出物"
+    },
+    "debug": {
+      "name": "调试与配置",
+      "hint": "修改或排查定时任务、创建或测试技能、连接器授权、发送测试消息"
+    },
+    "other": {
+      "name": "其他",
+      "hint": "信息不足无法判断"
+    }
+  }
+}
