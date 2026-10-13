@@ -363,8 +363,9 @@ def _tools_discover(context: dict[str, Any]) -> dict[str, Any]:
                     "Get a document by its explicit ID, including title, "
                     "knowledge_base_id, parse_status, error_message and metadata. "
                     "For manual text documents, metadata.content holds the full "
-                    "Markdown content. pending/processing means indexing has not "
-                    "finished; failed includes error_message."
+                    "Markdown content. pending, processing or finalizing means "
+                    "indexing has not finished; completed means it has finished; "
+                    "failed includes error_message."
                 ),
                 "input_schema": _object_schema(
                     {"knowledge_id": _ID_SCHEMA},
@@ -385,9 +386,10 @@ def _tools_discover(context: dict[str, Any]) -> dict[str, Any]:
                     "when the destination is unspecified or names are ambiguous. "
                     "status defaults to publish, which submits asynchronous "
                     "indexing. The response contains the document ID and "
-                    "parse_status. Use get_knowledge to check completion; "
-                    "pending/processing is not searchable yet, and failed includes "
-                    "error_message. Use draft to save without indexing. Keep the "
+                    "parse_status. Use get_knowledge until parse_status is "
+                    "completed; pending, processing or finalizing has not finished, "
+                    "and failed includes error_message. Use draft to save without "
+                    "indexing. Keep the "
                     "returned document ID for subsequent updates; do not create "
                     "duplicates."
                 ),

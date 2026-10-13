@@ -28,8 +28,9 @@ Write only when the user asks to save or change knowledge.
 - Before updating, read the document with `get_knowledge`, preserve content the
   user did not ask to change, and submit the complete revised Markdown.
 - `publish` submits asynchronous indexing. Check `parse_status` with
-  `get_knowledge`; report the document as searchable only after processing
-  completes, and report `error_message` when it fails.
+  `get_knowledge`; `pending`, `processing` and `finalizing` have not finished.
+  Report the document as searchable only when it is `completed`, and report
+  `error_message` when it is `failed`.
 - If WeKnoraX denies the write, report that this connection or knowledge base
   has no write access. The user may need WeKnoraX write permission and then
   reauthorize the connection. Never switch to another knowledge base
