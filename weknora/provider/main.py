@@ -12,6 +12,8 @@ _READ_SCOPE = "knowledge.read"
 # WeKnoraX grants only the scopes its application allows, so requesting write
 # still yields a read-only connection where writes are not enabled.
 _REQUESTED_SCOPES = "knowledge.read knowledge.write"
+# Text tools mirror the REST API and MCP tools inspected at this WeKnoraX commit.
+_WEKNORAX_SOURCE_REVISION = "WeKnoraX@f03b81a04fce3e951f0b95296e47d154559afeb4"
 _DNS_LABEL_PATTERN = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$", re.I)
 _ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
 _MANUAL_CONTENT_MAX_LENGTH = 200000
@@ -352,7 +354,7 @@ def _tools_discover(context: dict[str, Any]) -> dict[str, Any]:
                 },
                 "effect": "read",
                 "retry_policy": "safe",
-                "source_revision": "weknora-knowledge-read-v1",
+                "source_revision": _WEKNORAX_SOURCE_REVISION,
             },
             {
                 "key": "get_knowledge",
@@ -370,7 +372,7 @@ def _tools_discover(context: dict[str, Any]) -> dict[str, Any]:
                 "output_schema": None,
                 "effect": "read",
                 "retry_policy": "safe",
-                "source_revision": "weknora-knowledge-read-v1",
+                "source_revision": _WEKNORAX_SOURCE_REVISION,
             },
             {
                 "key": "create_knowledge_from_text",
@@ -402,7 +404,7 @@ def _tools_discover(context: dict[str, Any]) -> dict[str, Any]:
                 "effect": "write",
                 "retry_policy": "never",
                 "confirmation": "not_required",
-                "source_revision": "weknora-text-write-v1",
+                "source_revision": _WEKNORAX_SOURCE_REVISION,
             },
             {
                 "key": "update_knowledge_from_text",
@@ -435,7 +437,7 @@ def _tools_discover(context: dict[str, Any]) -> dict[str, Any]:
                 "effect": "destructive",
                 "retry_policy": "never",
                 "confirmation": "user_required",
-                "source_revision": "weknora-text-write-v1",
+                "source_revision": _WEKNORAX_SOURCE_REVISION,
             },
         ]
     }
