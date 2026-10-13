@@ -8,8 +8,20 @@ from urllib.parse import urlencode, urljoin, urlsplit
 import httpx
 
 _PROTOCOL_VERSION = 1
-_SEARCH_SCOPE = "knowledge.read"
+_READ_SCOPE = "knowledge.read"
+# WeKnoraX grants only the scopes its application allows, so requesting write
+# still yields a read-only connection where writes are not enabled.
+_REQUESTED_SCOPES = "knowledge.read knowledge.write"
 _DNS_LABEL_PATTERN = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$", re.I)
+_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
+_MANUAL_CONTENT_MAX_LENGTH = 200000
+_MANUAL_STATUSES = ("publish", "draft")
+_STATUS_ERROR_CODES = {
+    400: "bad_request",
+    403: "insufficient_scope",
+    404: "not_found",
+    409: "conflict",
+}
 
 
 class ProgramError(Exception):
@@ -158,7 +170,7 @@ def _authorization_begin(context: dict[str, Any]) -> dict[str, Any]:
         "client_id": str(public["client_id"]).strip(),
         "redirect_uri": str(context.get("redirect_uri") or ""),
         "state": str(context.get("state") or ""),
-        "scope": _SEARCH_SCOPE,
+        "scope": _REQUESTED_SCOPES,
         "code_challenge": str(context.get("code_challenge") or ""),
         "code_challenge_method": "S256",
     }
@@ -225,7 +237,7 @@ def _authorization_complete(context: dict[str, Any]) -> dict[str, Any]:
         or token_type != "API-Key"
         or not isinstance(connection_id, str)
         or not connection_id.strip()
-        or _SEARCH_SCOPE not in scopes
+        or _READ_SCOPE not in scopes
     ):
         raise ProgramError(
             "external_error",
@@ -242,6 +254,42 @@ def _authorization_complete(context: dict[str, Any]) -> dict[str, Any]:
         "credential": {"values": {"api_key": access_token}},
         "public_metadata": {"launch_path": normalized_launch_path},
         "invalidates_existing_credential": True,
+    }
+
+
+_ID_SCHEMA = {
+    "type": "string",
+    "description": "An explicit WeKnoraX ID returned by a previous tool call.",
+    "pattern": _ID_PATTERN.pattern,
+}
+_TITLE_SCHEMA = {
+    "type": "string",
+    "description": "The document title.",
+    "minLength": 1,
+}
+_CONTENT_SCHEMA = {
+    "type": "string",
+    "description": "The complete Markdown content of the document.",
+    "minLength": 1,
+    "maxLength": _MANUAL_CONTENT_MAX_LENGTH,
+}
+_STATUS_SCHEMA = {
+    "type": "string",
+    "description": "publish submits indexing; draft saves without indexing.",
+    "enum": list(_MANUAL_STATUSES),
+    "default": "publish",
+}
+
+
+def _object_schema(
+    properties: dict[str, Any], *, optional: tuple[str, ...] = ()
+) -> dict[str, Any]:
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": properties,
+        "required": [key for key in properties if key not in optional],
+        "additionalProperties": False,
     }
 
 
@@ -281,7 +329,114 @@ def _tools_discover(context: dict[str, Any]) -> dict[str, Any]:
                 "effect": "read",
                 "retry_policy": "safe",
                 "source_revision": "weknora-search-v1",
-            }
+            },
+            {
+                "key": "list_knowledge_bases",
+                "upstream_name": "list_knowledge_bases",
+                "description": (
+                    "List knowledge bases currently available to this connection. "
+                    "Results include id, name, description, tenant_id, tenant_name, "
+                    "type and can_write. Use can_write to find writable document "
+                    "knowledge bases. Match the user's requested workspace and "
+                    "knowledge base. If the destination is unspecified or names are "
+                    "ambiguous, ask the user to choose before writing. Reuse a "
+                    "confirmed destination only within the current task."
+                ),
+                "input_schema": _object_schema({}),
+                "output_schema": {
+                    "$schema": "https://json-schema.org/draft/2020-12/schema",
+                    "type": "object",
+                    "properties": {"items": {"type": "array"}},
+                    "required": ["items"],
+                    "additionalProperties": False,
+                },
+                "effect": "read",
+                "retry_policy": "safe",
+                "source_revision": "weknora-knowledge-read-v1",
+            },
+            {
+                "key": "get_knowledge",
+                "upstream_name": "get_knowledge",
+                "description": (
+                    "Get a document by its explicit ID, including title, "
+                    "knowledge_base_id, parse_status, error_message and metadata. "
+                    "For manual text documents, metadata.content holds the full "
+                    "Markdown content. pending/processing means indexing has not "
+                    "finished; failed includes error_message."
+                ),
+                "input_schema": _object_schema(
+                    {"knowledge_id": _ID_SCHEMA},
+                ),
+                "output_schema": None,
+                "effect": "read",
+                "retry_policy": "safe",
+                "source_revision": "weknora-knowledge-read-v1",
+            },
+            {
+                "key": "create_knowledge_from_text",
+                "upstream_name": "create_knowledge_from_text",
+                "description": (
+                    "Create a knowledge entry from raw Markdown text. kb_id is the "
+                    "explicit ID from list_knowledge_bases, never a name or default. "
+                    "Choose a document knowledge base with can_write. The user must "
+                    "have specified or confirmed the destination in this task; ask "
+                    "when the destination is unspecified or names are ambiguous. "
+                    "status defaults to publish, which submits asynchronous "
+                    "indexing. The response contains the document ID and "
+                    "parse_status. Use get_knowledge to check completion; "
+                    "pending/processing is not searchable yet, and failed includes "
+                    "error_message. Use draft to save without indexing. Keep the "
+                    "returned document ID for subsequent updates; do not create "
+                    "duplicates."
+                ),
+                "input_schema": _object_schema(
+                    {
+                        "kb_id": _ID_SCHEMA,
+                        "title": _TITLE_SCHEMA,
+                        "content": _CONTENT_SCHEMA,
+                        "status": _STATUS_SCHEMA,
+                    },
+                    optional=("status",),
+                ),
+                "output_schema": None,
+                "effect": "write",
+                "retry_policy": "never",
+                "confirmation": "not_required",
+                "source_revision": "weknora-text-write-v1",
+            },
+            {
+                "key": "update_knowledge_from_text",
+                "upstream_name": "update_knowledge_from_text",
+                "description": (
+                    "Replace the full Markdown content of an existing manual "
+                    "document. knowledge_id is the explicit document ID returned by "
+                    "creation or get_knowledge. Read the existing document first "
+                    "when editing it. Preserve content the user did not ask to "
+                    "change and submit the complete revised text. Its knowledge "
+                    "base stays the same; do not identify documents by title or "
+                    "create a new one instead. Wait for pending, processing or "
+                    "finalizing indexing to finish before updating. The document's "
+                    "knowledge base must still have can_write. status defaults to "
+                    "publish, which submits asynchronous reindexing. Check "
+                    "parse_status using get_knowledge before reporting completion. "
+                    "If permission is denied, report it; never switch to another "
+                    "knowledge base automatically."
+                ),
+                "input_schema": _object_schema(
+                    {
+                        "knowledge_id": _ID_SCHEMA,
+                        "title": _TITLE_SCHEMA,
+                        "content": _CONTENT_SCHEMA,
+                        "status": _STATUS_SCHEMA,
+                    },
+                    optional=("status",),
+                ),
+                "output_schema": None,
+                "effect": "destructive",
+                "retry_policy": "never",
+                "confirmation": "user_required",
+                "source_revision": "weknora-text-write-v1",
+            },
         ]
     }
 
@@ -352,18 +507,7 @@ def _normalize_search_items(payload: object) -> list[dict[str, Any]]:
     return items
 
 
-def _tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
-    if context.get("tool_name") != "knowledge_search":
-        raise ProgramError("action_forbidden", "Unsupported WeKnora tool")
-    arguments = context.get("arguments")
-    if not isinstance(arguments, dict) or set(arguments) - {"query"}:
-        raise ProgramError("bad_request", "WeKnora search arguments are invalid")
-    query = arguments.get("query")
-    if not isinstance(query, str) or not query.strip() or len(query) > 4000:
-        raise ProgramError(
-            "bad_request",
-            "WeKnora search query must contain 1 to 4000 characters",
-        )
+def _require_api_key(context: dict[str, Any]) -> str:
     credentials = context.get("credentials")
     api_key = (
         str(credentials.get("api_key") or "").strip()
@@ -375,6 +519,19 @@ def _tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
             "authorization_required",
             "WeKnora credential is unavailable",
         )
+    return api_key
+
+
+def _search(context: dict[str, Any], arguments: dict[str, Any]) -> dict[str, Any]:
+    if set(arguments) - {"query"}:
+        raise ProgramError("bad_request", "WeKnora search arguments are invalid")
+    query = arguments.get("query")
+    if not isinstance(query, str) or not query.strip() or len(query) > 4000:
+        raise ProgramError(
+            "bad_request",
+            "WeKnora search query must contain 1 to 4000 characters",
+        )
+    api_key = _require_api_key(context)
     public, _ = _configuration(context)
     base_url = _require_base_url(public)
     try:
@@ -408,7 +565,179 @@ def _tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
             "WeKnora knowledge search is unavailable",
             retryable=True,
         ) from exc
-    structured_content = {"items": _normalize_search_items(payload)}
+    return {"items": _normalize_search_items(payload)}
+
+
+def _status_error(response: httpx.Response, retryable: bool) -> ProgramError:
+    status_code = response.status_code
+    if status_code == 401:
+        return ProgramError(
+            "authorization_required",
+            "WeKnora rejected the stored credential",
+        )
+    code = _STATUS_ERROR_CODES.get(status_code)
+    if code is None:
+        return ProgramError(
+            "unavailable",
+            "WeKnora service is unavailable",
+            retryable=retryable,
+        )
+    try:
+        upstream_message = response.json()["error"]["message"]
+    except (ValueError, KeyError, TypeError):
+        upstream_message = ""
+    message = f"WeKnora rejected the request (HTTP {status_code})"
+    if isinstance(upstream_message, str) and upstream_message.strip():
+        message = f"{message}: {upstream_message.strip()[:500]}"
+    return ProgramError(code, message)
+
+
+def _call_weknora(
+    context: dict[str, Any],
+    method: str,
+    path: str,
+    *,
+    retryable: bool,
+    json_body: dict[str, Any] | None = None,
+) -> object:
+    api_key = _require_api_key(context)
+    public, _ = _configuration(context)
+    base_url = _require_base_url(public)
+    try:
+        with httpx.Client(timeout=httpx.Timeout(25.0, connect=10.0)) as client:
+            response = client.request(
+                method,
+                f"{base_url}/api/v1{path}",
+                headers={"X-API-Key": api_key},
+                json=json_body,
+            )
+            response.raise_for_status()
+            payload = response.json()
+    except httpx.HTTPStatusError as exc:
+        raise _status_error(exc.response, retryable) from exc
+    except (httpx.RequestError, ValueError) as exc:
+        raise ProgramError(
+            "unavailable",
+            "WeKnora service is unavailable",
+            retryable=retryable,
+        ) from exc
+    if not isinstance(payload, dict) or "data" not in payload:
+        raise ProgramError("external_error", "WeKnora returned an invalid response")
+    return payload["data"]
+
+
+def _check_arguments(
+    arguments: dict[str, Any],
+    required: set[str],
+    optional: set[str] = frozenset(),
+) -> None:
+    if set(arguments) - required - optional or required - set(arguments):
+        raise ProgramError("bad_request", "WeKnora tool arguments are invalid")
+
+
+def _id_argument(arguments: dict[str, Any], key: str) -> str:
+    value = arguments[key]
+    if not isinstance(value, str) or not _ID_PATTERN.fullmatch(value):
+        raise ProgramError("bad_request", f"WeKnora {key} is invalid")
+    return value
+
+
+def _manual_payload(arguments: dict[str, Any]) -> dict[str, str]:
+    title = arguments["title"]
+    content = arguments["content"]
+    status = arguments.get("status", "publish")
+    if not isinstance(title, str) or not title.strip():
+        raise ProgramError("bad_request", "WeKnora document title is required")
+    if (
+        not isinstance(content, str)
+        or not content.strip()
+        or len(content) > _MANUAL_CONTENT_MAX_LENGTH
+    ):
+        raise ProgramError(
+            "bad_request",
+            "WeKnora document content must contain 1 to "
+            f"{_MANUAL_CONTENT_MAX_LENGTH} characters",
+        )
+    if status not in _MANUAL_STATUSES:
+        raise ProgramError("bad_request", "WeKnora document status is invalid")
+    return {"title": title, "content": content, "status": status}
+
+
+def _require_object(data: object) -> dict[str, Any]:
+    if not isinstance(data, dict):
+        raise ProgramError("external_error", "WeKnora returned an invalid response")
+    return data
+
+
+def _list_knowledge_bases(
+    context: dict[str, Any], arguments: dict[str, Any]
+) -> dict[str, Any]:
+    _check_arguments(arguments, set())
+    data = _call_weknora(context, "GET", "/knowledge-bases", retryable=True)
+    if not isinstance(data, list):
+        raise ProgramError("external_error", "WeKnora returned an invalid response")
+    return {"items": data}
+
+
+def _get_knowledge(
+    context: dict[str, Any], arguments: dict[str, Any]
+) -> dict[str, Any]:
+    _check_arguments(arguments, {"knowledge_id"})
+    knowledge_id = _id_argument(arguments, "knowledge_id")
+    data = _call_weknora(
+        context, "GET", f"/knowledge/{knowledge_id}", retryable=True
+    )
+    return _require_object(data)
+
+
+def _create_knowledge_from_text(
+    context: dict[str, Any], arguments: dict[str, Any]
+) -> dict[str, Any]:
+    _check_arguments(arguments, {"kb_id", "title", "content"}, {"status"})
+    kb_id = _id_argument(arguments, "kb_id")
+    data = _call_weknora(
+        context,
+        "POST",
+        f"/knowledge-bases/{kb_id}/knowledge/manual",
+        retryable=False,
+        json_body=_manual_payload(arguments),
+    )
+    return _require_object(data)
+
+
+def _update_knowledge_from_text(
+    context: dict[str, Any], arguments: dict[str, Any]
+) -> dict[str, Any]:
+    _check_arguments(arguments, {"knowledge_id", "title", "content"}, {"status"})
+    knowledge_id = _id_argument(arguments, "knowledge_id")
+    data = _call_weknora(
+        context,
+        "PUT",
+        f"/knowledge/manual/{knowledge_id}",
+        retryable=False,
+        json_body=_manual_payload(arguments),
+    )
+    return _require_object(data)
+
+
+_TOOL_HANDLERS = {
+    "knowledge_search": _search,
+    "list_knowledge_bases": _list_knowledge_bases,
+    "get_knowledge": _get_knowledge,
+    "create_knowledge_from_text": _create_knowledge_from_text,
+    "update_knowledge_from_text": _update_knowledge_from_text,
+}
+
+
+def _tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
+    tool_name = context.get("tool_name")
+    handler = _TOOL_HANDLERS.get(tool_name) if isinstance(tool_name, str) else None
+    if handler is None:
+        raise ProgramError("action_forbidden", "Unsupported WeKnora tool")
+    arguments = context.get("arguments")
+    if not isinstance(arguments, dict):
+        raise ProgramError("bad_request", "WeKnora tool arguments are invalid")
+    structured_content = handler(context, arguments)
     try:
         text_content = json.dumps(
             structured_content,
@@ -419,7 +748,7 @@ def _tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
     except (TypeError, ValueError) as exc:
         raise ProgramError(
             "external_error",
-            "WeKnora returned an invalid knowledge search response",
+            "WeKnora returned an invalid response",
         ) from exc
     return {
         "content": [

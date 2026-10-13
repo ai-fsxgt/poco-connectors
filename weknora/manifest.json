@@ -2,7 +2,7 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "knowledge-base",
-  "package_version": "1.0.2",
+  "package_version": "1.1.0",
   "authorization_contract_version": "1",
   "default_locale": "zh-CN",
   "locales": ["zh-CN", "en"],
@@ -24,6 +24,10 @@
           {
             "title_key": "capabilities.search.title",
             "description_key": "capabilities.search.description"
+          },
+          {
+            "title_key": "capabilities.write.title",
+            "description_key": "capabilities.write.description"
           }
         ]
       }
@@ -104,6 +108,28 @@
         "tool": "search",
         "effect": "read",
         "retry": "safe"
+      },
+      {
+        "tool": "list_knowledge_bases",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "get_knowledge",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "create_knowledge_from_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "not_required"
+      },
+      {
+        "tool": "update_knowledge_from_text",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
       }
     ]
   },
