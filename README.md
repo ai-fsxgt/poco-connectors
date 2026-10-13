@@ -24,7 +24,7 @@
 | [`tencent-docs/`](./tencent-docs/) | 腾讯文档 | `tencent-docs` | `1.1.0` | 在线文档、表格、文件与知识库操作 |
 | [`tmeet/`](./tmeet/) | 腾讯会议 | `tmeet` | `1.1.1` | 会议、录制、转写、报告、通讯录及会中控制 |
 | [`wecom/`](./wecom/) | 企业微信 | `wecom` | `1.0.0` | 通讯录、消息、文档、表格、智能文档、日程、会议和待办 |
-| [`weknora/`](./weknora/) | WeKnoraX 知识库 | `knowledge-base` | `1.0.2` | 检索用户已授权知识空间中的文档与知识 |
+| [`weknora/`](./weknora/) | WeKnoraX 知识库 | `knowledge-base` | `1.1.0` | 检索已授权知识空间中的文档与知识，并在可写知识库中新增或更新文本 |
 
 ## 连接器目录结构
 
@@ -60,7 +60,7 @@ done
 进入连接器目录后生成安装包：
 
 ```bash
-zip -X -r ../weknora-1.0.2.zip . \
+zip -X -r ../weknora-1.1.0.zip . \
   -x '*/__pycache__/*' '*.pyc' '.DS_Store'
 ```
 
