@@ -2,7 +2,7 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "canva",
-  "package_version": "1.1.1",
+  "package_version": "1.1.2",
   "authorization_contract_version": "3",
   "default_locale": "zh-CN",
   "locales": ["zh-CN", "en"],
@@ -10,7 +10,7 @@
     "name_key": "name",
     "description_key": "description",
     "icon": "assets/icon.png",
-    "category": "design",
+    "category": "设计创作",
     "sections": [
       {
         "type": "notice",

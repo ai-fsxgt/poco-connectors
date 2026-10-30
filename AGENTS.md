@@ -4,6 +4,10 @@
 
 Each root directory is an independently installable connector. Use lowercase kebab-case names like `dingtalk/` or `weknora/`; never include `poco` or a version. Keep versions only in `manifest.json.package_version`; upgrade in place. Keep all package files inside the connector; shared references live in `docs/`. When adding, removing, or changing the version of a connector, update the `README.md` "Current Connectors" list in the same change.
 
+### 连接器分类名称
+
+`manifest.json` 的 `presentation.category` 必须使用简体中文名称，不得使用英文分类代号。同类连接器必须使用统一名称，当前分类统一为“效率工具”“搜索研究”“设计创作”“开发工具”和“知识管理”。
+
 ### Required Assets Directory
 
 Every newly created or migrated connector must include an `assets/` directory, even when no icon is provided. Generating icon files is optional; the user may add custom icons later. If the directory would otherwise be empty, include `assets/.gitkeep` so Git preserves it. Before completing authoring or migration, verify that `assets/` exists; when packaging, verify that the final ZIP also includes this directory.

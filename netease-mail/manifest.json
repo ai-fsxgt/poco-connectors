@@ -2,7 +2,7 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "netease-mail",
-  "package_version": "1.0.1",
+  "package_version": "1.0.2",
   "authorization_contract_version": "1",
   "default_locale": "zh-CN",
   "locales": [
@@ -13,7 +13,7 @@
     "name_key": "name",
     "description_key": "description",
     "icon": "assets/icon.svg",
-    "category": "productivity",
+    "category": "效率工具",
     "sections": [
       {
         "type": "notice",

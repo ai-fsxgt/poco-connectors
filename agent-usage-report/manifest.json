@@ -2,7 +2,7 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "agent-usage-report",
-  "package_version": "1.0.0",
+  "package_version": "1.0.1",
   "authorization_contract_version": "1",
   "default_locale": "zh-CN",
   "locales": [
@@ -13,7 +13,7 @@
     "name_key": "name",
     "description_key": "description",
     "icon": "assets/icon.png",
-    "category": "productivity",
+    "category": "效率工具",
     "sections": [
       {
         "type": "notice",

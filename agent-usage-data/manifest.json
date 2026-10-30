@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "agent-usage-data",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.png",
+    "category": "效率工具",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.dataset.title",
+            "description_key": "capabilities.dataset.description"
+          }
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {
+            "title_key": "examples.week.title",
+            "description_key": "examples.week.description"
+          },
+          {
+            "title_key": "examples.day.title",
+            "description_key": "examples.day.description"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {
+        "type": "reauthorize",
+        "label_key": "actions.reauthorize"
+      }
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.agent-usage-data",
+  "configuration": {
+    "fields": [
+      {
+        "key": "api_base_url",
+        "type": "url",
+        "label_key": "configuration.api_base_url.label",
+        "description_key": "configuration.api_base_url.description",
+        "placeholder_key": "configuration.api_base_url.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "max_length": 2048
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "username",
+        "type": "text",
+        "label_key": "authorization.username.label",
+        "description_key": "authorization.username.description",
+        "placeholder_key": "authorization.username.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 64
+      },
+      {
+        "key": "password",
+        "type": "secret",
+        "label_key": "authorization.password.label",
+        "description_key": "authorization.password.description",
+        "placeholder_key": "authorization.password.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 256
+      }
+    ],
+    "options": {
+      "type": "program"
+    }
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {
+      "type": "program"
+    }
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": []
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {
+        "tool": "get_usage_dataset",
+        "effect": "read",
+        "retry": "safe"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "key": "agent-usage-data",
+      "path": "skills/agent-usage-data"
+    }
+  ]
+}

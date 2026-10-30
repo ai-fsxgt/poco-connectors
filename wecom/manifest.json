@@ -2,7 +2,7 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "wecom",
-  "package_version": "1.0.0",
+  "package_version": "1.0.1",
   "authorization_contract_version": "1",
   "default_locale": "zh-CN",
   "locales": ["zh-CN", "en"],
@@ -10,7 +10,7 @@
     "name_key": "name",
     "description_key": "description",
     "icon": "assets/icon.svg",
-    "category": "productivity",
+    "category": "效率工具",
     "sections": [
       {"type": "notice", "title_key": "authorization.title", "description_key": "authorization.description"},
       {"type": "capability_list", "title_key": "capabilities.title", "items": [
