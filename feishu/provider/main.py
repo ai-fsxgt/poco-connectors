@@ -13,7 +13,7 @@ from lark_runtime import discover_tools, invoke_tool
 OPEN_API = "https://open.feishu.cn"
 OAUTH_ACCOUNT = "https://accounts.feishu.cn"
 OAUTH_AUTHORIZE = OAUTH_ACCOUNT + "/open-apis/authen/v1/authorize"
-OAUTH_TOKEN = OAUTH_ACCOUNT + "/oauth/v3/token"
+OAUTH_TOKEN = OPEN_API + "/open-apis/authen/v2/oauth/token"
 OAUTH_REVOKE = "https://accounts.feishu.cn/oauth/v1/revoke"
 USER_INFO = OPEN_API + "/open-apis/authen/v1/user_info"
 CATALOG_PATH = Path(__file__).with_name("catalog.json")
