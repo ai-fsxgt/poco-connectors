@@ -32,8 +32,10 @@ _NOT_FOUND_MARKERS = (
     "找不到",
     "not in task",
 )
-# DingTalk answered and declined the request, so a write did not take effect.
+# Server-side rejections that dws reports without starting the write.
 _PROVIDER_REJECTION_REASONS = {"business_error", "mcp_tool_error"}
+# Poco rejects Provider error messages longer than 2000 characters.
+_MAX_ERROR_MESSAGE_CHARS = 1800
 _FILE_INPUT_PARAMETERS = {
     ("aitable.record_create", "records-file"),
     ("aitable.record_update", "records-file"),
@@ -668,19 +670,22 @@ def _read_process_output(stream: Any) -> str:
 
 def _error_from_output(stdout: str, stderr: str) -> ProgramError:
     raw = stdout.strip() or stderr.strip()
-    message = raw[-1800:] if raw else "钉钉命令执行失败"
+    message = raw[-_MAX_ERROR_MESSAGE_CHARS:] if raw else "钉钉命令执行失败"
     joined = message.casefold()
-    rejected_by_provider = False
+    not_executed = False
     try:
         payload = json.loads(raw)
         error = payload.get("error") if isinstance(payload, dict) else None
         if isinstance(error, dict):
-            rejected_by_provider = (
-                str(error.get("reason") or "").lower() in _PROVIDER_REJECTION_REASONS
+            outer_kind = str(error.get("type") or error.get("category") or "").lower()
+            outer_reason = str(error.get("subtype") or error.get("reason") or "").lower()
+            not_executed = error.get("execution_started") is not True and (
+                outer_kind == "validation" or outer_reason in _PROVIDER_REJECTION_REASONS
             )
-            message = str(error.get("message") or message)
-            if message.startswith("[MCP_TOOL_ERROR] "):
-                tool_result = json.loads(message.removeprefix("[MCP_TOOL_ERROR] "))
+            full_message = str(error.get("message") or message)
+            message = full_message[:_MAX_ERROR_MESSAGE_CHARS]
+            if full_message.startswith("[MCP_TOOL_ERROR] "):
+                tool_result = json.loads(full_message.removeprefix("[MCP_TOOL_ERROR] "))
                 tool_error = (
                     tool_result.get("error") if isinstance(tool_result, dict) else None
                 )
@@ -693,8 +698,8 @@ def _error_from_output(stdout: str, stderr: str) -> ProgramError:
                 or error.get("errcode")
                 or ""
             ).casefold()
-            reason = str(error.get("reason") or "").lower()
-            category = str(error.get("category") or "").lower()
+            reason = str(error.get("subtype") or error.get("reason") or "").lower()
+            category = str(error.get("type") or error.get("category") or "").lower()
             joined = f"{provider_code} {reason} {category} {message}".casefold()
             if provider_code == "403" or reason in {"http_403", "rpc_forbidden"}:
                 return ProgramError("action_forbidden", message)
@@ -713,7 +718,7 @@ def _error_from_output(stdout: str, stderr: str) -> ProgramError:
         pass
     if any(marker in joined for marker in _NOT_FOUND_MARKERS):
         return ProgramError("not_found", message)
-    if rejected_by_provider:
+    if not_executed:
         return ProgramError("bad_request", message)
     return ProgramError("external_error", message)
 
