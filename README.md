@@ -12,7 +12,7 @@
 | [`anysearch/`](./anysearch/) | AnySearch | `anysearch` | `1.0.2` | 实时网页搜索、专业领域检索、批量搜索和网页全文提取 |
 | [`baidu-netdisk/`](./baidu-netdisk/) | 百度网盘 | `baidu-netdisk` | `1.0.2` | 文件浏览与检索、文件整理、分享链接、容量查询及 URL 转存 |
 | [`canva/`](./canva/) | Canva可画 | `canva` | `1.1.2` | 设计生成与编辑、素材和品牌资源、模板填充、导入导出及评论协作 |
-| [`dingtalk/`](./dingtalk/) | 钉钉 | `dingtalk` | `1.0.4` | 日程、待办、文档、云盘、聊天、通讯录及业务数据操作 |
+| [`dingtalk/`](./dingtalk/) | 钉钉 | `dingtalk` | `1.0.5` | 日程、待办、文档、云盘、聊天、通讯录及业务数据操作 |
 | [`feishu/`](./feishu/) | 飞书 | `feishu` | `1.1.3` | 日历、任务、文档、云盘、表格、审批、聊天、邮件及业务数据操作 |
 | [`github/`](./github/) | GitHub | `github` | `1.0.2` | 仓库与代码搜索、文件提交、Issue 管理、PR 评审与合并、用户及团队查询 |
 | [`ima/`](./ima/) | IMA | `ima-mcp` | `1.1.1` | 笔记与知识库的搜索、读取、创建、导入及文件上传 |

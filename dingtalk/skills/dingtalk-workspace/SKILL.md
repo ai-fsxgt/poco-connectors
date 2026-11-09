@@ -20,7 +20,7 @@ When a result contains `meta.operation.next_invocation`, call its `tool` with it
 
 For message sends, `outcome: pending` or an `openTaskId` means DingTalk accepted an asynchronous task, not that the message was delivered. Use the returned `next_invocation` to query status before reporting delivery; if the status is still pending, report it as pending.
 
-For write or destructive failures, do not repeat the command. Query the remote object first because the operation may have completed before the response failed.
+For write or destructive failures whose outcome is unknown, do not repeat the command. Query the remote object first because the operation may have completed before the response failed. When DingTalk explicitly rejects a write and returns its error message, the write did not take effect: correct the arguments according to that message before calling again, and never resend unchanged arguments.
 
 Use `file_inputs` for local file parameters. Supply text or base64 content and a plain file name; never pass server paths through `flags`. Returned small files appear as embedded resources.
 

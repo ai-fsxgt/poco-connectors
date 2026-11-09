@@ -32,6 +32,8 @@ _NOT_FOUND_MARKERS = (
     "找不到",
     "not in task",
 )
+# DingTalk answered and declined the request, so a write did not take effect.
+_PROVIDER_REJECTION_REASONS = {"business_error", "mcp_tool_error"}
 _FILE_INPUT_PARAMETERS = {
     ("aitable.record_create", "records-file"),
     ("aitable.record_update", "records-file"),
@@ -668,10 +670,14 @@ def _error_from_output(stdout: str, stderr: str) -> ProgramError:
     raw = stdout.strip() or stderr.strip()
     message = raw[-1800:] if raw else "钉钉命令执行失败"
     joined = message.casefold()
+    rejected_by_provider = False
     try:
         payload = json.loads(raw)
         error = payload.get("error") if isinstance(payload, dict) else None
         if isinstance(error, dict):
+            rejected_by_provider = (
+                str(error.get("reason") or "").lower() in _PROVIDER_REJECTION_REASONS
+            )
             message = str(error.get("message") or message)
             if message.startswith("[MCP_TOOL_ERROR] "):
                 tool_result = json.loads(message.removeprefix("[MCP_TOOL_ERROR] "))
@@ -707,6 +713,8 @@ def _error_from_output(stdout: str, stderr: str) -> ProgramError:
         pass
     if any(marker in joined for marker in _NOT_FOUND_MARKERS):
         return ProgramError("not_found", message)
+    if rejected_by_provider:
+        return ProgramError("bad_request", message)
     return ProgramError("external_error", message)
 
 
