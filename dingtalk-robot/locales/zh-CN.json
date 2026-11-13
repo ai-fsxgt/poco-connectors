@@ -17,6 +17,8 @@
   "capabilities.text.description": "向群发送纯文本消息，可按手机号或用户 ID @ 成员，或 @ 所有人。",
   "capabilities.markdown.title": "发送 Markdown 消息",
   "capabilities.markdown.description": "向群发送带标题、列表、链接和图片的 Markdown 消息，同样支持 @ 成员。",
+  "capabilities.info.title": "查看连接信息",
+  "capabilities.info.description": "查看当前连接对应的群名称和支持的消息类型，不访问钉钉，不发送消息。",
   "limits.title": "使用范围",
   "limits.description": "仅支持安全设置为“加签”的自定义机器人；如同时设置了自定义关键词，消息内容需包含关键词。每个机器人每分钟最多发送 20 条消息，超出后会被钉钉限流 10 分钟。每次发送前需要确认，不自动重试；发送超时请先到群里确认，避免重复发送。",
   "examples.title": "使用示例",

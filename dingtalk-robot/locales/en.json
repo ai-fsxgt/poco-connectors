@@ -17,6 +17,8 @@
   "capabilities.text.description": "Send plain text to the group and @mention members by mobile number or user ID, or @everyone.",
   "capabilities.markdown.title": "Send Markdown messages",
   "capabilities.markdown.description": "Send Markdown with a title, lists, links and images, also with @mentions.",
+  "capabilities.info.title": "View connection info",
+  "capabilities.info.description": "View the group name and supported message types of this connection without contacting DingTalk or sending a message.",
   "limits.title": "Limits",
   "limits.description": "Only custom robots using the “Signature” security setting are supported; if custom keywords are also set, the message must contain a keyword. Each robot can send at most 20 messages per minute and is throttled by DingTalk for 10 minutes when exceeded. Every send requires confirmation and is never retried automatically; after a timeout, check the group before sending again.",
   "examples.title": "Examples",

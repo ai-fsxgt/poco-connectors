@@ -1,4 +1,13 @@
 {
+  "get_connection_info": {
+    "description": "查看当前连接对应的群名称和支持的消息类型。只读取连接中保存的信息，不访问钉钉，不能用于检测 Webhook 地址或加签密钥是否正确。",
+    "input_schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
   "send_text": {
     "description": "向当前连接对应的钉钉群发送纯文本消息。要 @ 成员时，在 content 中写入“@手机号”或“@用户ID”，并在 at_mobiles 或 at_user_ids 中列出。",
     "input_schema": {

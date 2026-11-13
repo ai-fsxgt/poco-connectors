@@ -16,6 +16,11 @@ _CATALOG = json.loads((_ROOT / "tools.json").read_text())
 _WEBHOOK_URL = "https://oapi.dingtalk.com/robot/send"
 _TIMEOUT = 15.0
 _RATE_LIMIT_ERRCODES = {130101, 410100}
+_TOOL_POLICIES = {
+    "get_connection_info": ("read", "safe", "not_required"),
+    "send_text": ("write", "never", "user_required"),
+    "send_markdown": ("write", "never", "user_required"),
+}
 
 
 class ProgramError(Exception):
@@ -84,16 +89,17 @@ def _validate(value: Any, schema: dict[str, Any], path: str = "arguments") -> No
 
 
 def _tool_spec(name: str) -> dict[str, Any]:
-    if name not in _CATALOG:
+    if name not in _TOOL_POLICIES or name not in _CATALOG:
         raise ProgramError("action_forbidden", "该工具未获连接器授权")
+    effect, retry, confirmation = _TOOL_POLICIES[name]
     tool = {
         "key": name,
         "upstream_name": name,
         **_CATALOG[name],
         "output_schema": None,
-        "effect": "write",
-        "retry_policy": "never",
-        "confirmation": "user_required",
+        "effect": effect,
+        "retry_policy": retry,
+        "confirmation": confirmation,
     }
     source = json.dumps(tool, ensure_ascii=False, sort_keys=True).encode()
     tool["source_revision"] = hashlib.sha256(source).hexdigest()
@@ -159,6 +165,15 @@ def _send(access_token: str, secret: str, message: dict[str, Any]) -> None:
     raise ProgramError(code, f"钉钉返回错误 {errcode}：{errmsg}；{hint}")
 
 
+def _tool_result(data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "content": [{"type": "text", "text": json.dumps(data, ensure_ascii=False)}],
+        "structured_content": data,
+        "is_error": False,
+        "error": None,
+    }
+
+
 def configuration_validate(context: dict[str, Any]) -> dict[str, Any]:
     configuration = context.get("configuration", {})
     if (
@@ -203,7 +218,7 @@ def authorization_complete(context: dict[str, Any]) -> dict[str, Any]:
 
 def tools_discover(context: dict[str, Any]) -> dict[str, Any]:
     _credentials(context.get("credentials"))
-    return {"tools": [_tool_spec(name) for name in _CATALOG]}
+    return {"tools": [_tool_spec(name) for name in _TOOL_POLICIES]}
 
 
 def tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
@@ -214,15 +229,15 @@ def tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
     arguments = context.get("arguments")
     _validate(arguments, spec["input_schema"])
     group_name, access_token, secret = _credentials(context.get("credentials"))
+    if name == "get_connection_info":
+        return _tool_result(
+            {"group_name": group_name, "message_types": ["text", "markdown"]}
+        )
     message = _message(name, arguments)
     _send(access_token, secret, message)
-    result = {"sent": True, "group_name": group_name, "msgtype": message["msgtype"]}
-    return {
-        "content": [{"type": "text", "text": json.dumps(result, ensure_ascii=False)}],
-        "structured_content": result,
-        "is_error": False,
-        "error": None,
-    }
+    return _tool_result(
+        {"sent": True, "group_name": group_name, "msgtype": message["msgtype"]}
+    )
 
 
 _OPERATIONS = {
