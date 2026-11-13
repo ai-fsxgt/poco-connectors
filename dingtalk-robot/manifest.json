@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "dingtalk-robot",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "信息通讯",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.text.title",
+            "description_key": "capabilities.text.description"
+          },
+          {
+            "title_key": "capabilities.markdown.title",
+            "description_key": "capabilities.markdown.description"
+          }
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {
+            "title_key": "examples.notice.title",
+            "description_key": "examples.notice.description"
+          },
+          {
+            "title_key": "examples.report.title",
+            "description_key": "examples.report.description"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {
+        "type": "reauthorize",
+        "label_key": "actions.reauthorize"
+      }
+    ]
+  },
+  "connection_policy": "multiple_per_user",
+  "permission_key": "feature.connector.dingtalk-robot",
+  "configuration": {
+    "fields": []
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "group_name",
+        "type": "text",
+        "label_key": "authorization.group_name.label",
+        "description_key": "authorization.group_name.description",
+        "placeholder_key": "authorization.group_name.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 64
+      },
+      {
+        "key": "webhook_url",
+        "type": "secret",
+        "label_key": "authorization.webhook_url.label",
+        "description_key": "authorization.webhook_url.description",
+        "placeholder_key": "authorization.webhook_url.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 2048
+      },
+      {
+        "key": "secret",
+        "type": "secret",
+        "label_key": "authorization.secret.label",
+        "description_key": "authorization.secret.description",
+        "placeholder_key": "authorization.secret.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 256
+      }
+    ],
+    "options": {
+      "type": "program"
+    }
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {
+      "type": "program"
+    }
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": []
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {
+        "tool": "send_text",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "send_markdown",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "key": "dingtalk-robot",
+      "path": "skills/dingtalk-robot"
+    }
+  ]
+}

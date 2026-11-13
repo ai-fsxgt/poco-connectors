@@ -1,0 +1,91 @@
+{
+  "send_text": {
+    "description": "向当前连接对应的钉钉群发送纯文本消息。要 @ 成员时，在 content 中写入“@手机号”或“@用户ID”，并在 at_mobiles 或 at_user_ids 中列出。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "description": "消息正文。"
+        },
+        "at_mobiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\+?[0-9-]{5,20}$"
+          },
+          "uniqueItems": true,
+          "description": "被 @ 成员的手机号，必须是群成员。"
+        },
+        "at_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "uniqueItems": true,
+          "description": "被 @ 成员的钉钉用户 ID。"
+        },
+        "is_at_all": {
+          "type": "boolean",
+          "default": false,
+          "description": "是否 @ 所有人。"
+        }
+      },
+      "required": [
+        "content"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "send_markdown": {
+    "description": "向当前连接对应的钉钉群发送 Markdown 消息。title 显示在会话列表中，text 为 Markdown 正文；要 @ 成员时，在 text 中写入“@手机号”或“@用户ID”，并在 at_mobiles 或 at_user_ids 中列出。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "会话列表中显示的标题。"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Markdown 正文。"
+        },
+        "at_mobiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\+?[0-9-]{5,20}$"
+          },
+          "uniqueItems": true,
+          "description": "被 @ 成员的手机号，必须是群成员。"
+        },
+        "at_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "uniqueItems": true,
+          "description": "被 @ 成员的钉钉用户 ID。"
+        },
+        "is_at_all": {
+          "type": "boolean",
+          "default": false,
+          "description": "是否 @ 所有人。"
+        }
+      },
+      "required": [
+        "title",
+        "text"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
