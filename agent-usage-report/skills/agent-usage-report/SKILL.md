@@ -41,10 +41,12 @@ python3 SKILL_DIR/scripts/dates.py this_week
 
 ### 2. 获取数据
 
-调用 `get_usage_dataset(start_date, end_date)`。工具会把数据集保存为工作区里的 `.json.gz` 文件，并返回文件路径，下文记为 `DATASET`。
+调用 `get_usage_dataset(start_date, end_date)`。只有用户明确限定类型、运行状态、IM 来源或某个人、某类任务时才传筛选参数，默认不传，生成全平台报告。工具会把数据集保存为工作区里的 `.json.gz` 文件，并返回文件路径，下文记为 `DATASET`。
 
 - 不要直接读取或解压这个文件，后续一律交给脚本处理。
-- 工作目录 `WORK_DIR` 使用 `usage-report/<start_date>_<end_date>`。
+- 工作目录 `WORK_DIR` 使用 `usage-report/<start_date>_<end_date>`；有筛选时在末尾依次追加筛选值，例如 `usage-report/2026-11-09_2026-11-15_scheduled_failed`，避免覆盖同一区间的其他报告。
+- 有筛选时，上期对比使用相同筛选，报告会自动标明筛选条件。写结论时说明这是筛选范围内的情况，不要表述为全平台结论。
+- `q` 是模糊匹配，可能命中名字或标题相近的其他用户和任务；开启内容隐私的用户只能按用户名、姓名命中。
 
 ### 3. 给工作项分类
 

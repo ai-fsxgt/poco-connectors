@@ -28,6 +28,14 @@ TRIGGER_NAMES = {
     "api": "API 集成",
     "embed": "嵌入对话",
 }
+STATUS_NAMES = {
+    "queued": "排队中",
+    "claimed": "已领取",
+    "running": "运行中",
+    "completed": "已完成",
+    "failed": "失败",
+    "canceled": "已取消",
+}
 PRIVATE = "private"
 PRIVATE_NAME = "隐私内容（不可见）"
 SUMMARY_CHARS = 100
@@ -279,6 +287,19 @@ def item_row(item: dict, users: dict) -> dict:
     }
 
 
+def describe_filters(filters: dict) -> str:
+    parts = []
+    if "kind" in filters:
+        parts.append(f"类型 {TRIGGER_NAMES[filters['kind']]}")
+    if "status" in filters:
+        parts.append(f"状态 {STATUS_NAMES[filters['status']]}")
+    if "source" in filters:
+        parts.append("来源 IM")
+    if "q" in filters:
+        parts.append(f"关键词「{filters['q']}」")
+    return "、".join(parts)
+
+
 def compute_stats(dataset: dict, labels: dict[str, tuple[str, str]]) -> dict:
     totals, previous = dataset["totals"], dataset["previous_totals"]
     users = {u["user_id"]: u for u in dataset["users"]}
@@ -377,6 +398,7 @@ def compute_stats(dataset: dict, labels: dict[str, tuple[str, str]]) -> dict:
             "days": len(dataset["days"]),
             "previous_start_date": previous["start_date"],
             "previous_end_date": previous["end_date"],
+            "filters": describe_filters(dataset["filters"]),
             "generated_at": datetime.now(ZONE).strftime("%Y-%m-%d %H:%M"),
         },
         "kpis": {

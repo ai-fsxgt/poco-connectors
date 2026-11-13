@@ -15,7 +15,7 @@
   "authorization.password.placeholder": "Password of the administrator account",
   "capabilities.title": "Capabilities",
   "capabilities.dataset.title": "Read usage data",
-  "capabilities.dataset.description": "Read runs, outcomes, cost, tokens, users and departments for a date range, plus titles and AI summaries of scheduled tasks, chats and API sessions.",
+  "capabilities.dataset.description": "Read runs, outcomes, cost, tokens, users and departments for a date range, plus titles and AI summaries of scheduled tasks, chats and API sessions, optionally filtered by type, status, source and keyword.",
   "capabilities.report.title": "Generate a report",
   "capabilities.report.description": "Classify actual work by business domain and deliverable, and produce an HTML report with conclusions, cost drivers, scheduled task health, department adoption and recommendations.",
   "limits.title": "Limits",

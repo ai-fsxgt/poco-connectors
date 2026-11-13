@@ -15,7 +15,7 @@
   "authorization.password.placeholder": "管理员账号的登录密码",
   "capabilities.title": "支持的能力",
   "capabilities.dataset.title": "读取使用数据",
-  "capabilities.dataset.description": "按日期区间读取运行次数、成功失败、成本、Token、用户与部门，以及定时任务、对话和 API 会话的标题与 AI 摘要。",
+  "capabilities.dataset.description": "按日期区间读取运行次数、成功失败、成本、Token、用户与部门，以及定时任务、对话和 API 会话的标题与 AI 摘要，可按类型、状态、来源和关键词筛选。",
   "capabilities.report.title": "生成分析报告",
   "capabilities.report.description": "按业务领域和产出物对实际工作分类，输出包含结论、成本去向、定时任务健康度、部门渗透和建议的 HTML 报告。",
   "limits.title": "使用范围",

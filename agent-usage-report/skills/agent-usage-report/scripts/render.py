@@ -120,12 +120,13 @@ def masthead(stats: dict, insights: dict) -> str:
         if single_day
         else f"{short_date(period['start_date'])} — {short_date(period['end_date'])}"
     )
+    scope = f" · 筛选：{escape(period['filters'])}" if period["filters"] else ""
     return f"""
 <header class="masthead">
   <div class="masthead-inner">
     <p class="kicker">AGENT 平台 · {kind}</p>
     <h1>{span}</h1>
-    <p class="meta">统计 {period["days"]} 天（北京时间） · 对比上期 {short_date(period["previous_start_date"])} — {short_date(period["previous_end_date"])} · 生成于 {period["generated_at"]}</p>
+    <p class="meta">统计 {period["days"]} 天（北京时间） · 对比上期 {short_date(period["previous_start_date"])} — {short_date(period["previous_end_date"])} · 生成于 {period["generated_at"]}{scope}</p>
     <p class="headline">{escape(insights["headline"])}</p>
   </div>
 </header>"""
