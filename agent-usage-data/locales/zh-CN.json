@@ -15,7 +15,7 @@
   "authorization.password.placeholder": "管理员账号的登录密码",
   "capabilities.title": "支持的能力",
   "capabilities.dataset.title": "读取使用数据",
-  "capabilities.dataset.description": "按日期区间读取汇总、上一周期对比、逐日数据、用户与部门，以及定时任务、对话、API 和嵌入会话的运行、成本、Token、标题与 AI 摘要，提供 JSON 压缩数据文件。",
+  "capabilities.dataset.description": "按日期区间读取汇总、上一周期对比、逐日数据、用户与部门，以及定时任务、对话、API 和嵌入会话的运行、成本、Token、标题与 AI 摘要，可按类型、状态、来源和关键词筛选，提供 JSON 压缩数据文件。",
   "limits.title": "使用范围",
   "limits.description": "单次最多查询 31 天，日期按北京时间计算。开启内容隐私的用户只参与数字统计，不展示会话标题和摘要。只读取数据，不修改平台任何内容。",
   "examples.title": "使用示例",

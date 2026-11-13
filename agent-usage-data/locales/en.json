@@ -15,7 +15,7 @@
   "authorization.password.placeholder": "Password of the administrator account",
   "capabilities.title": "Capabilities",
   "capabilities.dataset.title": "Read usage data",
-  "capabilities.dataset.description": "Read totals, previous-period comparisons, daily data, users and departments, plus runs, cost, tokens, titles and AI summaries of scheduled tasks, chats, API and embedded sessions. Data is delivered as a compressed JSON file.",
+  "capabilities.dataset.description": "Read totals, previous-period comparisons, daily data, users and departments, plus runs, cost, tokens, titles and AI summaries of scheduled tasks, chats, API and embedded sessions, optionally filtered by type, status, source and keyword. Data is delivered as a compressed JSON file.",
   "limits.title": "Limits",
   "limits.description": "Up to 31 days per query, using Beijing time. Users with content privacy enabled are counted in numbers only; their session titles and summaries are hidden. Read-only; nothing on the platform is modified.",
   "examples.title": "Examples",

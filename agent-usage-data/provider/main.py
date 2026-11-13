@@ -13,6 +13,13 @@ _MAX_REQUEST_BYTES = 2 * 1024 * 1024
 _MAX_RESPONSE_BYTES = 1024 * 1024
 _ADMIN_ROLES = {"admin", "super_admin"}
 _TOOL_NAME = "get_usage_dataset"
+_FILTER_CHOICES = {
+    "kind": ("chat", "scheduled", "api", "embed"),
+    "status": ("queued", "claimed", "running", "completed", "failed", "canceled"),
+    "source": ("im",),
+}
+_KEYWORD_MAX_LENGTH = 200
+_ARGUMENT_KEYS = {"start_date", "end_date", "q", *_FILTER_CHOICES}
 _TOOL_SPEC = {
     "key": _TOOL_NAME,
     "upstream_name": _TOOL_NAME,
@@ -20,6 +27,7 @@ _TOOL_SPEC = {
         "获取 Agent 平台指定日期区间（北京时间，最长 31 天）的使用数据集："
         "汇总与上一周期对比、逐日数据、用户与部门、工作项明细（定时任务、对话、API 和嵌入"
         "会话的标题、AI 摘要、运行次数、成功失败、成本、Token）。"
+        "可按类型、状态、来源和关键词筛选，上一周期对比数据使用相同筛选。"
         "数据以 .json.gz 文件保存到工作区，可按需读取字段并统计。"
     ),
     "input_schema": {
@@ -35,6 +43,30 @@ _TOOL_SPEC = {
                 "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
                 "description": "结束日期（含），格式 YYYY-MM-DD，北京时间。",
             },
+            "kind": {
+                "type": "string",
+                "enum": list(_FILTER_CHOICES["kind"]),
+                "description": (
+                    "按类型筛选：chat 人工对话、scheduled 定时任务、api API 会话、"
+                    "embed 嵌入会话。关联了定时任务的运行一律算作 scheduled。"
+                ),
+            },
+            "status": {
+                "type": "string",
+                "enum": list(_FILTER_CHOICES["status"]),
+                "description": "按运行状态筛选，只统计该状态的运行记录。",
+            },
+            "source": {
+                "type": "string",
+                "enum": list(_FILTER_CHOICES["source"]),
+                "description": "im 表示只统计来自 IM 渠道的会话。",
+            },
+            "q": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": _KEYWORD_MAX_LENGTH,
+                "description": "关键词，模糊匹配用户名、姓名、会话标题和定时任务名称。",
+            },
         },
         "required": ["start_date", "end_date"],
         "additionalProperties": False,
@@ -43,7 +75,7 @@ _TOOL_SPEC = {
     "effect": "read",
     "retry_policy": "safe",
     "confirmation": "not_required",
-    "source_revision": "get-usage-dataset-v1",
+    "source_revision": "get-usage-dataset-v2",
 }
 
 
@@ -155,16 +187,43 @@ def _date_argument(arguments: dict[str, Any], key: str) -> str:
         ) from exc
 
 
+def _filters(arguments: dict[str, Any]) -> dict[str, str]:
+    filters = {}
+    for key, choices in _FILTER_CHOICES.items():
+        if key in arguments:
+            if arguments[key] not in choices:
+                raise ProgramError(
+                    "bad_request", f"{key} 只能是 {'、'.join(choices)} 之一"
+                )
+            filters[key] = arguments[key]
+    if "q" in arguments:
+        keyword = arguments["q"]
+        keyword = keyword.strip() if isinstance(keyword, str) else ""
+        if not keyword or len(keyword) > _KEYWORD_MAX_LENGTH:
+            raise ProgramError(
+                "bad_request", f"q 必须是 1 到 {_KEYWORD_MAX_LENGTH} 个字符的关键词"
+            )
+        filters["q"] = keyword
+    return filters
+
+
 def tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
     if context.get("tool_name") != _TOOL_NAME:
         raise ProgramError("bad_request", "未知工具")
     arguments = context.get("arguments")
-    if not isinstance(arguments, dict) or set(arguments) != {"start_date", "end_date"}:
-        raise ProgramError("bad_request", "参数只能且必须包含 start_date 和 end_date")
+    if not isinstance(arguments, dict) or not (
+        {"start_date", "end_date"} <= set(arguments) <= _ARGUMENT_KEYS
+    ):
+        raise ProgramError(
+            "bad_request",
+            "参数必须包含 start_date 和 end_date，筛选参数只能是 kind、status、source、q",
+        )
+    filters = _filters(arguments)
     params = {
         "start_date": _date_argument(arguments, "start_date"),
         "end_date": _date_argument(arguments, "end_date"),
         "timezone": "Asia/Shanghai",
+        **filters,
     }
 
     username, password = _credentials(context.get("credentials"))
@@ -175,10 +234,12 @@ def tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
             raise ProgramError("bad_request", response.json().get("message"))
         dataset = _data(response, "读取使用数据")
 
+    dataset["filters"] = filters
     archive = gzip.compress(json.dumps(dataset, ensure_ascii=False).encode())
     overview = {
         "start_date": params["start_date"],
         "end_date": params["end_date"],
+        "filters": filters,
         "totals": dataset["totals"],
         "work_items": len(dataset["work_items"]),
         "users": len(dataset["users"]),
