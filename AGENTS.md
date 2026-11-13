@@ -37,6 +37,10 @@ Before proposing or implementing a connector migration, read `docs/connector-pac
 - Poco 发布连接器时要求至少包含一个已批准的只读工具（`effect: read`），否则发布会报错 `Connector must declare at least one approved read-only tool`。设计工具集时必须满足这一点；上游只提供写接口（如 Webhook 推送）时，提供一个确有用途的只读工具，例如返回当前连接信息的本地工具，并在工具描述和 Skill 中如实说明它是否访问上游、能否验证凭据。
 - Before packaging, perform an architecture audit in addition to syntax checks: confirm there is no duplicated platform transport or authorization layer, no unsupported runtime dependency, no unpinned source behavior, and no manifest reference to a removed Provider or asset.
 
+### 包内 Skill 编写
+
+Skill 只写模型无法从工具定义中得知的调用规则，保持简短；不要重复工具 schema 已有的参数说明、示例和返回格式，也不要重复 Provider 错误信息中已给出的处理提示。写操作的确认和重试由 Poco 按 `tool_policy` 自动处理，Skill 中不得要求模型自行向用户确认是否执行，否则会造成重复确认。
+
 ## Migration & Source Reuse
 
 Before creating files during a migration, inventory reusable material from the source connector. Directly copy platform-neutral content whose purpose and semantics already match, including documentation, general Skills, references, API schemas and catalogs, icons and other assets, configuration, and provider code. Preserve reusable files verbatim instead of regenerating or paraphrasing equivalent content. When adaptation is required, copy the source file as the baseline and make only the necessary Poco-specific changes. Do not rebuild a reusable asset from scratch without a concrete incompatibility; this reuse-first workflow avoids unnecessary implementation time, review churn, and model-token usage.
