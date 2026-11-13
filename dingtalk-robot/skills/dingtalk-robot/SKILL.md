@@ -3,7 +3,7 @@ name: dingtalk-robot
 description: "通过钉钉自定义机器人 Webhook 向钉钉群发送文本或 Markdown 消息，支持 @ 成员。触发关键词：钉钉群、群机器人、钉钉通知、发到群里、webhook、DingTalk robot。"
 description_zh: "通过钉钉自定义机器人 Webhook 向钉钉群发送文本或 Markdown 消息，支持 @ 成员。触发关键词：钉钉群、群机器人、钉钉通知、发到群里。"
 description_en: "Send text or Markdown messages to DingTalk groups through custom robot webhooks, with @mentions."
-version: "1.1.1"
+version: "1.1.2"
 ---
 
 # 钉钉群机器人
