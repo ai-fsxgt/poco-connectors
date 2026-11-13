@@ -6,7 +6,7 @@ Each root directory is an independently installable connector. Use lowercase keb
 
 ### 连接器分类名称
 
-`manifest.json` 的 `presentation.category` 必须使用简体中文名称，不得使用英文分类代号。同类连接器必须使用统一名称，当前分类统一为“效率工具”“搜索研究”“设计创作”“开发工具”和“知识管理”。
+`manifest.json` 的 `presentation.category` 必须使用简体中文名称，不得使用英文分类代号。分类不设固定列表，根据连接器的主要用途自行评估；已有分类能准确描述时优先沿用，避免出现含义相同但名称不同的分类。
 
 ### Required Assets Directory
 
