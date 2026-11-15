@@ -1,0 +1,23 @@
+{
+  "name": "钉钉消息通知",
+  "description": "以管理员登记的钉钉通知机器人身份给同事发送单聊消息，并查询员工的回复和已读情况。",
+  "authorization.title": "选择通知机器人",
+  "authorization.description": "授权时从管理员在“IM 机器人”中登记、用途为“消息通知”且你可见的钉钉机器人中选择一个，无需填写凭证。每个连接对应一个机器人，可添加多个连接。管理员需为机器人所属应用开通机器人发送消息权限（qyapi_robot_sendmsg），以及查人所需的企业通讯录搜索、成员信息读、根据手机号获取成员基本信息和通讯录部门信息读权限；并在事件订阅中使用 Stream 推送、勾选“机器人消息已读”。",
+  "capabilities.title": "支持的能力",
+  "capabilities.find.title": "查找同事",
+  "capabilities.find.description": "按姓名或手机号查找同事，返回钉钉用户 ID、职位、工号和所在部门，便于区分同名同事。",
+  "capabilities.departments.title": "按部门选人",
+  "capabilities.departments.description": "按名称搜索部门，查看下级部门并列出部门成员，用于给整个部门发通知。",
+  "capabilities.send.title": "发送通知",
+  "capabilities.send.description": "以机器人身份给一位或多位同事发送 Markdown 单聊消息，自动按每批 20 人分批发送。",
+  "capabilities.events.title": "查询回复和已读",
+  "capabilities.events.description": "按消息、员工或时间查询员工的回复和已读记录，用于统计未读、未回复的人员。",
+  "limits.title": "使用范围",
+  "limits.description": "只能给机器人所属应用可用范围内的员工发消息。员工引用通知回复时，回复才能对应到这条通知。每次发送前需要确认，不自动重试；发送超时请先查询已读记录或询问收件人，避免重复发送。",
+  "examples.title": "使用示例",
+  "examples.notice.title": "发送异常通知",
+  "examples.notice.description": "把今天的成品异常信息发给质量部的张三、李四，请他们引用回复处理意见。",
+  "examples.follow.title": "查看处理进度",
+  "examples.follow.description": "查一下刚才那条通知谁还没读、谁已经回复了。",
+  "actions.reauthorize": "重新授权"
+}

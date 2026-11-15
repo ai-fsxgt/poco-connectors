@@ -1,0 +1,23 @@
+{
+  "name": "DingTalk Notifications",
+  "description": "Send one-on-one messages to colleagues as a DingTalk notification bot registered by your admin, and check their replies and read receipts.",
+  "authorization.title": "Choose a Notification Bot",
+  "authorization.description": "When authorizing, choose one of the DingTalk bots your admin registered under “IM Bots” with the “Notification” purpose and made visible to you; no credentials are needed. Each connection maps to one bot, and you can add several. The admin must grant the bot's app the robot messaging permission (qyapi_robot_sendmsg) and, for finding people, the directory search, member read, member-by-mobile and department read permissions, and enable Stream push with the “Robot message read” event in event subscriptions.",
+  "capabilities.title": "Capabilities",
+  "capabilities.find.title": "Find Colleagues",
+  "capabilities.find.description": "Find colleagues by name or mobile number, with their DingTalk user ID, title, employee number and departments to tell namesakes apart.",
+  "capabilities.departments.title": "Select by Department",
+  "capabilities.departments.description": "Search departments by name, browse sub-departments and list department members to notify a whole department.",
+  "capabilities.send.title": "Send Notifications",
+  "capabilities.send.description": "Send a Markdown one-on-one message to one or more colleagues as the bot, in batches of 20.",
+  "capabilities.events.title": "Check Replies and Reads",
+  "capabilities.events.description": "Query replies and read receipts by message, employee or time to find who has not read or replied.",
+  "limits.title": "Scope",
+  "limits.description": "Messages can only reach employees within the bot app's visible range. A reply is linked to a notification only when the employee quotes it. Each send requires confirmation and is never retried automatically; after a timeout, check read receipts or ask the recipients before sending again.",
+  "examples.title": "Examples",
+  "examples.notice.title": "Send an Alert",
+  "examples.notice.description": "Send today's finished-product exceptions to Zhang San and Li Si in Quality and ask them to quote-reply with their handling plan.",
+  "examples.follow.title": "Check Progress",
+  "examples.follow.description": "Who hasn't read that notification yet, and who has replied?",
+  "actions.reauthorize": "Reauthorize"
+}

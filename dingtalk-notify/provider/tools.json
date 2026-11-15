@@ -1,0 +1,183 @@
+{
+  "find_users": {
+    "description": "按姓名搜索同事，返回钉钉用户 ID、姓名、职位、工号和所在部门，最多 10 人。只能搜到机器人所属应用通讯录范围内的员工；不在应用授权范围内的部门只返回 ID，名称为 null。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "同事姓名或姓名中的关键字。"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "find_user_by_mobile": {
+    "description": "按手机号查找同事，返回钉钉用户 ID、姓名、职位、工号和所在部门；找不到时 user 为 null。不在应用授权范围内的部门只返回 ID，名称为 null。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "mobile": {
+          "type": "string",
+          "pattern": "^\\+?[0-9-]{5,20}$",
+          "description": "同事的手机号。"
+        }
+      },
+      "required": [
+        "mobile"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "find_departments": {
+    "description": "按名称搜索部门，返回部门 ID、名称和上级部门 ID，最多 10 个。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "部门名称或名称中的关键字。"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "list_sub_departments": {
+    "description": "列出某个部门的直属下级部门，返回部门 ID、名称和上级部门 ID。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "dept_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "部门 ID，根部门为 1。"
+        }
+      },
+      "required": [
+        "dept_id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "list_department_users": {
+    "description": "列出某个部门的直属成员（不含下级部门），每页最多 100 人，返回钉钉用户 ID、姓名、职位和工号。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "dept_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "部门 ID，根部门为 1。"
+        },
+        "cursor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "上次结果中的 next_cursor，用于翻页。"
+        }
+      },
+      "required": [
+        "dept_id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "send_message": {
+    "description": "以机器人身份给同事发送 Markdown 单聊消息。按每批 20 人分批发送，每批返回一个 process_query_key，用于之后查询回复和已读。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "minItems": 1,
+          "maxItems": 200,
+          "uniqueItems": true,
+          "description": "收件人的钉钉用户 ID。"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "会话列表中显示的标题。"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Markdown 正文。"
+        }
+      },
+      "required": [
+        "user_ids",
+        "title",
+        "text"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "list_message_events": {
+    "description": "查询员工对机器人消息的回复和已读记录，按时间先后排列。每条记录包含事件类型、消息标识、员工 ID 和姓名、回复内容、引用内容和发生时间。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "message_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "maxItems": 50,
+          "uniqueItems": true,
+          "description": "send_message 返回的 process_query_key。"
+        },
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "reply",
+            "read"
+          ],
+          "description": "reply 为回复，read 为已读；不传时两种都返回。"
+        },
+        "user_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "只看这位员工的钉钉用户 ID。"
+        },
+        "since": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?(Z|[+-]\\d{2}:\\d{2})$",
+          "description": "只返回此时间之后的事件，ISO 8601 格式且带时区，例如 2026-11-14T09:00:00+08:00。"
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "description": "上次结果中的 next_cursor，用于翻页。"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500,
+          "description": "每页条数，默认 200。"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}
