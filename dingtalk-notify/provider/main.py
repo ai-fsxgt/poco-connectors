@@ -29,6 +29,7 @@ _TOOL_POLICIES = {
     "list_sub_departments": ("read", "safe", "not_required"),
     "list_department_users": ("read", "safe", "not_required"),
     "send_message": ("write", "never", "user_required"),
+    "recall_message": ("destructive", "never", "user_required"),
     "list_message_events": ("read", "safe", "not_required"),
 }
 
@@ -392,6 +393,24 @@ def _partial_failure(
     }
 
 
+def _recall_message(
+    credentials: dict[str, str], arguments: dict[str, Any]
+) -> dict[str, Any]:
+    data = _dingtalk_api(
+        _access_token(credentials),
+        "/v1.0/robot/otoMessages/batchRecall",
+        {
+            "robotCode": credentials["client_id"],
+            "processQueryKeys": arguments["process_query_keys"],
+        },
+        "请联系管理员确认应用已开通机器人发送消息权限（qyapi_robot_sendmsg）",
+    )
+    return {
+        "recalled": data.get("successResult", []),
+        "failed": data.get("failedResult", {}),
+    }
+
+
 def _list_message_events(
     credentials: dict[str, str], arguments: dict[str, Any]
 ) -> dict[str, Any]:
@@ -466,6 +485,8 @@ def tool_invoke(context: dict[str, Any]) -> dict[str, Any]:
     credentials = _credentials(context.get("credentials"))
     if name == "send_message":
         return _send_message(credentials, arguments)
+    if name == "recall_message":
+        return _tool_result(_recall_message(credentials, arguments))
     if name == "list_message_events":
         return _tool_result(_list_message_events(credentials, arguments))
     return _tool_result(_DIRECTORY_TOOLS[name](_access_token(credentials), arguments))

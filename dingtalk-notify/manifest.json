@@ -2,7 +2,7 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "dingtalk-notify",
-  "package_version": "1.1.0",
+  "package_version": "1.2.0",
   "authorization_contract_version": "1",
   "default_locale": "zh-CN",
   "locales": [
@@ -35,6 +35,10 @@
           {
             "title_key": "capabilities.send.title",
             "description_key": "capabilities.send.description"
+          },
+          {
+            "title_key": "capabilities.recall.title",
+            "description_key": "capabilities.recall.description"
           },
           {
             "title_key": "capabilities.events.title",
@@ -126,6 +130,12 @@
       {
         "tool": "send_message",
         "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "recall_message",
+        "effect": "destructive",
         "retry": "never",
         "confirmation": "user_required"
       },

@@ -128,6 +128,30 @@
       "additionalProperties": false
     }
   },
+  "recall_message": {
+    "description": "撤回机器人发出的单聊消息。按 send_message 返回的 process_query_key 整批撤回，该批所有收件人的消息都会被撤回。返回撤回成功的 process_query_key 和撤回失败的原因。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "process_query_keys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "description": "要撤回的批次，即 send_message 返回的 process_query_key。"
+        }
+      },
+      "required": [
+        "process_query_keys"
+      ],
+      "additionalProperties": false
+    }
+  },
   "list_message_events": {
     "description": "查询员工对机器人消息的回复和已读记录，按时间先后排列。每条记录包含事件类型、消息标识、员工 ID 和姓名、回复内容、引用内容和发生时间。",
     "input_schema": {
