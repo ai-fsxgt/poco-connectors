@@ -19,6 +19,7 @@
 | [`github/`](./github/) | GitHub | `github` | `1.0.2` | 仓库与代码搜索、文件提交、Issue 管理、PR 评审与合并、用户及团队查询 |
 | [`ima/`](./ima/) | IMA | `ima-mcp` | `1.1.1` | 笔记与知识库的搜索、读取、创建、导入及文件上传 |
 | [`kdocs/`](./kdocs/) | 金山文档 | `kdocs` | `1.4.13` | 文档、表格、PDF、演示文稿、云盘与知识库操作 |
+| [`meeting-management/`](./meeting-management/) | 新钢会议管理 | `meeting-management` | `1.0.1` | 使用个人账号按日期、类别查询和全文检索会议纪要，查看督办与修改历史，按系统现有格式新增、修改、删除会议，并查询和维护重点跟踪事项 |
 | [`netease-mail/`](./netease-mail/) | 网易邮箱 | `netease-mail` | `1.0.2` | 邮件收发、搜索、附件获取、文件夹查询及已读状态管理 |
 | [`notion/`](./notion/) | Notion | `notion` | `1.0.2` | 工作区检索、知识沉淀、会议准备、研究文档及需求任务拆解 |
 | [`qingflow/`](./qingflow/) | 轻流 | `qingflow` | `1.0.1` | 应用搭建、表单记录、审批流程、数据导入导出及图表查询 |

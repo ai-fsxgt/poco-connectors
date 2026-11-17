@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "meeting-management",
+  "package_version": "1.0.1",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.svg",
+    "category": "效率工具",
+    "sections": [
+      {
+        "type": "notice",
+        "title_key": "authorization.title",
+        "description_key": "authorization.description"
+      },
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.meetings.title",
+            "description_key": "capabilities.meetings.description"
+          },
+          {
+            "title_key": "capabilities.search.title",
+            "description_key": "capabilities.search.description"
+          },
+          {
+            "title_key": "capabilities.manage.title",
+            "description_key": "capabilities.manage.description"
+          },
+          {
+            "title_key": "capabilities.tracking.title",
+            "description_key": "capabilities.tracking.description"
+          }
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      },
+      {
+        "type": "example_list",
+        "title_key": "examples.title",
+        "items": [
+          {
+            "title_key": "examples.query.title",
+            "description_key": "examples.query.description"
+          },
+          {
+            "title_key": "examples.search.title",
+            "description_key": "examples.search.description"
+          },
+          {
+            "title_key": "examples.create.title",
+            "description_key": "examples.create.description"
+          }
+        ]
+      }
+    ],
+    "connection_actions": [
+      {
+        "type": "reauthorize",
+        "label_key": "actions.reauthorize"
+      }
+    ]
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.meeting-management",
+  "configuration": {
+    "fields": [
+      {
+        "key": "meeting_base_url",
+        "type": "url",
+        "label_key": "configuration.meeting_base_url.label",
+        "description_key": "configuration.meeting_base_url.description",
+        "placeholder_key": "configuration.meeting_base_url.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "max_length": 2048
+      },
+      {
+        "key": "search_base_url",
+        "type": "url",
+        "label_key": "configuration.search_base_url.label",
+        "description_key": "configuration.search_base_url.description",
+        "placeholder_key": "configuration.search_base_url.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "max_length": 2048
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "program",
+    "interaction": "form",
+    "fields": [
+      {
+        "key": "username",
+        "type": "text",
+        "label_key": "authorization.username.label",
+        "description_key": "authorization.username.description",
+        "placeholder_key": "authorization.username.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 64
+      },
+      {
+        "key": "password",
+        "type": "secret",
+        "label_key": "authorization.password.label",
+        "description_key": "authorization.password.description",
+        "placeholder_key": "authorization.password.placeholder",
+        "required": true,
+        "min_length": 1,
+        "max_length": 128
+      }
+    ],
+    "options": {
+      "type": "program"
+    }
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {
+      "type": "program"
+    }
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": []
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {
+        "tool": "list_meetings",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "search_meetings",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "get_meeting_history",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "list_options",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "list_tracking_items",
+        "effect": "read",
+        "retry": "safe"
+      },
+      {
+        "tool": "create_meeting",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "update_meeting",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "delete_meeting",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "create_tracking_item",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "update_tracking_item",
+        "effect": "write",
+        "retry": "never",
+        "confirmation": "user_required"
+      },
+      {
+        "tool": "delete_tracking_item",
+        "effect": "destructive",
+        "retry": "never",
+        "confirmation": "user_required"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "key": "meeting-management",
+      "path": "skills/meeting-management"
+    }
+  ]
+}

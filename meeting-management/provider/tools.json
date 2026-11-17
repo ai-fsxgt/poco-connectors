@@ -1,0 +1,662 @@
+{
+  "list_meetings": {
+    "description": "按会议日期范围查询会议纪要，最新的会议在前。返回会议 ID、日期、时间、类别、地点、主持人、记录人、出席/缺席/迟到人员、会议内容（纯文本，每行一个分节标题或条目）和督办。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "会议日期起（含），格式 YYYY-MM-DD。"
+        },
+        "end_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "会议日期止（含），格式 YYYY-MM-DD。"
+        },
+        "meet_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "会议类别，取 list_options 返回的 meet_types 中的值；不传表示全部类别。"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "页码，默认 1。"
+        },
+        "page_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "description": "每页条数，默认 10。"
+        }
+      },
+      "required": [
+        "start_date",
+        "end_date"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "search_meetings": {
+    "description": "按关键词全文检索会议，结果按会议时间倒序。search_type 为 meet 时检索会议内容，work 时检索督办，attender 时按参会人检索。返回会议 ID、基本信息、会议内容、命中的关键词以及督办。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "keyword": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "检索关键词，例如“2#高炉开炉料方案”或参会人姓名。"
+        },
+        "search_type": {
+          "type": "string",
+          "enum": [
+            "meet",
+            "work",
+            "attender"
+          ],
+          "description": "检索类型：meet 查会议（默认），work 查督办，attender 查参会人。"
+        },
+        "start_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "会议日期起（含），格式 YYYY-MM-DD，需与 end_date 同时传入。"
+        },
+        "end_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "会议日期止（含），格式 YYYY-MM-DD，需与 start_date 同时传入。"
+        },
+        "meet_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "会议类别，仅 search_type 为 meet 或 attender 时可用，取 list_options 的 meet_types。"
+        },
+        "work_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "督办类别，仅 search_type 为 work 时可用，取 list_options 的 work_types。"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "页码，默认 1。"
+        },
+        "page_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "description": "每页条数，默认 10。"
+        }
+      },
+      "required": [
+        "keyword"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "get_meeting_history": {
+    "description": "查询一场会议的修改历史，返回每个版本的操作类型、记录时间、操作人以及该版本的完整会议信息。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "meeting_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "会议 ID。"
+        }
+      },
+      "required": [
+        "meeting_id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "list_options": {
+    "description": "读取会议系统字典：会议类别、会议地点、会议人员（可作主持人和记录人）、督办类别、单位（重点跟踪事项的责任单位和协助部门）以及提出层级。新增或修改时这些字段只能使用这里的值。",
+    "input_schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "list_tracking_items": {
+    "description": "查询重点跟踪事项。按计划完成日期范围和其他条件筛选；due_only 为 true 时只返回到期事件，此时不能使用其他筛选条件。返回事项 ID、类别、提出层级、责任单位、协助部门、会议日期、计划和实际完成日期、工作内容、完成情况、状态和附件名称。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "计划完成日期起（含），格式 YYYY-MM-DD；due_only 不为 true 时必填。"
+        },
+        "end_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "计划完成日期止（含），格式 YYYY-MM-DD；due_only 不为 true 时必填。"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "督办",
+            "重点工作"
+          ],
+          "description": "类别。"
+        },
+        "presenter": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "提出层级，取 list_options 的 presenters。"
+        },
+        "main_unit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "责任单位，取 list_options 的 units。"
+        },
+        "assign_unit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "协助部门，取 list_options 的 units。"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "推进中",
+            "已完成",
+            "延期",
+            "持续跟踪"
+          ],
+          "description": "状态。"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "工作内容关键词。"
+        },
+        "due_only": {
+          "type": "boolean",
+          "description": "为 true 时只查询到期事件。"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "页码，默认 1。"
+        },
+        "page_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "description": "每页条数，默认 20。"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "create_meeting": {
+    "description": "新增一场会议纪要。会议内容按分节和条目传入纯文本，连接器自动生成“一、分节标题”和“1、条目”格式；会议类别、地点、主持人和记录人必须是 list_options 中的值，会议日期不能晚于今天。不支持督办和附件。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "meet_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "会议类别，取 list_options 的 meet_types。"
+        },
+        "meet_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "会议日期，格式 YYYY-MM-DD，不能晚于今天。"
+        },
+        "start_time": {
+          "type": "string",
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+          "description": "开始时间，格式 HH:mm。"
+        },
+        "end_time": {
+          "type": "string",
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+          "description": "结束时间，格式 HH:mm，须晚于开始时间。"
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "会议地点，取 list_options 的 meet_locations。"
+        },
+        "hoster": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "主持人，取 list_options 的 meet_personnel。"
+        },
+        "recorder": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "记录人，取 list_options 的 meet_personnel。"
+        },
+        "attendees": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 200,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "description": "出席人员，每项一人，连接器用“、”连接。"
+        },
+        "absentees": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "description": "缺席人员，每项一人；没有时不传。"
+        },
+        "late": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "description": "迟到人员，每项一人；没有时不传。"
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50,
+                "description": "分节标题，例如“安环管理：”，不带“一、”编号。只有一个分节时可省略，多个分节时必填。"
+              },
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 80,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "description": "该分节的条目，每项一条纯文本，不带“1、”编号，不能换行或包含 HTML、Markdown 标记。"
+              }
+            },
+            "required": [
+              "items"
+            ],
+            "additionalProperties": false
+          },
+          "description": "会议内容，按分节顺序排列。"
+        }
+      },
+      "required": [
+        "meet_type",
+        "meet_date",
+        "start_time",
+        "end_time",
+        "location",
+        "hoster",
+        "recorder",
+        "attendees",
+        "sections"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "update_meeting": {
+    "description": "修改一场会议纪要，用会议 ID 和当前会议日期定位。只修改传入的字段，其余字段和已有督办保持不变；传入 sections 时按“一、”“1、”标准格式重新生成整场会议内容，原有的加粗标题、无编号段落和①②编号都会变成标准格式，仅在用户要求修改会议内容时传入。字段规则与 create_meeting 相同，开始和结束时间需同时传入。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "meeting_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "会议 ID。"
+        },
+        "meet_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "会议当前的日期，格式 YYYY-MM-DD，用于定位会议。"
+        },
+        "new_meet_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "新的会议日期，格式 YYYY-MM-DD，不能晚于今天；不改日期时不传。"
+        },
+        "meet_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "会议类别，取 list_options 的 meet_types。"
+        },
+        "start_time": {
+          "type": "string",
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+          "description": "开始时间，格式 HH:mm。"
+        },
+        "end_time": {
+          "type": "string",
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+          "description": "结束时间，格式 HH:mm，须晚于开始时间。"
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "会议地点，取 list_options 的 meet_locations。"
+        },
+        "hoster": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "主持人，取 list_options 的 meet_personnel。"
+        },
+        "recorder": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "记录人，取 list_options 的 meet_personnel。"
+        },
+        "attendees": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 200,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "description": "出席人员完整名单，每项一人。"
+        },
+        "absentees": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "description": "缺席人员完整名单；传空数组表示清空。"
+        },
+        "late": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "description": "迟到人员完整名单；传空数组表示清空。"
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50,
+                "description": "分节标题，不带“一、”编号。只有一个分节时可省略，多个分节时必填。"
+              },
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 80,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "description": "该分节的条目，每项一条纯文本，不带“1、”编号，不能换行或包含 HTML、Markdown 标记。"
+              }
+            },
+            "required": [
+              "items"
+            ],
+            "additionalProperties": false
+          },
+          "description": "完整的新会议内容，会替换原有内容。"
+        }
+      },
+      "required": [
+        "meeting_id",
+        "meet_date"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "delete_meeting": {
+    "description": "删除一场会议及其全部督办，用会议 ID 和会议日期定位。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "meeting_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "会议 ID。"
+        },
+        "meet_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "会议日期，格式 YYYY-MM-DD。"
+        }
+      },
+      "required": [
+        "meeting_id",
+        "meet_date"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "create_tracking_item": {
+    "description": "新增一条重点跟踪事项，仅会议系统授权维护重点跟踪事项的账号可用。提出层级和单位必须是 list_options 中的值，会议日期不能晚于计划完成日期。不支持附件。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "督办",
+            "重点工作"
+          ],
+          "description": "类别。"
+        },
+        "presenter": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "提出层级，取 list_options 的 presenters。"
+        },
+        "main_units": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 30,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": "责任单位，取 list_options 的 units。"
+        },
+        "assign_units": {
+          "type": "array",
+          "maxItems": 30,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": "协助部门，取 list_options 的 units；没有时不传。"
+        },
+        "meet_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "提出事项的会议日期，格式 YYYY-MM-DD。"
+        },
+        "plan_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "计划完成日期，格式 YYYY-MM-DD。"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "工作内容。"
+        }
+      },
+      "required": [
+        "category",
+        "presenter",
+        "main_units",
+        "meet_date",
+        "plan_date",
+        "content"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "update_tracking_item": {
+    "description": "修改重点跟踪事项或标记完成，用事项 ID 和当前计划完成日期定位，只修改传入的字段，已有附件保持不变。completed 为 true 时将状态改为已完成，此时修改后的事项必须有实际完成日期和完成情况。仅会议系统授权维护重点跟踪事项的账号可用。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "事项 ID。"
+        },
+        "plan_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "事项当前的计划完成日期，格式 YYYY-MM-DD，用于定位事项。"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "督办",
+            "重点工作"
+          ],
+          "description": "类别。"
+        },
+        "presenter": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "提出层级，取 list_options 的 presenters。"
+        },
+        "main_units": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 30,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": "责任单位完整列表，取 list_options 的 units。"
+        },
+        "assign_units": {
+          "type": "array",
+          "maxItems": 30,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": "协助部门完整列表；传空数组表示清空。"
+        },
+        "meet_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "会议日期，格式 YYYY-MM-DD。"
+        },
+        "new_plan_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "新的计划完成日期，格式 YYYY-MM-DD；不改时不传。"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "工作内容。"
+        },
+        "actual_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "实际完成日期，格式 YYYY-MM-DD。"
+        },
+        "complete_status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "实际完成情况。"
+        },
+        "completed": {
+          "type": "boolean",
+          "description": "传 true 将事项标记为已完成；不标记时不传。"
+        }
+      },
+      "required": [
+        "id",
+        "plan_date"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "delete_tracking_item": {
+    "description": "删除一条重点跟踪事项。仅会议系统授权维护重点跟踪事项的账号可用。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "事项 ID。"
+        },
+        "plan_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "事项当前的计划完成日期，格式 YYYY-MM-DD，用于定位事项。"
+        }
+      },
+      "required": [
+        "id",
+        "plan_date"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
