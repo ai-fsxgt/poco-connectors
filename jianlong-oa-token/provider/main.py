@@ -66,7 +66,13 @@ def _exchange_token(context: dict[str, Any]) -> dict[str, Any]:
         if isinstance(payload, dict)
         else response.text[:500]
     )
-    code = "unavailable" if response.status_code >= 500 else "external_error"
+    if response.status_code >= 500:
+        code = "unavailable"
+    elif isinstance(payload, dict):
+        # The OA refused this employee; the service itself is healthy.
+        code = "action_forbidden"
+    else:
+        code = "external_error"
     raise ProgramError(code, f"换取 OA 凭证失败（HTTP {response.status_code}，{detail}）")
 
 

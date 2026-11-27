@@ -2,7 +2,7 @@
   "schema_version": 1,
   "platform_api_version": "1",
   "key": "jianlong-oa-token",
-  "package_version": "1.0.0",
+  "package_version": "1.1.0",
   "authorization_contract_version": "1",
   "default_locale": "zh-CN",
   "locales": [
@@ -100,5 +100,10 @@
       }
     ]
   },
-  "skills": []
+  "skills": [
+    {
+      "key": "jianlong-oa-token",
+      "path": "skills/jianlong-oa-token"
+    }
+  ]
 }

@@ -18,7 +18,7 @@
 | [`feishu/`](./feishu/) | 飞书 | `feishu` | `1.1.3` | 日历、任务、文档、云盘、表格、审批、聊天、邮件及业务数据操作 |
 | [`github/`](./github/) | GitHub | `github` | `1.0.2` | 仓库与代码搜索、文件提交、Issue 管理、PR 评审与合并、用户及团队查询 |
 | [`ima/`](./ima/) | IMA | `ima-mcp` | `1.1.1` | 笔记与知识库的搜索、读取、创建、导入及文件上传 |
-| [`jianlong-oa-token/`](./jianlong-oa-token/) | 建龙 OA 凭证 | `jianlong-oa-token` | `1.0.0` | 以 IM 中发消息员工的身份换取建龙 OA 访问凭证，返回令牌、工号和有效期 |
+| [`jianlong-oa-token/`](./jianlong-oa-token/) | 建龙 OA 凭证 | `jianlong-oa-token` | `1.1.0` | 以 IM 中发消息员工的身份换取建龙 OA 访问凭证，返回令牌、工号和有效期 |
 | [`kdocs/`](./kdocs/) | 金山文档 | `kdocs` | `1.4.13` | 文档、表格、PDF、演示文稿、云盘与知识库操作 |
 | [`meeting-management/`](./meeting-management/) | 新钢会议管理 | `meeting-management` | `1.0.1` | 使用个人账号按日期、类别查询和全文检索会议纪要，查看督办与修改历史，按系统现有格式新增、修改、删除会议，并查询和维护重点跟踪事项 |
 | [`netease-mail/`](./netease-mail/) | 网易邮箱 | `netease-mail` | `1.0.2` | 邮件收发、搜索、附件获取、文件夹查询及已读状态管理 |
