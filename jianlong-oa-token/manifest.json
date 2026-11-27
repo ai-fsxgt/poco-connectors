@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "platform_api_version": "1",
+  "key": "jianlong-oa-token",
+  "package_version": "1.0.0",
+  "authorization_contract_version": "1",
+  "default_locale": "zh-CN",
+  "locales": [
+    "zh-CN",
+    "en"
+  ],
+  "presentation": {
+    "name_key": "name",
+    "description_key": "description",
+    "icon": "assets/icon.png",
+    "category": "效率工具",
+    "sections": [
+      {
+        "type": "capability_list",
+        "title_key": "capabilities.title",
+        "items": [
+          {
+            "title_key": "capabilities.token.title",
+            "description_key": "capabilities.token.description"
+          }
+        ]
+      },
+      {
+        "type": "notice",
+        "title_key": "limits.title",
+        "description_key": "limits.description"
+      }
+    ],
+    "connection_actions": []
+  },
+  "connection_policy": "single_per_user",
+  "permission_key": "feature.connector.jianlong-oa-token",
+  "configuration": {
+    "fields": [
+      {
+        "key": "base_url",
+        "type": "url",
+        "label_key": "configuration.base_url.label",
+        "description_key": "configuration.base_url.description",
+        "placeholder_key": "configuration.base_url.placeholder",
+        "group_key": "configuration.group",
+        "required": true,
+        "max_length": 2048
+      },
+      {
+        "key": "app_id",
+        "type": "text",
+        "label_key": "configuration.app_id.label",
+        "description_key": "configuration.app_id.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "max_length": 128
+      },
+      {
+        "key": "app_secret",
+        "type": "secret",
+        "label_key": "configuration.app_secret.label",
+        "description_key": "configuration.app_secret.description",
+        "group_key": "configuration.group",
+        "required": true,
+        "max_length": 256
+      }
+    ]
+  },
+  "auth": {
+    "strategy": "none",
+    "interaction": "none",
+    "fields": [],
+    "options": {
+      "type": "none"
+    }
+  },
+  "runtime": {
+    "adapter": "program",
+    "transport": "program",
+    "options": {
+      "type": "program"
+    }
+  },
+  "program": {
+    "protocol_version": 1,
+    "runtime": "python",
+    "entrypoint": "provider/main.py",
+    "capabilities": [
+      "im_sender"
+    ]
+  },
+  "tool_policy": {
+    "default": "deny",
+    "rules": [
+      {
+        "tool": "get_oa_token",
+        "effect": "read",
+        "retry": "safe"
+      }
+    ]
+  },
+  "skills": []
+}

@@ -1,0 +1,17 @@
+{
+  "name": "建龙 OA 凭证",
+  "description": "以 IM 中发消息员工的身份换取建龙 OA 访问凭证，供调用 OA 接口使用。",
+  "configuration.group": "换票配置",
+  "configuration.base_url.label": "OA 认证服务地址",
+  "configuration.base_url.description": "换票接口 /oauth2/wecom_agent_token 所在服务的根地址，不含接口路径",
+  "configuration.base_url.placeholder": "https://oa.example.com",
+  "configuration.app_id.label": "应用 appId",
+  "configuration.app_id.description": "在用户中心注册的调用方应用 appKey",
+  "configuration.app_secret.label": "应用密钥",
+  "configuration.app_secret.description": "与 appId 配对的应用密钥，由 POCO 加密保存",
+  "capabilities.title": "支持的能力",
+  "capabilities.token.title": "换取 OA 凭证",
+  "capabilities.token.description": "用当前发消息员工的 IM 用户 ID 换取 OA 访问令牌，同时返回工号和有效期。",
+  "limits.title": "使用范围",
+  "limits.description": "只能在企业微信、钉钉、飞书等 IM 对话中使用，网页对话无法获取员工身份。群聊中使用的是当条消息发送人的身份。凭证默认 10 分钟有效。"
+}

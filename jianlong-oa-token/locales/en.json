@@ -1,0 +1,17 @@
+{
+  "name": "Jianlong OA Token",
+  "description": "Exchange a Jianlong OA access token on behalf of the employee who sent the IM message, for calling OA APIs.",
+  "configuration.group": "Token exchange",
+  "configuration.base_url.label": "OA auth service URL",
+  "configuration.base_url.description": "Root URL of the service hosting /oauth2/wecom_agent_token, without the API path",
+  "configuration.base_url.placeholder": "https://oa.example.com",
+  "configuration.app_id.label": "App ID",
+  "configuration.app_id.description": "The caller app key registered in the user center",
+  "configuration.app_secret.label": "App secret",
+  "configuration.app_secret.description": "The secret paired with the App ID, stored encrypted by POCO",
+  "capabilities.title": "Capabilities",
+  "capabilities.token.title": "Exchange OA token",
+  "capabilities.token.description": "Exchange the sender's IM user ID for an OA access token, returning the employee number and expiry.",
+  "limits.title": "Scope",
+  "limits.description": "Works only in IM conversations such as WeCom, DingTalk and Feishu; web conversations carry no employee identity. In group chats the sender of the current message is used. Tokens are valid for 10 minutes by default."
+}
